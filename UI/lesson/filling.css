@@ -1,4 +1,4 @@
-.filling-answer {
+.task-answer.task-answer--filling {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -10,7 +10,7 @@
   color: var(--text);
 }
 
-.panel-filling {
+.task-answer-shell.task-answer-shell--filling {
   border-style: dashed;
 }
 
@@ -20,7 +20,7 @@
   text-align: end;
 }
 
-.blank {
+.task-blank {
   display: inline-flex;
   min-width: 100px;
   min-height: 42px;

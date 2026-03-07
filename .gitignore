@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+venv314/
+
+# Node.js
+.npm-cache/
+
+# Logs
+*.log
+
+# Other
+lesson_plans

@@ -93,28 +93,28 @@
   /* height: 350px; */
 }
 
-.task-screen {
+.lesson-task {
   transition: transform 360ms ease;
   flex: 1;
   width: calc(100% - 40px);
   position: absolute;
 }
 
-.task-title {
+.lesson-task__title {
   margin-left: 10px;
   font-size: 20px;
   font-weight: 600;
   color: var(--text);
 }
 
-.task-description {
+.lesson-task__description {
   margin-left: 10px;
   margin-top: 5px;
   color: var(--muted);
   font-size: 15px;
 }
 
-.panel {
+.lesson-card {
   margin: 14px 0;
   background: var(--panel);
   padding: 14px;
@@ -123,17 +123,17 @@
   box-shadow: var(--inner-shadow);
 }
 
-.field-wrong {
+.task-answer--invalid {
   border-color: rgba(255, 6, 6, 0.5);
   /* outline: 2px solid rgba(255, 6, 6, .3); */
   box-shadow: 0 0 10px rgba(255, 6, 6, 0.2);
 }
 
-.hint-wrap {
+.task-hint-wrap {
   overflow: hidden;
 }
 
-.hint {
+.task-hint {
   margin-top: 12px;
   color: var(--muted);
   white-space: nowrap;
@@ -141,14 +141,14 @@
   font-size: 13px;
 }
 
-.field-label {
+.lesson-card__label {
   font-size: 12px;
   letter-spacing: 1.5px;
   margin-bottom: 6px;
   color: var(--muted);
 }
 
-.translation-sentence {
+.translation-prompt {
   font-size: 17px;
   color: var(--text);
   font-weight: 700;

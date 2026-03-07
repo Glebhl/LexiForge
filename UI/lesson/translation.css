@@ -1,4 +1,4 @@
-.translation-answer {
+.task-answer.task-answer--translation {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -9,6 +9,6 @@
   color: var(--text);
 }
 
-.panel-translation {
+.task-answer-shell.task-answer-shell--translation {
   border-style: dashed;
 }

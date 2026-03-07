@@ -196,7 +196,7 @@ class LessonController(QObject):
 
     def _translation_set_highlight(self, is_correct: bool) -> None:
         """Highlight translation field depending on correctness."""
-        script = f"highlightTraslation({str(is_correct).lower()});"
+        script = f"highlightTranslation({str(is_correct).lower()});"
         self.view.page().runJavaScript(script)
 
     def _load_translation_task(self, content: Any) -> None:

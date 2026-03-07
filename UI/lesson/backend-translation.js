@@ -1,114 +1,206 @@
-// Translation task interactions and answer extraction.
+// Translation task: keyboard interactions, selected answer tracking,
+// answer extraction, and validation highlighting.
 
-const keyTemplate = document.getElementById("key-template");
+const translationKeyTemplate = document.getElementById("key-template");
 
 const translationState = {
-  answerWordIds: [],
-  root: null,
+  selectedWordIds: [],
+  rootElement: null,
 };
 
-let translationWordIdSeq = 0;
+let translationWordIdCounter = 0;
 
-function initTranslation(el, sentenceValue, keyboardArray) {
-  const answer = el.querySelector(".translation-answer");
-  const keyboard = el.querySelector(".keyboard");
-  const sentence = el.querySelector(".translation-sentence");
-  translationState.answerWordIds = [];
-  translationState.root = el;
-  sentence.textContent =
-    sentenceValue === undefined ? "" : String(sentenceValue);
-  answer.replaceChildren();
-  keyboard.replaceChildren();
-  const words = Array.isArray(keyboardArray) ? keyboardArray : [];
-  for (let i = 0; i != words.length; i += 1) {
-    keyboard.append(createTranslationKey(words[i]));
+/**
+ * Initialize a translation task.
+ *
+ * @param {HTMLElement} rootElement
+ * @param {string} sentenceText
+ * @param {string[]} keyboardWords
+ * @returns {Function} highlightTranslation
+ */
+function initTranslation(rootElement, sentenceText, keyboardWords) {
+  const answerContainer = rootElement.querySelector(
+    ".task-answer--translation",
+  );
+  const keyboardContainer = rootElement.querySelector(".task-keyboard");
+  const promptElement = rootElement.querySelector(".translation-prompt");
+
+  resetTranslationState(rootElement);
+
+  promptElement.textContent =
+    sentenceText === undefined ? "" : String(sentenceText);
+
+  answerContainer.replaceChildren();
+  keyboardContainer.replaceChildren();
+
+  const words = Array.isArray(keyboardWords) ? keyboardWords : [];
+  for (let i = 0; i < words.length; i += 1) {
+    keyboardContainer.append(createTranslationKey(words[i]));
   }
+
   lessonTaskUtils.setContinueEnabled(false);
-  function onKeyClick(event) {
-    const button = event.target.closest(".word-key");
-    if (!button) {
+
+  function handleKeyClick(event) {
+    const clickedKey = event.target.closest(".task-key");
+    if (!clickedKey) {
       return;
     }
-    const id = button.dataset.id;
-    const inKeyboard = keyboard.contains(button);
-    lessonTaskUtils.runFlipAnimation([keyboard, answer], function () {
-      if (inKeyboard) {
-        answer.append(button);
-        translationState.answerWordIds.push(id);
-      } else {
-        keyboard.append(button);
-        removeAnswerId(id);
-      }
-      updateTranslationContinueState();
-    });
+
+    const wordId = clickedKey.dataset.id;
+    const isInsideKeyboard = keyboardContainer.contains(clickedKey);
+
+    lessonTaskUtils.runFlipAnimation(
+      [keyboardContainer, answerContainer],
+      function () {
+        if (isInsideKeyboard) {
+          moveKeyToAnswer(clickedKey, answerContainer, wordId);
+        } else {
+          moveKeyToKeyboard(clickedKey, keyboardContainer, wordId);
+        }
+
+        updateTranslationContinueState();
+      },
+    );
   }
-  keyboard.addEventListener("click", onKeyClick);
-  answer.addEventListener("click", onKeyClick);
+
+  keyboardContainer.addEventListener("click", handleKeyClick);
+  answerContainer.addEventListener("click", handleKeyClick);
+
   return highlightTranslation;
 }
 
+/**
+ * Reset internal state for a new translation task.
+ *
+ * @param {HTMLElement} rootElement
+ */
+function resetTranslationState(rootElement) {
+  translationState.selectedWordIds = [];
+  translationState.rootElement = rootElement;
+}
+
+/**
+ * Create one keyboard key node for a translation word.
+ *
+ * @param {string} text
+ * @returns {HTMLElement}
+ */
 function createTranslationKey(text) {
-  translationWordIdSeq += 1;
+  translationWordIdCounter += 1;
+
   return lessonTaskUtils.createWordKeyNode(
-    keyTemplate,
+    translationKeyTemplate,
     text,
-    translationWordIdSeq,
+    translationWordIdCounter,
   );
 }
 
-function removeAnswerId(id) {
-  for (let i = 0; i != translationState.answerWordIds.length; i += 1) {
-    if (translationState.answerWordIds[i] === id) {
-      translationState.answerWordIds.splice(i, 1);
+/**
+ * Move a key from the keyboard into the answer area.
+ *
+ * @param {HTMLElement} keyElement
+ * @param {HTMLElement} answerContainer
+ * @param {string} wordId
+ */
+function moveKeyToAnswer(keyElement, answerContainer, wordId) {
+  answerContainer.append(keyElement);
+  translationState.selectedWordIds.push(wordId);
+}
+
+/**
+ * Move a key from the answer area back into the keyboard.
+ *
+ * @param {HTMLElement} keyElement
+ * @param {HTMLElement} keyboardContainer
+ * @param {string} wordId
+ */
+function moveKeyToKeyboard(keyElement, keyboardContainer, wordId) {
+  keyboardContainer.append(keyElement);
+  removeSelectedWordId(wordId);
+}
+
+/**
+ * Remove a word id from the selected answer order.
+ *
+ * @param {string} wordId
+ */
+function removeSelectedWordId(wordId) {
+  const ids = translationState.selectedWordIds;
+
+  for (let i = 0; i < ids.length; i += 1) {
+    if (ids[i] === wordId) {
+      ids.splice(i, 1);
       return;
     }
   }
 }
 
+/**
+ * Continue button becomes enabled when at least one word is selected.
+ */
 function updateTranslationContinueState() {
   lessonTaskUtils.setContinueEnabled(
-    translationState.answerWordIds.length !== 0,
+    translationState.selectedWordIds.length > 0,
   );
 }
 
+/**
+ * Build the selected translation answer as a space-separated string.
+ *
+ * @returns {string}
+ */
 function getTranslationAnswerString() {
-  const root = translationState.root;
-  if (!root) {
+  const rootElement = translationState.rootElement;
+  if (!rootElement) {
     return "";
   }
-  const container = root.querySelector(".translation-answer");
-  if (!container) {
+
+  const answerContainer = rootElement.querySelector(
+    ".task-answer--translation",
+  );
+  if (!answerContainer) {
     return "";
   }
-  const keys = container.querySelectorAll(".word-key");
-  const keyMap = new Map();
-  for (let i = 0; i != keys.length; i += 1) {
-    const key = keys[i];
-    keyMap.set(key.dataset.id, key.textContent.trim());
+
+  const keyElements = answerContainer.querySelectorAll(".task-key");
+  const textById = new Map();
+
+  for (let i = 0; i < keyElements.length; i += 1) {
+    const keyElement = keyElements[i];
+    textById.set(keyElement.dataset.id, keyElement.textContent.trim());
   }
+
   const resultWords = [];
-  for (let i = 0; i != translationState.answerWordIds.length; i += 1) {
-    const id = translationState.answerWordIds[i];
-    const word = keyMap.get(id);
-    if (word) {
-      resultWords.push(word);
+
+  for (let i = 0; i < translationState.selectedWordIds.length; i += 1) {
+    const wordId = translationState.selectedWordIds[i];
+    const wordText = textById.get(wordId);
+
+    if (wordText) {
+      resultWords.push(wordText);
     }
   }
-  return resultWords.join("\x20");
+
+  return resultWords.join(" ");
 }
 
+/**
+ * Highlight the answer area depending on correctness.
+ *
+ * @param {boolean} isCorrect
+ */
 function highlightTranslation(isCorrect) {
-  const root = translationState.root;
-  if (!root) {
+  const rootElement = translationState.rootElement;
+  if (!rootElement) {
     return;
   }
-  const panel = root.querySelector(".panel-translation");
-  if (!panel) {
-    return;
-  }
-  panel.classList.toggle("field-wrong", !Boolean(isCorrect));
-}
 
-function highlightTraslation(isCorrect) {
-  highlightTranslation(isCorrect);
+  const answerShell = rootElement.querySelector(
+    ".task-answer-shell--translation",
+  );
+  if (!answerShell) {
+    return;
+  }
+
+  answerShell.classList.toggle("task-answer--invalid", !Boolean(isCorrect));
 }

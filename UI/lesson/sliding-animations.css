@@ -1,9 +1,9 @@
-.task-screen.is-right {
+.lesson-task.is-enter-from-right {
   transform: translateX(110%);
 }
-.task-screen.is-left {
+.lesson-task.is-enter-from-left {
   transform: translateX(-110%);
 }
-.task-screen.is-center {
+.lesson-task.is-active {
   transform: translateX(0);
 }
