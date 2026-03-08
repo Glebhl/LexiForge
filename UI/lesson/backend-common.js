@@ -13,6 +13,7 @@ const skipButton = document.getElementById("skip");
 const taskState = {
   currentElement: null,
   transitionFallbackMs: 500,
+  transitionId: 0,
 };
 
 // ===== Task hydrators ========================================================
@@ -201,16 +202,35 @@ function getTransitionClasses(direction) {
   };
 }
 
+// Remove every mounted task except the one that should remain on stage.
+function cleanupTaskElements(keepElement = null) {
+  const mountedTasks = stage.querySelectorAll(".lesson-task");
+
+  for (const taskElement of mountedTasks) {
+    if (taskElement === keepElement) {
+      continue;
+    }
+
+    taskElement.remove();
+  }
+}
+
 // Mount a new task, animate it in, and remove the previous one after transition.
 function setTask(templateName, direction = "next", data = {}) {
   setContinueEnabled(false);
+
+  const transitionId = taskState.transitionId + 1;
+  taskState.transitionId = transitionId;
 
   const previousElement = taskState.currentElement;
   const nextElement = createFromTemplate(templateName);
 
   hydrate(templateName, nextElement, data);
+  taskState.currentElement = nextElement;
 
   const { incoming, outgoing } = getTransitionClasses(direction);
+
+  cleanupTaskElements(previousElement);
 
   // Prepare the new element in its off-screen position.
   nextElement.classList.add(incoming);
@@ -231,8 +251,12 @@ function setTask(templateName, direction = "next", data = {}) {
   }
 
   return waitTransition(nextElement, taskState.transitionFallbackMs).then(() => {
-    previousElement?.remove();
-    taskState.currentElement = nextElement;
+    if (taskState.transitionId !== transitionId) {
+      cleanupTaskElements(taskState.currentElement);
+      return;
+    }
+
+    cleanupTaskElements(nextElement);
   });
 }
 
