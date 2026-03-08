@@ -9,6 +9,15 @@
     }
   },
   {
+    "task_id": "question",
+    "content": {
+      "question": "What is the grass color according to the text?",
+      "paragraph": "The grass is green.",
+      "options": ["yellow", "green", "violet"],
+      "answer": "green"
+    }
+  },
+  {
     "task_id": "explanation",
     "content": {
       "cards": [

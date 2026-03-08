@@ -26,13 +26,13 @@
   color: var(--text);
   transition: var(--transition);
   /* box-shadow: var(--inner-shadow); */
-}
-
-.task-choice.is-idle,
-.item.unselected {
   border: 1px solid var(--border);
   background: var(--panel);
 }
+
+/* .task-choice.is-idle,
+.item.unselected {
+} */
 
 .task-choice.is-idle:hover,
 .item.unselected:hover {

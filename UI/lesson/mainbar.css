@@ -88,16 +88,16 @@
   flex: 1;
   position: relative;
   padding: 15px 20px;
-  overflow-y: scroll;
-  overflow-x: hidden;
   /* height: 350px; */
 }
 
 .lesson-task {
   transition: transform 360ms ease;
-  flex: 1;
   width: calc(100% - 40px);
+  height: calc(100% - 15px);
   position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .lesson-task__title {
