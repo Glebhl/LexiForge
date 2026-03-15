@@ -1,0 +1,186 @@
+.task-answer-shell.task-answer-shell--translation,
+.task-answer-shell.task-answer-shell--filling {
+  border-style: dashed;
+}
+
+.task-answer-stack {
+  position: relative;
+  min-height: 90px;
+}
+
+.task-answer.task-answer--translation,
+.task-answer__typing-wrap {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity var(--duration-normal) ease,
+    transform var(--duration-normal) ease;
+}
+
+.task-answer.task-answer--translation {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 6px;
+  color: var(--color-text);
+  font-size: 16px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.task-answer__typing-wrap {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+}
+
+.task-answer__typing-input {
+  width: 100%;
+  height: calc(100% - 12px);
+  padding: 6px;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  line-height: 26px;
+  resize: none;
+  outline: none;
+}
+
+.task-answer.task-answer--filling {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: start;
+  gap: 6px;
+  min-height: 94px;
+  color: var(--color-text);
+  font-size: 16px;
+  transition: transform var(--duration-fast) ease;
+}
+
+.filling-text {
+  min-height: 42px;
+  line-height: 42px;
+  text-align: end;
+}
+
+.task-blank {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  min-height: 45px;
+  border-bottom: 2px solid #8d8d8d;
+  vertical-align: middle;
+}
+
+.task-blank__input-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition:
+    opacity var(--duration-normal) ease,
+    transform var(--duration-normal) ease;
+}
+
+.task-blank__input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  text-align: center;
+  outline: none;
+}
+
+.task-blank > .task-key {
+  position: relative;
+  z-index: 1;
+  transition:
+    opacity var(--duration-normal) ease,
+    transform var(--duration-normal) ease;
+}
+
+.lesson-task .task-keyboard-block {
+  overflow: visible;
+  max-height: 220px;
+  margin: 14px 0;
+  padding: 14px;
+  border-width: 1px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    max-height var(--duration-moderate) ease,
+    opacity var(--duration-moderate) ease,
+    transform var(--duration-moderate) ease,
+    margin var(--duration-moderate) ease,
+    padding var(--duration-moderate) ease,
+    border-width var(--duration-moderate) ease;
+}
+
+.lesson-task .task-hint-wrap {
+  max-height: 70px;
+  margin: 0;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    max-height var(--duration-normal) ease,
+    opacity var(--duration-normal) ease,
+    transform var(--duration-normal) ease;
+}
+
+.lesson-task.is-translation-typing .task-answer--translation {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.lesson-task.is-translation-typing .task-answer__typing-wrap {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+
+.lesson-task.is-translation-typing .task-keyboard-block,
+.lesson-task.is-filling-typing .task-keyboard-block {
+  overflow: hidden;
+  max-height: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.lesson-task.is-translation-typing .task-hint-wrap,
+.lesson-task.is-filling-typing .task-hint-wrap {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.lesson-task.is-filling-typing .task-blank__input-wrap {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.lesson-task.is-filling-typing .task-blank > .task-key {
+  opacity: 0;
+  transform: scale(0.94);
+  pointer-events: none;
+}

@@ -1,0 +1,57 @@
+.md-content {
+  color: var(--color-text);
+  font-size: 16px;
+}
+
+.md-content h2,
+.md-content h3 {
+  margin: 14px 0 5px;
+}
+
+.md-content h2 {
+  font-size: 24px;
+}
+
+.md-content h3 {
+  font-size: 19px;
+}
+
+.md-content p,
+.md-content li {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.md-content ul {
+  margin: 0;
+}
+
+ul {
+  padding-left: 28px;
+}
+
+.md-content blockquote {
+  display: inline-block;
+  margin: 14px 0 0;
+  padding: 23px 20px 23px 12px;
+  border-left: 3px solid rgba(0, 195, 137, 0.55);
+  border-radius: 10px;
+  background: rgba(0, 195, 137, 0.08);
+}
+
+.answer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.question-content {
+  color: var(--color-text);
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.question-paragraph {
+  margin-top: 6px;
+  color: var(--color-text);
+  font-size: 16px;
+}

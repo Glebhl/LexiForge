@@ -1,19 +1,12 @@
 <!doctype html>
-
 <html>
-  <head>
-    <link href="Inter.ttf" rel="stylesheet" />
-
-    <link href="darkscroll.css" rel="stylesheet" />
-    <link href="general.css" rel="stylesheet" />
-    <link href="mainbar.css" rel="stylesheet" />
-    <link href="sliding-animations.css" rel="stylesheet" />
-    <link href="keyboard.css" rel="stylesheet" />
-    <link href="explanation.css" rel="stylesheet" />
-    <link href="matching.css" rel="stylesheet" />
-    <link href="translation.css" rel="stylesheet" />
-    <link href="filling.css" rel="stylesheet" />
-    <link href="question.css" rel="stylesheet" />
+  <head>    
+    <link href="styles/theme.css" rel="stylesheet" />
+    <link href="styles/layout.css" rel="stylesheet" />
+    <link href="styles/motion.css" rel="stylesheet" />
+    <link href="styles/content.css" rel="stylesheet" />
+    <link href="styles/interactive.css" rel="stylesheet" />
+    <link href="styles/task-modes.css" rel="stylesheet" />
 
     <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
   </head>
@@ -25,7 +18,7 @@
             <img class="lesson-shell__logo" src="../logo.jpg" />
             <div>
               <p class="lesson-shell__name">LexiForge</p>
-              <p class="lesson-shell__subtitle">Lesson · Tasks</p>
+              <p class="lesson-shell__subtitle">Lesson - Tasks</p>
             </div>
           </div>
           <div class="lesson-progress">
@@ -34,18 +27,16 @@
             </div>
             <div class="lesson-progress__text" id="progressText"></div>
           </div>
-          <div class="lesson-stage" id="taskStage">
-            <!-- Mainscreen content -->
-            <!-- Content END -->
-          </div>
+          <div class="lesson-stage" id="taskStage"></div>
         </div>
         <div class="lesson-shell__footer">
-          <button class="lesson-button lesson-button--skip" id="skip">
+          <button class="lesson-button lesson-button--skip" id="skip" type="button">
             Skip
           </button>
           <button
             class="lesson-button lesson-button--continue"
             id="continue"
+            type="button"
             disabled
           >
             Continue
@@ -54,7 +45,6 @@
       </div>
     </main>
 
-    <!-- QUESTION task START -->
     <template id="tpl-question">
       <div class="lesson-task">
         <div>
@@ -75,21 +65,18 @@
         </div>
       </div>
     </template>
-    <!-- QUESTION task END -->
 
-    <!-- EXPLANATION task START -->
-    <template id="article-template">
+    <template id="tpl-explanation">
+      <div class="lesson-task"></div>
+    </template>
+
+    <template id="tpl-explanation-card">
       <article class="lesson-card">
         <div class="lesson-card__label"></div>
         <div class="md-content"></div>
       </article>
     </template>
-    <template id="tpl-explanation">
-      <div class="lesson-task"></div>
-    </template>
-    <!-- EXAMPLE task END -->
 
-    <!-- FILLING task START -->
     <template id="tpl-filling">
       <div class="lesson-task">
         <div>
@@ -136,11 +123,7 @@
         </div>
       </div>
     </template>
-    <template id="blank-template">
-      <span class="task-blank"></span>
-    </template>
 
-    <!-- TRANSLATION task START -->
     <template id="tpl-translation">
       <div class="lesson-task">
         <div>
@@ -154,7 +137,7 @@
           <p class="lesson-card__label">SENTENCE</p>
           <p class="translation-prompt"></p>
         </div>
-          <div class="lesson-card">
+        <div class="lesson-card">
           <div class="task-keyboard__header">
             <p class="lesson-card__label">YOUR ANSWER</p>
             <div class="task-keyboard__mode-switch">
@@ -181,7 +164,6 @@
               <div class="task-answer__typing-wrap">
                 <textarea
                   class="task-answer__typing-input"
-                  type="text"
                   autocomplete="off"
                   spellcheck="false"
                   placeholder="Type your translation here..."
@@ -202,12 +184,7 @@
         </div>
       </div>
     </template>
-    <template id="key-template">
-      <div class="task-key"></div>
-    </template>
-    <!-- TRANSLATION task END -->
 
-    <!-- MATCHING task START-->
     <template id="tpl-matching">
       <div class="lesson-task">
         <div>
@@ -219,36 +196,36 @@
         <div class="lesson-card">
           <span class="lesson-card__label">YOUR ANSWER</span>
           <div class="matching-grid">
-            <div
-              class="matching-grid__column matching-grid__column--left"
-            ></div>
-            <div
-              class="matching-grid__column matching-grid__column--right"
-            ></div>
+            <div class="matching-grid__column matching-grid__column--left"></div>
+            <div class="matching-grid__column matching-grid__column--right"></div>
           </div>
         </div>
       </div>
     </template>
-    <template id="item-template">
-      <button class="task-choice is-idle"></button>
+
+    <template id="tpl-word-key">
+      <div class="task-key"></div>
     </template>
-    <!-- MATCHING tast END -->
+
+    <template id="tpl-matching-choice">
+      <button class="task-choice is-idle" type="button"></button>
+    </template>
 
     <script>
-      // Global link to Python backend
-      let backend = null;
+      window.backend = null;
 
-      // Channel initialization
       new QWebChannel(qt.webChannelTransport, function (channel) {
-        backend = channel.objects.backend;
+        window.backend = channel.objects.backend;
       });
     </script>
-    <script src="backend-common.js"></script>
+    <script src="shared-utils.js"></script>
     <script src="mode-switch.js"></script>
-    <script src="backend-explanation.js"></script>
-    <script src="backend-matching.js"></script>
-    <script src="backend-translation.js"></script>
-    <script src="backend-filling.js"></script>
-    <script src="backend-question.js"></script>
+    <script src="task-registry.js"></script>
+    <script src="tasks/explanation-task.js"></script>
+    <script src="tasks/matching-task.js"></script>
+    <script src="tasks/translation-task.js"></script>
+    <script src="tasks/filling-task.js"></script>
+    <script src="tasks/question-task.js"></script>
+    <script src="lesson-shell.js"></script>
   </body>
 </html>

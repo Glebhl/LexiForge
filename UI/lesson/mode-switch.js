@@ -1,76 +1,73 @@
-// Shared mode switch helper used by tasks that have segmented toggle buttons.
 (function registerLessonModeSwitch(globalObject) {
-  /**
-   * Attach mode switch behavior to a button group.
-   *
-   * @param {HTMLElement} switchRoot
-   * @param {(mode: string) => void} onModeChange
-   * @param {string} initialMode
-   * @returns {{setMode: Function, getMode: Function}}
-   */
-  function attachLessonModeSwitch(switchRoot, onModeChange, initialMode) {
-    if (!switchRoot) {
-      return {
-        setMode: function () {},
-        getMode: function () {
-          return "";
-        },
-      };
+  function createNoopController() {
+    return {
+      getMode: function () {
+        return "";
+      },
+      setMode: function () {},
+    };
+  }
+
+  function attachModeSwitch(rootElement, onModeChange, initialMode) {
+    if (!rootElement) {
+      return createNoopController();
     }
 
     const buttons = Array.from(
-      switchRoot.querySelectorAll(".task-keyboard__mode-button[data-mode]"),
+      rootElement.querySelectorAll(".task-keyboard__mode-button[data-mode]"),
     );
+
+    if (buttons.length === 0) {
+      return createNoopController();
+    }
 
     let currentMode = "";
 
-    function setMode(mode, emitChange = true) {
+    function applyMode(mode, shouldNotify) {
       const nextMode = String(mode || "");
+      const hasModeButton = buttons.some(function (button) {
+        return button.dataset.mode === nextMode;
+      });
 
-      // Ignore mode values that are not represented by a button.
-      if (!buttons.some((button) => button.dataset.mode === nextMode)) {
+      if (!hasModeButton) {
         return;
       }
 
       currentMode = nextMode;
 
-      // Keep only the active button marked with .is-active.
-      for (let i = 0; i < buttons.length; i += 1) {
-        const button = buttons[i];
+      for (const button of buttons) {
         button.classList.toggle("is-active", button.dataset.mode === nextMode);
       }
 
-      if (emitChange && typeof onModeChange === "function") {
+      if (shouldNotify && typeof onModeChange === "function") {
         onModeChange(nextMode);
       }
     }
 
-    for (let i = 0; i < buttons.length; i += 1) {
-      const button = buttons[i];
+    for (const button of buttons) {
       button.addEventListener("click", function () {
-        setMode(button.dataset.mode, true);
+        applyMode(button.dataset.mode, true);
       });
     }
 
-    if (buttons.length > 0) {
-      const fallbackMode = buttons[0].dataset.mode;
-      const preferredMode =
-        buttons.find((button) => button.dataset.mode === initialMode)?.dataset
-          .mode || fallbackMode;
+    const fallbackMode = buttons[0].dataset.mode;
+    const initialButton = buttons.find(function (button) {
+      return button.dataset.mode === initialMode;
+    });
 
-      setMode(preferredMode, true);
-    }
+    applyMode(initialButton ? initialButton.dataset.mode : fallbackMode, true);
 
     return {
-      setMode: function (mode) {
-        setMode(mode, true);
-      },
       getMode: function () {
         return currentMode;
+      },
+      setMode: function (mode) {
+        applyMode(mode, true);
       },
     };
   }
 
-  globalObject.lessonModeSwitch = globalObject.lessonModeSwitch || {};
-  globalObject.lessonModeSwitch.attach = attachLessonModeSwitch;
+  globalObject.lessonModeSwitch = {
+    attach: attachModeSwitch,
+  };
 })(window);

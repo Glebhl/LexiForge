@@ -1,9 +1,11 @@
 .lesson-task.is-enter-from-right {
   transform: translateX(110%);
 }
+
 .lesson-task.is-enter-from-left {
   transform: translateX(-110%);
 }
+
 .lesson-task.is-active {
   transform: translateX(0);
 }
