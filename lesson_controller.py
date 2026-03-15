@@ -1,11 +1,14 @@
 import json
 import logging
-import re
 from typing import Any, Callable, Optional
 
 from PySide6.QtCore import QObject
 
+from answer_matcher import answer_matcher
+
 logger = logging.getLogger(__name__)
+
+DEFAULT_ANSWER_LANGUAGE = "en"
 
 
 class LessonController(QObject):
@@ -180,34 +183,39 @@ class LessonController(QObject):
         """
 
         def on_answer_received(answer: Optional[str]) -> None:
-            user_answer = self._normalize_translation_answer(answer)
-            expected = [
-                self._normalize_translation_answer(candidate)
-                for candidate in self.answers
-            ]
-            is_correct = user_answer in expected
-
-            logger.debug(
-                "Translation answer received: user_answer=%r expected=%s is_correct=%s",
-                user_answer,
-                expected,
-                is_correct,
+            language_code = self._get_task_answer_language()
+            match_result = answer_matcher.evaluate_text_answer(
+                user_answer=answer,
+                expected_answers=self.answers,
+                language_code=language_code,
+            )
+            comparison_details = answer_matcher.explain_text_answer(
+                user_answer=answer,
+                expected_answers=self.answers,
+                language_code=language_code,
             )
 
-            self._translation_set_highlight(is_correct)
-            self._on_check_result(is_correct)
+            logger.debug(
+                "Translation answer received: raw_user_answer=%r expected=%s "
+                "language_code=%s comparison=%s is_correct=%s",
+                answer,
+                self.answers,
+                language_code,
+                comparison_details,
+                match_result.is_correct,
+            )
+            logger.debug(
+                "Translation close match: is_close_match=%s closest_answer=%r",
+                match_result.is_close_match,
+                match_result.closest_answer,
+            )
+
+            self._translation_set_highlight(match_result.is_correct)
+            self._on_check_result(match_result.is_correct)
 
         script = "getTranslationAnswerString();"
         self.view.page().runJavaScript(script, on_answer_received)
         return False
-
-    def _normalize_translation_answer(self, answer: Optional[str]) -> str:
-        """
-        Normalize translation text to keep answer checks consistent between
-        word-bank and typing modes.
-        """
-        normalized = re.sub(r"\s+", " ", str(answer or "")).strip()
-        return normalized.lower()
 
     def _translation_set_highlight(self, is_correct: bool) -> None:
         """Highlight translation field depending on correctness."""
@@ -228,18 +236,30 @@ class LessonController(QObject):
         """
 
         def on_answer_received(answer: Optional[str]) -> None:
-            user_answer = json.loads(answer or "")
-            is_correct = user_answer == self.answers  # Expect exact matching
-
-            logger.debug(
-                "Filling answer received: user_answer=%r expected=%s is_correct=%s",
-                user_answer,
-                self.answers,
-                is_correct,
+            user_answer = json.loads(answer or "[]")
+            language_code = self._get_task_answer_language()
+            match_result = answer_matcher.evaluate_sequence_answer(
+                user_answers=user_answer,
+                expected_answers=self.answers,
+                language_code=language_code,
             )
 
-            self._filling_set_highlight(is_correct)
-            self._on_check_result(is_correct)
+            logger.debug(
+                "Filling answer received: user_answer=%r expected=%s language_code=%s "
+                "is_correct=%s",
+                user_answer,
+                self.answers,
+                language_code,
+                match_result.is_correct,
+            )
+            logger.debug(
+                "Filling close match: is_close_match=%s closest_answer=%r",
+                match_result.is_close_match,
+                match_result.closest_answer,
+            )
+
+            self._filling_set_highlight(match_result.is_correct)
+            self._on_check_result(match_result.is_correct)
 
         script = "getFillingAnswerString();"
         self.view.page().runJavaScript(script, on_answer_received)
@@ -261,3 +281,14 @@ class LessonController(QObject):
         """Render question task."""
         script = f'setTask("question", "next", {json.dumps(content)});'
         self.view.page().runJavaScript(script)
+
+    def _get_task_answer_language(self) -> Optional[str]:
+        """
+        Returns an optional answer language code for the current task.
+        Supports several field names to keep lesson JSON flexible as more
+        languages are introduced.
+        """
+        task = self.lesson_plan[self.taskIndex - 1]
+        content = task.get("content") or {}
+
+        return content.get("language") or DEFAULT_ANSWER_LANGUAGE
