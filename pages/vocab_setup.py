@@ -65,9 +65,9 @@ class VocabPlannerController(QObject):
         logger.debug("Clicked the button with the id='%s'", payload.get("id"))
 
         match payload.get("id"):
-            case "go":
+            case "generate":
                 self._add_card("Humble", "word", "noun", "A2", "/ˈhʌmbl/", "скромный", "simple or ordinary; not special in any way", "“Despite his success, he stayed humble.”")
-            case "start":
+            case "start_lesson":
                 # print(self.cards)
                 self.router.navigate_to(LessonController)
 

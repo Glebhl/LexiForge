@@ -28,7 +28,7 @@
               AI ready
             </div>
             <div class="chip">
-              <img class="language-indicator" src="../flagpack/US.svg">
+              <img class="language-indicator" src="../flagpack/us.svg">
               EN
             </div>
             <div class="chip" id="deck-amount">Deck: 0 cards</div>
@@ -56,11 +56,15 @@
           </button>
         </div>
       </div>
-        <div class="cards" id="cards"></div>
+      <div class="cards-shell">
+        <div class="cards-scroll">
+          <div class="cards" id="cards"></div>
+        </div>
+      </div>
     </main>
 
     <template id="card-template">
-      <div class="card">
+      <div class="card fade-enter">
         <div class="strip"></div>
         <div class="cardTop">
           <div class="word-block">

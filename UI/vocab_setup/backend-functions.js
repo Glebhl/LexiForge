@@ -12,33 +12,114 @@ function renumberCards() {
   });
 
   nextId = cards.length;
-  document.getElementById('deck-amount').textContent = 'Deck: ' + nextId + ' cards'
+
+  const suffix = nextId === 1 ? "" : "s";
+
+  document.getElementById('deck-amount').textContent =
+    `Deck: ${nextId} card${suffix}`;
+}
+
+function captureCardPositions() {
+  const positions = new Map();
+
+  list.querySelectorAll('.card').forEach((card) => {
+    positions.set(card, card.getBoundingClientRect());
+  });
+
+  return positions;
+}
+
+function animateCardReflow(previousPositions) {
+  const cards = list.querySelectorAll('.card');
+
+  cards.forEach((card) => {
+    const previousRect = previousPositions.get(card);
+
+    if (!previousRect) {
+      return;
+    }
+
+    const currentRect = card.getBoundingClientRect();
+    const deltaX = previousRect.left - currentRect.left;
+    const deltaY = previousRect.top - currentRect.top;
+
+    if (!deltaX && !deltaY) {
+      return;
+    }
+
+    card.animate(
+      [
+        { transform: `translate(${deltaX}px, ${deltaY}px)` },
+        { transform: 'translate(0, 0)' }
+      ],
+      {
+        duration: 220,
+        easing: 'ease'
+      }
+    );
+  });
 }
 
 function addCard(word, unit, part, level, transcription, translation, defenition, example) {
   const node = tpl.content.cloneNode(true);
+  const card = node.querySelector('.card');
   const id = String(nextId++);
 
-  node.querySelector('.card').dataset.id = id;
-  node.querySelector('.word').textContent = word;
-  node.querySelector('.tag--purple').textContent = unit;
-  node.querySelector('.tag--green').textContent = part;
-  node.querySelector('.tag--amber').textContent = level;
-  node.querySelector('.transcription').textContent = transcription;
-  node.querySelector('.translation').textContent = translation;
-  node.querySelector('.defenition').textContent = defenition;
-  node.querySelector('.example').textContent = example;
+  card.dataset.id = id;
+  card.querySelector('.word').textContent = word;
+  card.querySelector('.tag--purple').textContent = unit;
+  card.querySelector('.tag--green').textContent = part;
+  card.querySelector('.tag--amber').textContent = level;
+  card.querySelector('.transcription').textContent = transcription;
+  card.querySelector('.translation').textContent = translation;
+  card.querySelector('.defenition').textContent = defenition;
+  card.querySelector('.example').textContent = example;
   
   list.append(node);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      card.classList.add('fade-enter-active');
+    });
+  });
+
+  card.addEventListener('transitionend', () => {
+    card.classList.remove('fade-enter');
+    card.classList.remove('fade-enter-active');
+  }, { once: true });
+
   renumberCards();
 
   return id;
 }
 
+function animateCardRemoval(card, onRemoved) {
+  if (!card || card.classList.contains('fade-exit-active')) {
+    return;
+  }
+
+  const previousPositions = captureCardPositions();
+  card.classList.add('fade-exit');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      card.classList.add('fade-exit-active');
+    });
+  });
+
+  card.addEventListener('transitionend', () => {
+    card.remove();
+    renumberCards();
+    animateCardReflow(previousPositions);
+
+    if (typeof onRemoved === 'function') {
+      onRemoved();
+    }
+  }, { once: true });
+}
+
 function removeCard(id) {
-  const el = list.querySelector(`item[data-id="${id}"]`);
-  el.parentNode.removeChild(el);
-  renumberCards();
+  const card = list.querySelector(`.card[data-id="${id}"]`);
+  animateCardRemoval(card);
 }
 
 list.addEventListener('click', (e) => {
@@ -46,10 +127,11 @@ list.addEventListener('click', (e) => {
   if (!btn) return;
 
   const item = btn.closest('.card');
-  item.remove();
-  renumberCards();
+  const removedId = item.dataset.id;
 
-  backend.emitEvent('card-closed', { id: item.dataset.id });
+  animateCardRemoval(item, () => {
+    backend.emitEvent('card-closed', { id: removedId });
+  });
 });
 
 function setHint(hint) {
@@ -58,9 +140,9 @@ function setHint(hint) {
 
 // UI actions (JS -> Python)
 document.getElementById('btn-go').addEventListener('click', () => {
-  backend.emitEvent('btn-click', { id: "go" });
+  backend.emitEvent('btn-click', { id: "generate" });
 });
 
 document.getElementById("btn-start").addEventListener('click', () => {
-  backend.emitEvent('btn-click', { id: 'start' });
+  backend.emitEvent('btn-click', { id: 'start_lesson' });
 });

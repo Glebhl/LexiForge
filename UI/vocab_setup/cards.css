@@ -1,10 +1,47 @@
+.cards-shell {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  --cards-scrollbar-width: 10px;
+  --cards-scrollbar-gap: 6px;
+}
+
+.cards-shell::before,
+.cards-shell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: calc(var(--cards-scrollbar-width) + var(--cards-scrollbar-gap));
+  height: 26px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cards-shell::before {
+  top: 0;
+  background: linear-gradient(180deg, var(--background) 0%, rgba(18, 19, 20, 0) 100%);
+}
+
+.cards-shell::after {
+  bottom: 0;
+  background: linear-gradient(0deg, var(--background) 0%, rgba(18, 19, 20, 0) 100%);
+}
+
+.cards-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 18px 14px 30px 0;
+}
+
 .cards {
   display: grid;
   gap: 23px;
   grid-template-columns: 1fr 1fr;
   justify-content: center;
-  align-content: center;
-  align-items: center;
+  align-content: start;
+  align-items: start;
   width: 100%;
 }
 
@@ -26,6 +63,30 @@
     }
 }
 
+.fade-enter {
+  opacity: 0;
+  transform: scale(.985);
+  transition: opacity 100ms ease, transform 100ms ease;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 100ms ease, transform 100ms ease;
+  transform-origin: center;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: scale(.94);
+  pointer-events: none;
+}
+
 .card {
   position: relative;
   background-color: var(--panel);
@@ -33,8 +94,8 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 16px;
-  height: calc(100% - 32px);
   box-shadow: var(--main-shadow);
+  align-self: start;
 }
 
 .card:hover {

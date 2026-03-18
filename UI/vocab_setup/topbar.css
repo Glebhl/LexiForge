@@ -1,5 +1,5 @@
 .topbar {
-  flex: 1;
+  flex: none;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -80,8 +80,13 @@
   gap: 12px;
 }
 
+.prompt-wrap {
+  min-width: 0;
+}
+
 .prompt {
-  width: calc(100% - 32px);
+  display: block;
+  width: 100%;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid var(--border);
