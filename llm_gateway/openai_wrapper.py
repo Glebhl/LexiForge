@@ -65,16 +65,23 @@ def extract_stream_error(event: Any) -> str:
     return "OpenAI streaming request failed."
 
 
-def log_response_usage(response: Any, *, model: str, operation: str) -> None:
+def log_response_usage(
+    response: Any,
+    *,
+    model: str,
+    operation: str,
+    prompt_cache_key: str | None = None,
+) -> None:
     usage = getattr(response, "usage", None)
     if usage is None:
         return
 
     input_details = getattr(usage, "input_tokens_details", None)
     logger.info(
-        "OpenAI usage: operation=%s model=%s input_tokens=%s cached_tokens=%s output_tokens=%s total_tokens=%s",
+        "OpenAI usage: operation=%s model=%s prompt_cache_key=%s input_tokens=%s cached_tokens=%s output_tokens=%s total_tokens=%s",
         operation,
         model,
+        prompt_cache_key,
         getattr(usage, "input_tokens", None),
         getattr(input_details, "cached_tokens", None) if input_details is not None else None,
         getattr(usage, "output_tokens", None),
@@ -138,7 +145,12 @@ class OpenAITextClient:
             return self._stream_text(request)
 
         response = self._client.responses.create(**request)
-        log_response_usage(response, model=self.model, operation="generate_text")
+        log_response_usage(
+            response,
+            model=self.model,
+            operation="generate_text",
+            prompt_cache_key=request.get("prompt_cache_key"),
+        )
         return extract_response_text(response)
 
     def stream_text(
@@ -244,7 +256,12 @@ class OpenAITextClient:
             previous_response_id=previous_response_id,
         )
         response = self._client.responses.create(**request)
-        log_response_usage(response, model=self.model, operation="create_response")
+        log_response_usage(
+            response,
+            model=self.model,
+            operation="create_response",
+            prompt_cache_key=request.get("prompt_cache_key"),
+        )
         return response
 
     def _stream_text(self, request: dict[str, Any]) -> Iterator[str]:
@@ -280,6 +297,7 @@ class OpenAITextClient:
                         completed_response,
                         model=self.model,
                         operation="stream_text",
+                        prompt_cache_key=request.get("prompt_cache_key"),
                     )
                 logger.debug(
                     "Streaming response finished in %.2fs",
