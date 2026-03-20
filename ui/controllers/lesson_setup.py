@@ -9,8 +9,8 @@ from typing import Any
 
 from PySide6.QtCore import QObject, QThread, Signal, Slot
 
-from pages.lesson import LessonController
-from pipeline.vocab import VocabularyCard, VocabularyCardGenerator
+from ui.controllers import LessonFlowController
+from pipeline import VocabularyCard, VocabularyCardGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -81,10 +81,10 @@ class VocabularyGenerationWorker(QObject):
             self.finished.emit()
 
 
-class VocabularySetupController(QObject):
+class LessonSetupController(QObject):
     def __init__(self, router, view, backend):
         super().__init__()
-        self.url = r"\UI\vocab_setup\index.html"
+        self.url = r"\ui\views\lesson_setup\index.html"
         self.router = router
         self.view = view
         self.backend = backend
@@ -206,7 +206,7 @@ class VocabularySetupController(QObject):
                     self._start_card_generation,
                 )
             case "start_lesson":
-                self.router.navigate_to(LessonController)
+                self.router.navigate_to(LessonFlowController)
 
     def _on_card_closed(self, payload: dict):
         card_id = str(payload.get("id", ""))

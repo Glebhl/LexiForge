@@ -8,10 +8,10 @@ from answer_matcher import answer_matcher
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ANSWER_LANGUAGE = "en"
+LESSON_LANGUAGE = "en"
 
 
-class LessonController(QObject):
+class LessonFlowController(QObject):
     """
     Controls lesson flow: loads tasks from a lesson plan, renders them via JS,
     and validates user answers using JS callbacks where needed.
@@ -21,7 +21,7 @@ class LessonController(QObject):
         super().__init__()
 
         # Public-ish fields kept for compatibility with existing codebase usage
-        self.url = r"\UI\lesson\index.html"
+        self.url = r"\ui\views\lesson_flow\index.html"
         self.router = router
         self.view = view
         self.backend = backend
@@ -291,4 +291,4 @@ class LessonController(QObject):
         task = self.lesson_plan[self.taskIndex - 1]
         content = task.get("content") or {}
 
-        return content.get("language") or DEFAULT_ANSWER_LANGUAGE
+        return content.get("language") or LESSON_LANGUAGE

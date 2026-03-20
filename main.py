@@ -7,7 +7,7 @@ from PySide6.QtWebChannel import QWebChannel
 from dotenv import load_dotenv
 
 from backend import Backend
-from pages.vocab_setup import VocabularySetupController
+from ui.controllers import LessonSetupController
 from router import Router
 from logging_config import setup_logging
 
@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
 
     def _open_initial_page(self) -> None:
         """Navigate to the initial controller/page."""
-        self.router.navigate_to(VocabularySetupController)
+        self.router.navigate_to(LessonSetupController)
         logger.debug("Navigated to VocabPlannerController")
 
 
