@@ -1,29 +1,49 @@
 # LexiForge
 
-LexiForge is an open-source desktop application for language learning.
+## Localizations
 
-This repository is currently in a very early stage.
+- [Русский](i18n/ru.md)
+- [Español](i18n/es.md)
+- [中文](i18n/zh.md)
+
+## Short Overview
+
+LexiForge is a desktop prototype for language learning built with `PySide6`, `Qt WebEngine`, and an HTML/CSS/JavaScript UI. The app lets a learner describe what they want to study, generates vocabulary cards with OpenAI, and then launches a lesson flow based on the selected content.
+
+## Current Capabilities
+
+- Vocabulary card generation through the OpenAI Responses API
+- Lesson flow with multiple task types: explanation, matching, translation, filling, and question
+- Local JSON lesson plan used as a temporary lesson source
 
 ## Project Layout
 
 ```text
 LexiForge/
-├─ main.py                     # Application entry point
-├─ backend.py                  # Python <-> UI bridge via Qt signals/slots
-├─ router.py                   # Screen navigation and transitions
-├─ answer_matcher.py           # Text normalization and answer matching
-├─ lesson_plans/               # Lesson content in JSON format
-├─ pages/                      # Python backend for web screens
-│  ├─ lesson.py                # Lesson flow, task loading, answer checks
-│  └─ vocab_setup.py           # Vocabulary setup screen logic
-└─ UI/                         # Frontend screens, styles, assets, and scripts
+├─ main.py                         # Application entry point and dotenv bootstrap
+├─ backend.py                      # Python <-> UI bridge via Qt signals/slots
+├─ router.py                       # Screen navigation and controller routing
+├─ logging_config.py               # Logging setup
+├─ answer_matcher.py               # Answer normalization and validation
+├─ language_converter.py           # Language labels/helpers
+├─ requirements.txt                # Python dependencies
+├─ .env                            # Local environment variables (OpenAI key)
+├─ lesson_plans/
+│  └─ lesson.json                  # Temporary lesson data
+├─ llm_gateway/
+│  ├─ openai_wrapper.py            # OpenAI Responses API client wrapper
+│  ├─ openai_chat.py               # Chat session helper
+│  └─ openai_cache.py              # Prompt cache helpers/state
+├─ pipeline/
+│  └─ vocab.py                     # Vocabulary card generation pipeline
+├─ prompts/
+│  └─ en/
+│     └─ vocab_setup.txt           # System prompt for vocabulary generation
+└─ ui/
+   ├─ controllers/                 # Python controllers for setup and lesson flow
+   ├─ views/                       # HTML/CSS/JS screens
+   └─ assets/                      # Fonts, icons, shared theme files
 ```
-
-## How It Works
-
-When the application starts, `main.py` creates a `PySide6` window with an embedded browser view. The interface itself is built with HTML/CSS/JavaScript. Python controllers load screens, react to UI events through `QWebChannel`, and validate some lesson answers.
-
-Right now, lessons are loaded from temporary test templates stored in JSON files [`lesson_plans`](./lesson_plans). In the future, lessons will be automatically generated with AI based on the learner's request.
 
 ## Getting Started
 
@@ -37,8 +57,8 @@ cd LexiForge
 ### 2. Create and activate a virtual environment
 
 ```bash
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+python -m venv venv
+venv\Scripts\Activate.ps1
 ```
 
 ### 3. Install dependencies
@@ -47,53 +67,37 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 4. Run the app
+### 4. Configure environment variables
+
+Create a `.env` file in the project root and add your OpenAI API key:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Without `OPENAI_API_KEY`, vocabulary generation will not work.
+
+### 5. Run the app
 
 ```bash
 python main.py
 ```
 
+## Status
 
-## Lesson Format
-
-Lessons are defined as arrays of task objects. A task usually contains:
-
-- `task_id` to select the task type
-- `content` for the task payload
-- `answers` for accepted solutions, when validation is needed
-
-See [`lesson_plans/lesson.json`](./lesson_plans/lesson.json) for an example.
+This project is still an early prototype. The vocabulary setup flow already uses OpenAI, while the full lesson generation pipeline is still partially backed by temporary JSON lesson data.
 
 ## Roadmap
 
-The planned direction of the project is to turn the main screen into a lesson builder. A user will be able to enter a request, create a list of vocabulary cards, and use that input as the basis for an AI-generated personalized lesson.
+Planned next steps include:
 
-The current prototype is focused mostly on vocabulary-oriented lesson flow, but the long-term plan is to support more areas of language learning, including:
-
-- Grammar
-- Speaking practice
-- Writing practice
-- Listening practice
-- Additional exercise types
-
-At the moment, only English is supported. Planned future language support is roughly expected in this order:
-
-1. German
-2. Polish
-3. Japanese
-4. Russian
-5. Spanish
-6. Italian
-7. French
-
-## Status
-
-This is a work-in-progress open-source project in a very early version. The current application is mostly a prototype of the lesson engine, desktop shell, and interface flow. Some parts of the product are still based on temporary test data and placeholder content.
+- Generate full lessons from the selected vocabulary cards
+- Add support for more languages.
+- Add grammar support
+- Add localization other than English.
+- Replace temporary lesson templates with fully AI-driven lesson creation
+- Add progress tracking
 
 ## Contributing
 
 Issues, suggestions, and pull requests are welcome.
-
-## TODO
-
-- [ ] Fill out this TODO list
