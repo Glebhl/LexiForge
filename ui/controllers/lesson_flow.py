@@ -8,16 +8,13 @@ from answer_matcher import answer_matcher
 
 logger = logging.getLogger(__name__)
 
-LESSON_LANGUAGE = "en"
-
-
 class LessonFlowController(QObject):
     """
     Controls lesson flow: loads tasks from a lesson plan, renders them via JS,
     and validates user answers using JS callbacks where needed.
     """
 
-    def __init__(self, router, view, backend):
+    def __init__(self, router, view, backend, lesson_plan):
         super().__init__()
 
         # Public-ish fields kept for compatibility with existing codebase usage
@@ -25,6 +22,10 @@ class LessonFlowController(QObject):
         self.router = router
         self.view = view
         self.backend = backend
+
+        # Save lesson plan
+        self._lesson_plan = lesson_plan
+        self.tasksTotal = len(self._lesson_plan)
 
         # UI event handlers (external events -> internal methods)
         self.handlers: dict[str, Callable[[dict], None]] = {
@@ -51,12 +52,6 @@ class LessonFlowController(QObject):
             "filling": self._verify_filling_task,
             "question": None,
         }
-
-        # Load lesson plan once
-        with open("lesson_plans/lesson.json", encoding="utf-8") as file:
-            self.lesson_plan: list[dict[str, Any]] = json.load(file)
-
-        self.tasksTotal: int = len(self.lesson_plan)
 
         logger.debug(
             "LessonController initialized: tasks_total=%d, url=%s",
@@ -112,7 +107,7 @@ class LessonFlowController(QObject):
 
         self._set_step_ui(self.taskIndex, self.tasksTotal)
 
-        task = self.lesson_plan[self.taskIndex - 1]
+        task = self._lesson_plan[self.taskIndex - 1]
         self.taskID = task.get("task_id", "")
         content = task.get("content")
         self.answers = task.get("answers") or []
@@ -288,7 +283,7 @@ class LessonFlowController(QObject):
         Supports several field names to keep lesson JSON flexible as more
         languages are introduced.
         """
-        task = self.lesson_plan[self.taskIndex - 1]
+        task = self._lesson_plan[self.taskIndex - 1]
         content = task.get("content") or {}
 
-        return content.get("language") or LESSON_LANGUAGE
+        return content.get("language") or self._lesson_language

@@ -205,7 +205,14 @@ class LessonSetupController(QObject):
                     self._start_card_generation,
                 )
             case "start_lesson":
-                self.router.navigate_to(LessonFlowController)
+                 # Placeholder for lesson generation
+                with open("lesson_plans/lesson.json", encoding="utf-8") as file:
+                    lesson_plan: list[dict[str, Any]] = json.load(file)
+
+                self.router.navigate_to(
+                    LessonFlowController,
+                    lesson_plan
+                )
 
     def _on_card_closed(self, payload: dict):
         card_id = str(payload.get("id", ""))

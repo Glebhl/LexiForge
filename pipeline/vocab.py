@@ -7,6 +7,7 @@ from pathlib import Path
 
 from llm_gateway import OpenAITextClient
 from llm_gateway.openai_wrapper import REASONING_EFFORT_MINIMAL, TEXT_VERBOSITY_LOW
+from language_converter import get_language_display_name
 
 
 logger = logging.getLogger(__name__)
@@ -22,66 +23,6 @@ CARD_FIELDS = (
     "EXAMPLE",
 )
 CARD_FIELDS_SET = set(CARD_FIELDS)
-
-LANGUAGE_MAP = {
-    "en": "English",
-    "zh": "Chinese (Mandarin)",
-    "hi": "Hindi",
-    "es": "Spanish",
-    "fr": "French",
-    "ar": "Arabic",
-    "bn": "Bengali",
-    "ru": "Russian",
-    "pt": "Portuguese",
-    "ur": "Urdu",
-    "id": "Indonesian",
-    "de": "German",
-    "ja": "Japanese",
-    "sw": "Swahili",
-    "mr": "Marathi",
-    "te": "Telugu",
-    "tr": "Turkish",
-    "ta": "Tamil",
-    "vi": "Vietnamese",
-    "ko": "Korean",
-    "fa": "Persian (Farsi)",
-    "it": "Italian",
-    "th": "Thai",
-    "gu": "Gujarati",
-    "pl": "Polish",
-    "uk": "Ukrainian",
-    "ro": "Romanian",
-    "nl": "Dutch",
-    "el": "Greek",
-    "cs": "Czech",
-    "hu": "Hungarian",
-    "sv": "Swedish",
-    "he": "Hebrew",
-    "da": "Danish",
-    "fi": "Finnish",
-    "no": "Norwegian",
-    "sk": "Slovak",
-    "bg": "Bulgarian",
-    "hr": "Croatian",
-    "sr": "Serbian",
-    "sl": "Slovenian",
-    "lt": "Lithuanian",
-    "lv": "Latvian",
-    "et": "Estonian",
-    "ms": "Malay",
-    "fil": "Filipino",
-    "is": "Icelandic",
-    "ga": "Irish",
-    "mt": "Maltese",
-    "sq": "Albanian",
-    "mk": "Macedonian",
-    "ka": "Georgian",
-    "hy": "Armenian",
-    "az": "Azerbaijani",
-    "kk": "Kazakh",
-    "uz": "Uzbek",
-    "mn": "Mongolian",
-}
 
 
 @dataclass(frozen=True, slots=True)
@@ -211,7 +152,7 @@ class VocabularyCardGenerator:
 
         prompt_path = Path("prompts") / lesson_language / "vocab_setup.txt"
         self._system_prompt = prompt_path.read_text(encoding="utf-8").format(
-            language=LANGUAGE_MAP.get(translation_language, "English")
+            language=get_language_display_name(translation_language)
         )
 
     def generate_cards(self, query: str) -> list[VocabularyCard]:
