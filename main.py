@@ -13,11 +13,6 @@ from logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 
-logger.debug("dotenv initialization started")
-load_dotenv()
-logger.info("dotenv was initializated")
-
-
 def excepthook(exc_type, exc, tb) -> None:
     """Global exception hook to log any unhandled exceptions."""
     logger.critical("Unhandled exception", exc_info=(exc_type, exc, tb))
@@ -78,6 +73,11 @@ class MainWindow(QMainWindow):
 def main() -> int:
     """Application entry point."""
     setup_logging(logging.DEBUG)
+    
+    logger.debug("dotenv initialization")
+    load_dotenv()
+    logger.debug("dotenv was initializated")
+
     logger.debug("Application startup")
 
     app = QApplication(sys.argv)
