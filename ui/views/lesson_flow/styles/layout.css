@@ -77,7 +77,6 @@
 
 .task-hint {
   width: 20px;
-  margin-top: 12px;
   color: var(--color-text-muted);
   font-size: 13px;
   white-space: nowrap;

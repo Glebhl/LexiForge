@@ -68,7 +68,7 @@
 }
 
 .lesson-card {
-  margin: 14px 0;
+  margin-top: 14px;
   padding: var(--card-padding);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
