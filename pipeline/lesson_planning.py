@@ -35,19 +35,14 @@ class MacroPlanner:
 
     def generate_plan(
         self,
-        cards: list[VocabularyCard],
         *,
+        cards: list[VocabularyCard],
         user_request: str | None = None,
-        lesson_size: str | None = None,
-        target_step_count: int | None = None,
     ) -> list:
         payload = self._build_user_prompt(
-            lesson_language=get_language_display_name(self._lesson_language),
             translation_language=get_language_display_name(self._translation_language),
-            learning_units=cards,
             user_request=user_request,
-            lesson_size=lesson_size,
-            target_step_count=target_step_count
+            learning_units=cards,
         )
 
         print(payload)
@@ -61,27 +56,12 @@ class MacroPlanner:
 
     def _build_user_prompt(
         self,
-        lesson_language: str,
         translation_language: str,
         learning_units: list[VocabularyCard],
-        user_request: str | None = None,
-        lesson_size: str | None = None,
-        target_step_count: int | None = None,
+        user_request: str | None = None
     ) -> str:
         """
         Builds a plain-text input prompt for the macro lesson planner.
-
-        learning_units format:
-        [
-            {
-                "id": "U1",
-                "type": "lexeme",
-                "lexeme": "hit",
-                "part_of_speech": "verb",
-                "meaning": "strike something",
-                # optional extra fields allowed
-            }
-        ]
         """
 
         lines: list[str] = []
@@ -90,15 +70,8 @@ class MacroPlanner:
         lines.append("")
 
         if user_request:
-            lines.append(f"USER_REQUEST: {user_request}")
-            lines.append("")
-
-        if lesson_size:
-            lines.append(f"LESSON_SIZE: {lesson_size}")
-        elif target_step_count:
-            lines.append(f"LESSON_SIZE: {target_step_count} steps")
-
-        if lesson_size or target_step_count:
+            lines.append("USER_REQUEST:")
+            lines.append(user_request)
             lines.append("")
 
         lines.append("LEARNING_UNITS:")

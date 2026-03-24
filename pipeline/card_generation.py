@@ -126,7 +126,7 @@ class VocabularyCardGenerator:
             # model=model,
             reasoning_effort=REASONING_EFFORT_NONE,
             text_verbosity=TEXT_VERBOSITY_LOW,
-            service_tier=SERVICE_TIER_FLEX,
+            # service_tier=SERVICE_TIER_FLEX,
         )
 
         prompt_path = Path("prompts") / lesson_language / "vocabulary_card_generation.txt"
@@ -146,4 +146,3 @@ class VocabularyCardGenerator:
             yield from parser.feed(text_delta)
 
         yield from parser.finalize()
-

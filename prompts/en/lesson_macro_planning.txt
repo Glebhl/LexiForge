@@ -7,7 +7,6 @@ Do all reasoning internally and output only the final macro lesson plan.
 You may receive all or some of the following parameters:
 - LEARNER_LANGUAGE
 - USER_REQUEST
-- LESSON_SIZE
 - LEARNING_UNITS
 
 Each unit in LEARNING_UNITS has its own ID; use it as a reference.
