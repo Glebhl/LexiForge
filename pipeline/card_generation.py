@@ -5,9 +5,9 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from llm_gateway import OpenAITextClient
-from llm_gateway.openai_wrapper import REASONING_EFFORT_MINIMAL, TEXT_VERBOSITY_LOW
+from llm_gateway.openai_wrapper import REASONING_EFFORT_NONE, TEXT_VERBOSITY_LOW, SERVICE_TIER_FLEX
 from language_converter import get_language_display_name
-from .vocabulary_card import VocabularyCard
+from .card_models import VocabularyCard
 
 
 logger = logging.getLogger(__name__)
@@ -38,6 +38,7 @@ class VocabularyCardStreamParser:
         self._pending_fields: dict[str, str] = {}
 
     def feed(self, chunk: str) -> list[VocabularyCard]:
+        print(chunk, end="")
         completed_cards: list[VocabularyCard] = []
         if not chunk:
             return completed_cards
@@ -121,12 +122,14 @@ class VocabularyCardGenerator:
     ) -> None:
         self._text_client = OpenAITextClient(
             api_key=api_key,
-            model=model,
-            reasoning_effort=REASONING_EFFORT_MINIMAL,
+            model="gpt-5.4-nano",
+            # model=model,
+            reasoning_effort=REASONING_EFFORT_NONE,
             text_verbosity=TEXT_VERBOSITY_LOW,
+            service_tier=SERVICE_TIER_FLEX,
         )
 
-        prompt_path = Path("prompts") / lesson_language / "vocab_setup.txt"
+        prompt_path = Path("prompts") / lesson_language / "vocabulary_card_generation.txt"
         self._system_prompt = prompt_path.read_text(encoding="utf-8").format(
             language=get_language_display_name(translation_language)
         )

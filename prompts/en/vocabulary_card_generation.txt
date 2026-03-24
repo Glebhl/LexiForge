@@ -48,4 +48,4 @@ TRANSLATION: <translation in {language}>
 TRANSCRIPTION: <American IPA in /slashes/>
 LEVEL: <A1 / A2 / B1 / B2 / C1>
 MEANING: <short learner-friendly definition in {language}>
-EXAMPLE: <natural and clear example sentence>
+EXAMPLE: <natural and clear example sentence

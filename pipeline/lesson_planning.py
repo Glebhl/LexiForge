@@ -5,7 +5,7 @@ from typing import Any
 from llm_gateway import OpenAITextClient
 from llm_gateway.openai_wrapper import REASONING_EFFORT_MEDIUM, TEXT_VERBOSITY_MEDIUM, SERVICE_TIER_FLEX
 
-from .vocabulary_card import VocabularyCard
+from .card_models import VocabularyCard
 from language_converter import get_language_display_name
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class MacroPlanner:
             service_tier=SERVICE_TIER_FLEX,
         )
 
-        prompt_path = Path("prompts") / lesson_language / "plan_setup.txt"
+        prompt_path = Path("prompts") / lesson_language / "lesson_macro_planning.txt"
         self._system_prompt = prompt_path.read_text(encoding="utf-8")
 
     def generate_plan(
