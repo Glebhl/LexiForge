@@ -142,7 +142,7 @@ class AnswerMatcher:
             for index, answer in enumerate(user_answers, start=1)
         )
 
-        print("\n\n\n", "\n".join(lines), "\n\n\n")
+        print("\n".join(lines))
 
         return "\n".join(lines)
 
@@ -153,6 +153,6 @@ class AnswerMatcher:
         for index, part in enumerate(sentence_parts):
             chunks.append(part)
             if index != len(sentence_parts) - 1:
-                chunks.append(f"[BLANK {index + 1}]")
+                chunks.append(f" [BLANK {index + 1}] ")
 
         return "".join(chunks)
