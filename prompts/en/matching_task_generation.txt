@@ -1,9 +1,8 @@
-Create one matching exercise.
+Create one exercise on matching pairs from columns.
 
 Requirements:
 - Create pairs with all the TARGETS.
-- Default for vocabulary: lexeme in English / translation in LERNER_LANGUAGE.
-- Default for grammar: short example in English / meaning, function, or rule label.
+- Default mode: lexeme in English / translation in LERNER_LANGUAGE.
 - Keep both sides short.
 - Do not shuffle the columns.
 

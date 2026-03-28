@@ -1,4 +1,4 @@
-Create one translation exercise from one language to another.
+Create one translation exercise.
 
 Requirements:
 - Write a cohesive paragraph consisting of preferably 1 sentence or 2-3 very short ones.
@@ -6,6 +6,8 @@ Requirements:
 - Do not create sentence without any of the listed targets.
 - Provide all acceptable full-sentence answers. Do not duplicate answers that differ only by expanded contractions.
 - Provide word bank containing 3-5 extra distractor words.
+- Do not mix languages in a single field.
+- PARAGRAPH must be in one language, ANSWERS in a another one
 
 Output format:
 PARAGRAPH: <text to be translated by the user>

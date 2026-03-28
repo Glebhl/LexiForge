@@ -9,6 +9,7 @@ Decide:
 - minor: small typo or insignificant mistake, meaning intact
 - mistake: meaning changed, missing, or grammatically wrong
 
-Ignore punctuation and minor spelling unless it affects meaning.
+You may not receive all of the punctuation, do not consider this a mistake or typo
+Ignore minor spelling unless it affects meaning.
 
 Output exactly one word: correct / minor / mistake
