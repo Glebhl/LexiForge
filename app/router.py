@@ -22,7 +22,7 @@ class Router:
         self._stack = []  # controller history stack
         self._pending_controller = None
         self._is_transitioning = False
-        self._fade_duration_ms = 90
+        self._fade_duration_ms = 100
 
         self._transition_overlay = QLabel(self.view.parentWidget())
         self._transition_overlay.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
@@ -92,6 +92,30 @@ class Router:
         self._transition_to(previous, use_fade=True)
 
         logger.info('Went back to previous page: url="%s"', previous.url)
+
+    def replace_current(self, controller_cls, *args, **kwargs):
+        """
+        Replace the current controller with a new one while keeping history.
+        """
+        controller = controller_cls(self, self.view, self.backend, *args, **kwargs)
+        current = self._current_controller()
+
+        logger.debug(
+            'Replacing current page: from url="%s" to url="%s"',
+            current.url if current is not None else None,
+            controller.url,
+        )
+
+        if current is not None:
+            self._deactivate_controller(current)
+            self._stack[-1] = controller
+        else:
+            self._stack.append(controller)
+
+        use_fade = current is not None and not getattr(controller, "disable_transition", False)
+        self._transition_to(controller, use_fade=use_fade)
+
+        logger.info('Page replacement completed: url="%s"', controller.url)
 
     # --- Internal helper methods ---
 

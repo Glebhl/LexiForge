@@ -1,64 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generating Lesson</title>
-    <style>
-      :root {
-        color-scheme: dark;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #111;
-        color: #f5f5f5;
-        font-family: Arial, sans-serif;
-      }
-
-      .container {
-        text-align: center;
-      }
-
-      h1 {
-        margin: 0 0 20px;
-        font-size: 28px;
-        font-weight: 500;
-      }
-
-      button {
-        padding: 10px 20px;
-        border: 1px solid #444;
-        border-radius: 10px;
-        background: #1e1e1e;
-        color: #f5f5f5;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.1s ease, border-color 0.1s ease;
-      }
-
-      button:hover {
-        background: #2a2a2a;
-        border-color: #666;
-      }
-
-      button:active {
-        background: #333;
-      }
-    </style>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <link href="../../assets/styles/theme.css" rel="stylesheet" />
+    <link href="styles/general.css" rel="stylesheet" />
   </head>
   <body>
     <div class="container">
-      <h1>Generating lesson...</h1>
-      <button type="button">Stop</button>
+      <div class="loader" aria-hidden="true"></div>
+      <p class="eyebrow">Lesson setup</p>
+      <h1>Generating...</h1>
+      <p class="description">
+        Please wait a moment while AI generates a lesson for you
+      </p>
+      <button id="btn-stop" type="button">Stop</button>
     </div>
 
     <script>
@@ -68,5 +23,6 @@
         window.backend = channel.objects.backend;
       });
     </script>
+    <script src="callbacks.js"></script>
   </body>
 </html>

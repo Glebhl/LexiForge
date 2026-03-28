@@ -10,8 +10,8 @@ from PySide6.QtCore import QObject, QThread, Qt, Slot
 
 from app import get_settings_store, make_logged_callback
 from dev_fixtures import DevFixtureSettings
-from ui.controllers import LessonFlowController
-from ui.services import CardGenerationWorker, LessonGenerationWorker
+from ui.controllers.loading_screen import LoadingScreenController
+from ui.services import CardGenerationWorker
 from models import VocabularyCard
 
 
@@ -46,8 +46,6 @@ class LessonSetupController(QObject):
         self._dev_fixtures = DevFixtureSettings.from_env()
         self._card_generation_thread: QThread | None = None
         self._card_generation_worker: CardGenerationWorker | None = None
-        self._lesson_generation_thread: QThread | None = None
-        self._lesson_generation_worker: LessonGenerationWorker | None = None
 
         settings = get_settings_store()
 
@@ -121,6 +119,7 @@ class LessonSetupController(QObject):
             return
 
         self._generation_error_message = None
+        self._user_request = clean_query
         self._set_card_generating(True)
 
         worker_thread = QThread(self)
@@ -174,73 +173,6 @@ class LessonSetupController(QObject):
         self._card_generation_thread = None
         self._card_generation_worker = None
 
-    def _start_lesson_generation(self) -> None:
-        if self._lesson_generation_thread is not None:
-            logger.warning("Lesson generation is already running; ignoring duplicate start request")
-            return
-
-        self._generation_error_message = None
-
-        worker_thread = QThread(self)
-        worker = LessonGenerationWorker(
-            api_key=self._api_key,
-            plan_generation_model=self._plan_generation_model,
-            task_generation_model=self._task_generation_model,
-            cards=self._cards,
-            user_request=self._user_request,
-            lerner_level=self._lerner_level,
-            lesson_language=self._lesson_language,
-            translation_language=self._translation_language,
-        )
-        self._lesson_generation_thread = worker_thread
-        self._lesson_generation_worker = worker
-        worker.moveToThread(worker_thread)
-
-        worker_thread.started.connect(worker.run)
-        worker.generation_failed.connect(self._handle_lesson_generation_error, Qt.ConnectionType.QueuedConnection)
-        worker.lesson_generated.connect(self._handle_lesson_generation, Qt.ConnectionType.QueuedConnection)
-        worker.finished.connect(self._finish_lesson_generation, Qt.ConnectionType.QueuedConnection)
-        worker.finished.connect(worker_thread.quit)
-        worker.finished.connect(worker.deleteLater)
-        worker_thread.finished.connect(worker_thread.deleteLater)
-        worker_thread.finished.connect(self._clear_lesson_generation_references, Qt.ConnectionType.QueuedConnection)
-        worker_thread.start()
-
-    @Slot(object)
-    def _handle_lesson_generation(self, lesson_plan: object) -> None:
-        if not isinstance(lesson_plan, list):
-            logger.error("Lesson generation returned an invalid payload type: %s", type(lesson_plan).__name__)
-            self._generation_error_message = "Lesson generation returned invalid data."
-            return
-
-        self.router.navigate_to(
-            LessonFlowController,
-            lesson_plan,
-            self._lesson_language,
-            self._translation_language,
-        )
-    
-    @Slot(str)
-    def _handle_lesson_generation_error(self, message: str) -> None:
-        try:
-            self._generation_error_message = message
-            logger.error("Lesson generation failed: %s", message)
-        except Exception:  # noqa: BLE001
-            logger.exception("Unhandled exception while handling a lesson generation error")
-    
-    @Slot()
-    def _finish_lesson_generation(self) -> None:
-        try:
-            if self._generation_error_message:
-                self._set_hint("Lesson generation failed. Check the logs and try again.")
-        except Exception:  # noqa: BLE001
-            logger.exception("Unhandled exception while finalizing vocabulary generation")
-
-    @Slot()
-    def _clear_lesson_generation_references(self) -> None:
-        self._lesson_generation_thread = None
-        self._lesson_generation_worker = None
-
     def _on_btn_click(self, payload: dict):
         logger.debug("Clicked the button with the id='%s'", payload.get("id"))
 
@@ -257,7 +189,17 @@ class LessonSetupController(QObject):
             case "start_lesson":
                 for i, card in enumerate(self._cards):
                     logger.debug("Lesson card %d: %s", i, card)
-                self._start_lesson_generation()
+                self.router.navigate_to(
+                    LoadingScreenController,
+                    self._cards.copy(),
+                    self._user_request,
+                    self._lerner_level,
+                    self._lesson_language,
+                    self._translation_language,
+                    self._api_key,
+                    self._plan_generation_model,
+                    self._task_generation_model,
+                )
 
     def _on_card_closed(self, payload: dict):
         card_id = str(payload.get("id", ""))
