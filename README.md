@@ -1,4 +1,4 @@
-# LexiForge
+# Glosium
 
 ## Localizations
 
@@ -8,7 +8,7 @@
 
 ## Short Overview
 
-LexiForge is a desktop prototype for language learning built with `PySide6`, `Qt WebEngine`, and an HTML/CSS/JavaScript UI. The app lets a learner describe what they want to study, generates vocabulary cards with OpenAI, and then launches a lesson flow based on the selected content.
+Glosium is a desktop prototype for language learning built with `PySide6`, `Qt WebEngine`, and an HTML/CSS/JavaScript UI. The app lets a learner describe what they want to study, generates vocabulary cards with OpenAI, and then launches a lesson flow based on the selected content.
 
 ## Current Capabilities
 
@@ -19,7 +19,7 @@ LexiForge is a desktop prototype for language learning built with `PySide6`, `Qt
 ## Project Layout
 
 ```text
-LexiForge/
+Glosium/
 |-- main.py                         # Application entry point
 |-- app/                            # Application shell and shared runtime utilities
 |   |-- backend.py                  # Python <-> UI bridge via Qt signals/slots
@@ -47,8 +47,8 @@ LexiForge/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Glebhl/LexiForge.git
-cd LexiForge
+git clone https://github.com/Glebhl/Glosium.git
+cd Glosium
 ```
 
 ### 2. Create and activate a virtual environment

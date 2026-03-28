@@ -47,15 +47,15 @@ class DevFixtureSettings:
     @classmethod
     def from_env(cls) -> "DevFixtureSettings":
         return cls(
-            preload_cards=_env_flag("LEXIFORGE_DEV_CARDS"),
-            cards_path=_resolve_path(os.getenv("LEXIFORGE_DEV_CARDS_FILE"), fallback=_DEFAULT_CARDS_PATH),
-            use_macro_plan_fixture=_env_flag("LEXIFORGE_DEV_MACRO_PLAN"),
+            preload_cards=_env_flag("GLOSIUM_DEV_CARDS"),
+            cards_path=_resolve_path(os.getenv("GLOSIUM_DEV_CARDS_FILE"), fallback=_DEFAULT_CARDS_PATH),
+            use_macro_plan_fixture=_env_flag("GLOSIUM_DEV_MACRO_PLAN"),
             macro_plan_path=_resolve_path(
-                os.getenv("LEXIFORGE_DEV_MACRO_PLAN_FILE"),
+                os.getenv("GLOSIUM_DEV_MACRO_PLAN_FILE"),
                 fallback=_DEFAULT_MACRO_PLAN_PATH,
             ),
-            use_lesson_fixture=_env_flag("LEXIFORGE_DEV_LESSON"),
-            lesson_path=_resolve_path(os.getenv("LEXIFORGE_DEV_LESSON_FILE"), fallback=_DEFAULT_LESSON_PATH),
+            use_lesson_fixture=_env_flag("GLOSIUM_DEV_LESSON"),
+            lesson_path=_resolve_path(os.getenv("GLOSIUM_DEV_LESSON_FILE"), fallback=_DEFAULT_LESSON_PATH),
         )
 
     def load_cards(self) -> list[VocabularyCard]:

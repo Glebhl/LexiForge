@@ -6,7 +6,7 @@ from typing import Any, Iterable
 from uuid import uuid4
 
 
-DEFAULT_CACHE_NAMESPACE = "lexiforge-openai"
+DEFAULT_CACHE_NAMESPACE = "glosium-openai"
 MAX_PROMPT_CACHE_KEY_LENGTH = 64
 
 

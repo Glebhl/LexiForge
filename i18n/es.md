@@ -1,6 +1,6 @@
-# LexiForge
+# Glosium
 
-LexiForge es un prototipo de escritorio para aprendizaje de idiomas construido con `PySide6`, `Qt WebEngine` y una interfaz HTML/CSS/JavaScript. La aplicacion genera tarjetas de vocabulario con OpenAI y luego ejecuta una leccion basada en el contenido elegido.
+Glosium es un prototipo de escritorio para aprendizaje de idiomas construido con `PySide6`, `Qt WebEngine` y una interfaz HTML/CSS/JavaScript. La aplicacion genera tarjetas de vocabulario con OpenAI y luego ejecuta una leccion basada en el contenido elegido.
 
 ## Capacidades actuales
 
@@ -11,7 +11,7 @@ LexiForge es un prototipo de escritorio para aprendizaje de idiomas construido c
 ## Estructura del proyecto
 
 ```text
-LexiForge/
+Glosium/
 |-- main.py                         # Punto de entrada de la aplicacion
 |-- app/                            # Infraestructura de la aplicacion y utilidades compartidas
 |   |-- backend.py                  # Puente Python <-> UI mediante Qt

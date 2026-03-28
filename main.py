@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
 
     def _configure_window(self) -> None:
         """Configure basic window properties."""
-        self.setWindowTitle("PySide6 + WebEngine")
+        self.setWindowTitle("Glosium")
 
     def _create_web_view(self) -> None:
         """Create and attach the WebEngine view."""
