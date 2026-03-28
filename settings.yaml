@@ -1,7 +1,7 @@
 lesson:
   language: en
   lerner_language: ru
-  learner_level: A1
+  learner_level: B2
 models:
   card_generation: gpt-5.4-nano
   lesson_planning: o3

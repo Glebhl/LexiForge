@@ -1,17 +1,21 @@
 Create one translation exercise.
 
 Requirements:
-- Write a cohesive paragraph consisting of preferably 1 sentence or 2-3 very short ones.
-- Use all of the listed targets.
-- Do not create sentence without any of the listed targets.
-- Provide all acceptable full-sentence answers. Do not duplicate answers that differ only by expanded contractions.
-- Provide word bank containing 3-5 extra distractor words.
+- Write a cohesive paragraph of 1-2 very short sentences or 3 extremely short ones.
+- Use all listed TARGETS.
+- Do not create any sentence without at least one listed TARGET.
+- Keep the meaning concrete, literal, and unambiguous.
+- Avoid open contexts that allow many equally natural translations, near-synonyms, or broad paraphrases.
+- Prefer simple, high-frequency wording and clear clues that point to one small set of valid translations.
+- Provide all acceptable full-sentence answers, but do not duplicate answers that differ only by expanded contractions.
+- Provide a word bank with 3-5 extra distractor words for ANSWERS.
+- Do not use distractors that are near-synonyms, same-category alternatives, or words that could still fit naturally into a valid translation.
 - Do not mix languages in a single field.
-- PARAGRAPH must be in one language, ANSWERS in a another one
+- PARAGRAPH must be in one language; ANSWERS and DISTRACTORS must be in the other language.
 
 Output format:
 PARAGRAPH: <text to be translated by the user>
 ANSWERS:
-- <The PARAGRAPH translated into another language>
+- <full translation>
 - ...
 DISTRACTORS: <comma-separated words>

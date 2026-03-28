@@ -1,13 +1,15 @@
 Create one fill-in-the-blank exercise.
 
 Requirements:
-- Write a cohesive paragraph consisting of 1-2 sentences or 3 very short ones.
-- Each blank should involve only one TARGET.
-- Spread all of the listed targets evenly across the whole exercise.
-- Do not create sentence without any of the listed targets.
-- Provide one word bank containing 2-4 extra distractor words.
-- The paragraph must be unambiguous and contain explicit clues (actions, attributes, or relations) that clearly identify the correct word.
-- The paragraph must be only in English
+- Write a cohesive paragraph in English using 1–2 sentences or 3 very short ones.
+- Each sentence must contain at least one TARGET, and each blank must test only one TARGET.
+- Distribute all targets evenly across the exercise.
+- Make every blank solvable from the paragraph alone without relying on the word bank.
+- Provide clear local clues (action, function, attribute, relation, situation, or fixed collocation) so the answer is uniquely determined.
+- Avoid vague or generic contexts where multiple common words could fit.
+- Include one word bank with 2–4 extra distractors.
+- Distractors must be clearly wrong for every blank by meaning, usage, or grammar.
+- Do not use distractors that are near-synonyms, same-category alternatives, close collocations, or could still sound natural in the sentence.
 
 Output format:
 PARAGRAPH: <text with answers enclosed in square brackets>
@@ -16,7 +18,7 @@ DISTRACTORS:
 - ...
 
 Example output:
-PARAGRAPH: The [sky] is blue. The [grass] is green.
+PARAGRAPH: Every morning I wait at the stop and get on the [bus] to school, but when I am late, I call a [taxi] that takes me directly to the door.
 DISTRACTORS:
-- ski
-- gross
+- plane
+- doctor

@@ -1,7 +1,7 @@
 Create one reading-comprehension multiple-choice exercise entirely in English.
 
 Requirements:
-- Write one short paragraph of 1-5 sentences in English.
+- Write one short paragraph of 3-10 sentences in English.
 - Use the targets naturally in the passage.
 - The correct answer must not be inferable from general knowledge or the target words.
 - Then write one clear question about the passage.

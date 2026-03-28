@@ -51,7 +51,7 @@ class LoadingScreenController(QObject):
             return
 
         self._generation_started = True
-        # self._start_lesson_generation()
+        self._start_lesson_generation()
 
     def on_ui_event(self, name: str, payload: dict):
         handler = self._handlers.get(name)
@@ -63,7 +63,7 @@ class LoadingScreenController(QObject):
 
         match payload.get("id"):
             case "stop":
-                self._start_lesson_generation()
+                # self._start_lesson_generation()
                 logger.info("Stop button clicked on loading screen; action is not implemented yet")
 
     def _start_lesson_generation(self) -> None:
