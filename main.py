@@ -84,4 +84,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # raise SystemExit(main())
+    print("Исправь промпт для macro plan: two short sentences—one with the verb, one with the phrase; no word bank")
+    print("Генератор создает неправильное задание: Я хочу hit мяч, а потом мы hit the road.")

@@ -1,0 +1,26 @@
+lesson:
+  language: en
+  translation_language: ru
+  learner_level: A1
+models:
+  card_generation: gpt-5.4-nano
+  lesson_planning: o3
+  task_generation: gpt-5.4-mini
+  answer_matcher: gpt-5.4-nano
+pipeline:
+  card_generation:
+    reasoning_effort: none
+    text_verbosity: low
+    service_tier: flex
+  lesson_planning:
+    reasoning_effort: low
+    text_verbosity: null
+    service_tier: flex
+  task_generation:
+    reasoning_effort: none
+    text_verbosity: low
+    service_tier: flex
+  answer_matcher:
+    reasoning_effort: none
+    text_verbosity: low
+    service_tier: flex

@@ -8,7 +8,7 @@ from typing import Any
 
 from PySide6.QtCore import QObject, QThread, Qt, Slot
 
-from app import make_logged_callback
+from app import get_settings_store, make_logged_callback
 from dev_fixtures import DevFixtureSettings
 from ui.controllers import LessonFlowController
 from ui.services import CardGenerationWorker, LessonGenerationWorker
@@ -49,16 +49,16 @@ class LessonSetupController(QObject):
         self._lesson_generation_thread: QThread | None = None
         self._lesson_generation_worker: LessonGenerationWorker | None = None
 
-        # Settings placeholders
+        settings = get_settings_store()
+
         self._api_key = os.getenv("OPENAI_API_KEY")
-        self._lesson_language = "en"
-        self._translation_language = "ru"
-        self._lerner_level = "A1"
+        self._lesson_language = settings.get_value("lesson/language")
+        self._translation_language = settings.get_value("lesson/translation_language")
+        self._lerner_level = settings.get_value("lesson/learner_level")
         self._user_request = None
-        self._cards_generation_model = "gpt-5.4-nano"
-        self._plan_generation_model = "o3"
-        self._task_generation_model = "gpt-5.4-mini"
-        self._answer_matcher_model = "gpt-5.4-nano"  # Does not do anything from this place yet
+        self._cards_generation_model = settings.get_value("models/card_generation")
+        self._plan_generation_model = settings.get_value("models/lesson_planning")
+        self._task_generation_model = settings.get_value("models/task_generation")
 
     def on_load_finished(self):
         self._cards = []

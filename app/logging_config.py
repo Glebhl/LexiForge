@@ -4,6 +4,7 @@ from logging.handlers import RotatingFileHandler
 
 LOG_FILE_PATH = Path("app.log")
 NOISY_LOGGER_LEVELS = {
+    "httpx": logging.WARNING,
     "httpcore.http11": logging.WARNING,
     "httpcore.connection": logging.WARNING,
     "openai._base_client": logging.WARNING,

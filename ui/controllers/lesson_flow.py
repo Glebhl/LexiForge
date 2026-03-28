@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional
 
 from PySide6.QtCore import QObject
 
-from app import make_logged_callback
+from app import get_settings_store, make_logged_callback
 from ui.services import (
     is_filling_answer_correct,
     is_translation_answer_correct,
@@ -75,9 +75,10 @@ class LessonFlowController(QObject):
             self.url,
         )
 
-        # Settings placeholder
+        settings = get_settings_store()
+
         self._api_key = os.getenv("OPENAI_API_KEY")
-        self._answer_matcher_model = "gpt-5.4-nano"
+        self._answer_matcher_model = settings.get_value("models/answer_matcher")
 
         self._answer_matcher: AnswerMatcher | None = None
 
