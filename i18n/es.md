@@ -1,13 +1,13 @@
-# LexiForge
+# Glosium
 
 ## Descripcion general
 
-LexiForge es un prototipo de escritorio para el aprendizaje de idiomas asistido por IA, construido con `PySide6`, `Qt WebEngine` y una interfaz HTML/CSS/JavaScript. La aplicacion permite que el estudiante describa lo que quiere estudiar, muestra en streaming tarjetas de vocabulario generadas por OpenAI y luego construye una leccion a partir de esas tarjetas mediante un pipeline de dos etapas.
+Glosium es un prototipo de escritorio para el aprendizaje de idiomas asistido por IA, construido con `PySide6`, `Qt WebEngine` y una interfaz HTML/CSS/JavaScript. La aplicacion permite que el estudiante describa lo que quiere estudiar, muestra en streaming tarjetas de vocabulario generadas por OpenAI y luego construye una leccion a partir de esas tarjetas mediante un pipeline de dos etapas.
 
 ## Estructura del proyecto
 
 ```text
-LexiForge/
+Glosium/
 |-- main.py                         # Punto de entrada de la aplicacion
 |-- settings.yaml                   # Configuracion de runtime para idiomas, modelos y opciones del pipeline
 |-- app/                            # Shell de la aplicacion, enrutamiento, logging y helpers de configuracion
@@ -43,8 +43,8 @@ LexiForge/
 ### 1. Clona el repositorio
 
 ```bash
-git clone https://github.com/Glebhl/LexiForge.git
-cd LexiForge
+git clone https://github.com/Glebhl/Glosium.git
+cd Glosium
 ```
 
 ### 2. Crea y activa un entorno virtual

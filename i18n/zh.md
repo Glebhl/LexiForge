@@ -1,13 +1,13 @@
-# LexiForge
+# Glosium
 
 ## 概览
 
-LexiForge 是一个由 AI 辅助的桌面语言学习原型，基于 `PySide6`、`Qt WebEngine` 和 HTML/CSS/JavaScript UI 构建。应用允许学习者描述自己想学的内容，流式展示由 OpenAI 生成的词汇卡片，然后通过两阶段课程流水线用这些卡片构建课程。
+Glosium 是一个由 AI 辅助的桌面语言学习原型，基于 `PySide6`、`Qt WebEngine` 和 HTML/CSS/JavaScript UI 构建。应用允许学习者描述自己想学的内容，流式展示由 OpenAI 生成的词汇卡片，然后通过两阶段课程流水线用这些卡片构建课程。
 
 ## 项目结构
 
 ```text
-LexiForge/
+Glosium/
 |-- main.py                         # 应用入口
 |-- settings.yaml                   # 语言、模型和流水线选项的运行时配置
 |-- app/                            # 应用外壳、路由、日志和配置辅助模块
@@ -43,8 +43,8 @@ LexiForge/
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/Glebhl/LexiForge.git
-cd LexiForge
+git clone https://github.com/Glebhl/Glosium.git
+cd Glosium
 ```
 
 ### 2. 创建并激活虚拟环境
