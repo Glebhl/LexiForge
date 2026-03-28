@@ -3,13 +3,11 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Callable, Generic, TypeVar
+from dataclasses import asdict, replace
 
+from app.settings import get_settings_store
+from app.language_registry import get_language_display_name
 from llm_gateway import OpenAITextClient
-from llm_gateway.openai_wrapper import (
-    REASONING_EFFORT_LOW,
-    SERVICE_TIER_FLEX,
-    TEXT_VERBOSITY_LOW,
-)
 
 from .task_generation_models import (
     FillInTheBlankExercise,
@@ -24,12 +22,81 @@ from .task_generation_parsers import (
     parse_translation_exercise,
 )
 from models import VocabularyCard
-from app.language_registry import get_language_display_name
+from .lesson_planning import MacroPlanStep
 
 logger = logging.getLogger(__name__)
 
 ParsedExerciseT = TypeVar("ParsedExerciseT")
 ExerciseParser = Callable[[str], ParsedExerciseT]
+
+
+class TaskGenerator:
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        model: str,
+        lesson_language: str,
+        translation_language: str,
+        lerner_level: str,
+    ) -> None:
+        self._generator_by_exercise_id = {
+            "filling": FillingTaskGenerator(
+                api_key=api_key,
+                model=model,
+                lesson_language=lesson_language,
+                translation_language=translation_language,
+                lerner_level=lerner_level,
+            ),
+            "matching": MatchingTaskGenerator(
+                api_key=api_key,
+                model=model,
+                lesson_language=lesson_language,
+                translation_language=translation_language,
+                lerner_level=lerner_level,
+            ),
+            "question": QuestionTaskGenerator(
+                api_key=api_key,
+                model=model,
+                lesson_language=lesson_language,
+                translation_language=translation_language,
+                lerner_level=lerner_level,
+            ),
+            "translation": TranslationTaskGenerator(
+                api_key=api_key,
+                model=model,
+                lesson_language=lesson_language,
+                translation_language=translation_language,
+                lerner_level=lerner_level,
+            ),
+        }
+
+    def generate_tasks(self, macro_plan: list[MacroPlanStep]) -> list[dict]:
+        tasks: list[dict] = []
+
+        for step in macro_plan:
+            try:
+                exercise_id = step.exercise_id.strip().lower()
+                if exercise_id == "explanation":  # Not supported yet
+                    continue
+
+                generator = self._generator_by_exercise_id.get(exercise_id)
+                if generator is None:
+                    print(f"Unsupported exercise_id in macro plan: {step.exercise_id!r}")
+                    continue
+
+                task = generator.generate_task(
+                    description=step.description,
+                    targets=step.targets,
+                )
+                if hasattr(task, "mode"):
+                    task = replace(task, mode=step.mode)
+
+                tasks.append(asdict(task))
+            except Exception as exc:
+                print(exc)
+
+        return tasks
 
 
 class BaseTaskGenerator(Generic[ParsedExerciseT]):
@@ -47,12 +114,13 @@ class BaseTaskGenerator(Generic[ParsedExerciseT]):
     ) -> None:
         self._translation_language = translation_language
         self._lerner_level = lerner_level
+        settings = get_settings_store()
         self._text_client = OpenAITextClient(
             api_key=api_key,
             model=model,
-            reasoning_effort=REASONING_EFFORT_LOW,
-            text_verbosity=TEXT_VERBOSITY_LOW,
-            service_tier=SERVICE_TIER_FLEX,
+            reasoning_effort=settings.get_value("pipeline/task_generation/reasoning_effort"),
+            text_verbosity=settings.get_value("pipeline/task_generation/text_verbosity"),
+            service_tier=settings.get_value("pipeline/task_generation/service_tier"),
         )
 
         common_prompt_path = Path("prompts") / lesson_language / "task_generation_common.txt"

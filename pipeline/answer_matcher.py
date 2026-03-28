@@ -2,12 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
+from app.settings import get_settings_store
 from llm_gateway import OpenAITextClient
-from llm_gateway.openai_wrapper import (
-    REASONING_EFFORT_LOW,
-    TEXT_VERBOSITY_LOW,
-    SERVICE_TIER_FLEX,
-)
 
 CORRECT = "correct"
 MISTAKE = "mistake"
@@ -28,12 +24,13 @@ class AnswerMatcher:
             model: str,
             lesson_language: str,
         ) -> None:
+        settings = get_settings_store()
         self._text_client = OpenAITextClient(
             api_key=api_key,
             model=model,
-            reasoning_effort=REASONING_EFFORT_LOW,
-            text_verbosity=TEXT_VERBOSITY_LOW,
-            service_tier=SERVICE_TIER_FLEX,
+            reasoning_effort=settings.get_value("pipeline/answer_matcher/reasoning_effort"),
+            text_verbosity=settings.get_value("pipeline/answer_matcher/text_verbosity"),
+            service_tier=settings.get_value("pipeline/answer_matcher/service_tier"),
         )
 
         prompt_dir = Path("prompts") / lesson_language

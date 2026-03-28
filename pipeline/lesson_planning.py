@@ -3,14 +3,10 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.settings import get_settings_store
 from app.language_registry import get_language_display_name
 from dev_fixtures import DevFixtureSettings
 from llm_gateway import OpenAITextClient
-from llm_gateway import (
-    REASONING_EFFORT_LOW,
-    # TEXT_VERBOSITY_HIGH,
-    SERVICE_TIER_FLEX,
-)
 from models import VocabularyCard
 
 logger = logging.getLogger(__name__)
@@ -46,12 +42,13 @@ class MacroPlanner:
             lerner_level,
         )
         self._dev_fixtures = DevFixtureSettings.from_env()
+        settings = get_settings_store()
         self._text_client = OpenAITextClient(
             api_key=api_key,
             model=model,
-            reasoning_effort=REASONING_EFFORT_LOW,
-            # text_verbosity=TEXT_VERBOSITY_HIGH,
-            service_tier=SERVICE_TIER_FLEX,
+            reasoning_effort=settings.get_value("pipeline/lesson_planning/reasoning_effort"),
+            text_verbosity=settings.get_value("pipeline/lesson_planning/text_verbosity"),
+            service_tier=settings.get_value("pipeline/lesson_planning/service_tier"),
         )
 
         prompt_path = Path("prompts") / lesson_language / "lesson_macro_planning.txt"
