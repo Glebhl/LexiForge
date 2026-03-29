@@ -129,8 +129,8 @@ class Router:
     def _deactivate_controller(self, controller):
         """Disconnect signals for the previously active controller."""
         # Note: disconnecting can raise if already disconnected; keep behavior stable and safe.
-        self._safe_disconnect(controller, controller.on_ui_event, "on_ui_event")
-        self._safe_disconnect(controller, controller.on_load_finished, "on_load_finished")
+        self._safe_disconnect(self.backend.uiEvent, controller.on_ui_event, "on_ui_event")
+        self._safe_disconnect(self.view.loadFinished, controller.on_load_finished, "on_load_finished")
         logger.debug('Deactivated controller signals: url="%s"', controller.url)
 
     def _load_controller_url(self, controller):
@@ -292,6 +292,12 @@ class Router:
         """
         try:
             signal.disconnect(slot)
+        except AttributeError as exc:
+            logger.warning(
+                'Safe disconnect failed: %s does not expose disconnect(slot) (reason="%s")',
+                signal_name,
+                exc,
+            )
         except (RuntimeError, TypeError) as exc:
             logger.debug(
                 'Safe disconnect skipped: %s was not connected (reason="%s")',
