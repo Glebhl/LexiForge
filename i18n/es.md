@@ -16,7 +16,6 @@ Glosium/
 |   |-- settings.py
 |   |-- logging_config.py
 |   |-- exception_logging.py
-|   `-- language_registry.py
 |-- models/                         # Modelos tipados para tarjetas, pasos del macro plan y ejercicios generados
 |-- pipeline/                       # Generacion de vocabulario, planificacion macro, generacion de tareas y parsing
 |-- llm_gateway/                    # Wrappers del cliente de OpenAI y helpers de cache

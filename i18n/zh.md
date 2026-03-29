@@ -16,7 +16,6 @@ Glosium/
 |   |-- settings.py
 |   |-- logging_config.py
 |   |-- exception_logging.py
-|   `-- language_registry.py
 |-- models/                         # 词卡、宏观计划步骤和生成练习的类型化模型
 |-- pipeline/                       # 词汇生成、宏观课程规划、任务生成与解析
 |-- llm_gateway/                    # OpenAI 客户端封装和缓存辅助工具
