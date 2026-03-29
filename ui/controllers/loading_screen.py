@@ -20,9 +20,6 @@ class LoadingScreenController(QObject):
         learner_level,
         lesson_language,
         translation_language,
-        api_key,
-        plan_generation_model,
-        task_generation_model,
     ):
         super().__init__()
         self.url = r"\ui\views\loading_screen\index.html"
@@ -37,9 +34,6 @@ class LoadingScreenController(QObject):
         self._learner_level = learner_level
         self._lesson_language = lesson_language
         self._translation_language = translation_language
-        self._api_key = api_key
-        self._plan_generation_model = plan_generation_model
-        self._task_generation_model = task_generation_model
         self._generation_started = False
         self._generation_error_message: str | None = None
         self._lesson_generation_thread: QThread | None = None
@@ -75,9 +69,6 @@ class LoadingScreenController(QObject):
 
         worker_thread = QThread(self)
         worker = LessonGenerationWorker(
-            api_key=self._api_key,
-            plan_generation_model=self._plan_generation_model,
-            task_generation_model=self._task_generation_model,
             cards=self._cards,
             user_request=self._user_request,
             lerner_level=self._learner_level,

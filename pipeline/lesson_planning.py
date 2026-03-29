@@ -18,8 +18,6 @@ class MacroPlanner:
     def __init__(
         self,
         *,
-        api_key: str,
-        model: str,
         lesson_language: str,
         lerner_language: str,
         lerner_level: str,
@@ -27,8 +25,7 @@ class MacroPlanner:
         self._lerner_language = lerner_language
         self._lerner_level = lerner_level
         logger.debug(
-            "Initializing MacroPlanner with model=%s, lesson_language=%s, translation_language=%s, learner_level=%s",
-            model,
+            "Initializing MacroPlanner with lesson_language=%s, translation_language=%s, learner_level=%s",
             lesson_language,
             lerner_language,
             lerner_level,
@@ -36,7 +33,6 @@ class MacroPlanner:
         self._dev_fixtures = DevFixtureSettings.from_env()
         settings = get_settings_store()
         self._text_client = OpenAITextClient(
-            api_key=api_key,
             model=settings.get_value("models/lesson_planning"),
             reasoning_effort=settings.get_value("pipeline/lesson_planning/reasoning_effort"),
             text_verbosity=settings.get_value("pipeline/lesson_planning/text_verbosity"),

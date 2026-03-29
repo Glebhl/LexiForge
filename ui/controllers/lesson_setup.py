@@ -52,8 +52,6 @@ class LessonSetupController(QObject):
         self._translation_language = settings.get_value("lesson/lerner_language")
         self._lerner_level = settings.get_value("lesson/learner_level")
         self._user_request = None
-        self._plan_generation_model = settings.get_value("models/lesson_planning")
-        self._task_generation_model = settings.get_value("models/task_generation")
 
     def on_load_finished(self):
         self._cards = []
@@ -187,9 +185,6 @@ class LessonSetupController(QObject):
                     self._lerner_level,
                     self._lesson_language,
                     self._translation_language,
-                    self._api_key,
-                    self._plan_generation_model,
-                    self._task_generation_model,
                 )
 
     def _on_card_closed(self, payload: dict):

@@ -15,152 +15,130 @@ Use only unit IDs from LEARNING_UNITS in TARGETS.
 
 [PLAN SIZE]
 Let N = number of learning units.
-Step count:
+Target step count:
 - use LESSON_SIZE if provided
 - otherwise plan about 5 × N steps
 
-Each unit must normally appear at least 4 times:
-1. introduction
-2. guided/contextual practice
-3. early review
-4. later review
+Each unit must normally appear 4-5 times:
+1. first exposure
+2. guided recognition
+3. guided production
+4. later stronger recall
+5. optional extra contrast or review
 
-If the lesson is too short, remove extra review first.
-Do not remove introduction or guided practice.
+If the lesson must be shorter, remove only the optional 5th exposure first.
 
 [EXERCISE MEANING]
-- explanation: short teaching text, no user input; used to explain meaning, contrast, form, or irregularity
-- matching: recognition task; user matches pairs; good for first exposure or contrast
-- filling: 1-3 sentences with blanks; user inserts the target into English context
-- translation: 1-3 sentences; user translates between English and LEARNER_LANGUAGE
-- question: short English passage plus one comprehension question; tests understanding of English text
+- explanation: short teaching text, no user input; use to explain meaning, contrast, form, pattern, irregularity
+- matching: pair matching; mainly first exposure or recognition; must have at least 2 pairs
+- filling: 1-3 short sentences with blanks; user fills one English target or part of it
+- translation: 1-3 short sentences; user translates between English and LEARNER_LANGUAGE
+- question: short English passage of 1-5 sentences + one comprehension question; use only after the targets were introduced earlier
 
-Only translation and filling use MODE.
-- word-bank = guided production with options
-- typing = manual typing by the user
+Only filling and translation have modes: word-bank and typing.
+Word-bank = guided support.
+Typing = manual user input.
 
-Typing must produce English only.
+[MODE RULES]
+Use word-bank earlier, typing later.
+Typing is allowed only after the same unit appeared at least 2 times before.
+Typing must produce English, not LEARNER_LANGUAGE.
+
 So:
-- filling + typing = user types English
-- translation + typing = only LEARNER_LANGUAGE-to-English
-- english-to-LEARNER_LANGUAGE translation must not use typing
+- filling + typing = user types the missing English target
+- translation + typing = LEARNER_LANGUAGE-to-English only
+- english-to-LEARNER_LANGUAGE translation is allowed only in word-bank or none, never in typing
 
-Question is always English reading comprehension, never reading in LEARNER_LANGUAGE.
+No unit may appear for the first time in:
+- typing
+- question
+- late mixed review
 
 [GROUPING]
 Split units into micro-blocks of 1-3 related items.
 Group by:
 - close meaning or likely confusion
-- shared grammar, form, or pattern
+- shared form, grammar, or pattern
 - natural shared context
 
-Do not mix unrelated units just to fill a step.
+Do not mix unrelated units just to fill a block.
 A unit may stay alone if needed.
 
-[PLANNING ALGORITHM]
-Plan in 4 passes:
+[SEQUENCE ALGORITHM]
+Plan the lesson in 4 rounds across micro-blocks, not one block from start to finish.
 
-Pass 1: assign each unit an introduction slot in the first half.
-Use explanation or matching only.
+Round 1: first exposure
+- use explanation only if the block needs explicit explanation
+- then use matching
+- all units must be introduced in this round or early Round 2
 
-Pass 2: assign each unit a guided practice slot after introduction.
-Use filling word-bank, translation word-bank, or matching.
+Round 2: guided practice
+- use filling with word-bank or translation with word-bank
+- this must come before any typing for the same unit
 
-Pass 3: assign each unit a later review slot after at least 2 other steps.
-Use filling typing, translation typing, question, matching, or explanation.
+Round 3: controlled production
+- use filling typing or translation typing
+- translation typing must be LEARNER_LANGUAGE-to-English only
 
-Pass 4: add extra review only if lesson size allows.
-Prefer mixed review of already introduced units. Do not create new introductions here.
+Round 4: later review
+- use question, filling typing, translation typing, or matching review
+- this round must happen later, after other steps intervene
 
-[ORDER RULES]
-A unit must be introduced before any productive use.
-A unit may not appear for the first time in:
-- typing
-- question
-- late mixed review
-- translation
-
-First appearance should normally be:
-- matching
-- explanation
-
-Second appearance should normally be guided:
-- filling word-bank
-- translation word-bank
-- matching
-
-Typing is allowed only after the same unit has already appeared at least 2 times.
-
-All units must be introduced in the first half of the lesson.
-
-[BLOCK PATTERNS]
-Use these default patterns:
-
-1. Standard unit/block:
-- matching
-- filling (word-bank)
-- filling or translation (typing)
-
-2. Contrast-heavy block:
-- explanation
-- matching
-- translation (word-bank)
-- filling or translation (typing)
-
-3. Context-heavy block:
-- matching
-- filling or translation (word-bank)
-- question or filling/translation (typing)
-
-Use question only for units already introduced earlier.
+Do not use explanation as a late standalone review step unless USER_REQUEST clearly needs new clarification.
+Do not place all steps of one micro-block together if that breaks spacing.
 
 [STEP LOAD]
-These are hard limits. Never exceed them.
-- explanation: 1-4 targets
-- matching: 2-5 targets
-- question: 1-3 targets
-- filling: 1-3 targets
-- translation: 1-2 targets; 3 only for a very tight contrast set
+Keep target count realistic. These are hard limits:
+- explanation: 1-3
+- matching: 2-5
+- question: 1-3
+- filling: 1-2, rarely 3 if tightly related
+- translation: 1-2, rarely 3 if tightly related
 
-Do not put many unrelated units into one step.
-Do not use 3 targets in translation unless they are strongly connected.
-Do not use max target count repeatedly across the whole lesson.
-Prefer 1-2 targets for productive steps.
+Matching with 1 pair is invalid.
+Do not exceed limits.
+If unsure, use fewer targets, not more.
 
-[COVERAGE]
-Every unit must receive:
-- one early recognition/introduction step
-- one guided/contextual step
-- one early review step (shortly after practice)
-- one later review step (after several other steps)
-
-Explanation and matching alone are not enough.
-Do not spend too many steps on one unit before others are introduced.
+[PER-STEP RULES]
+- One step = one exercise, not a whole micro-block
+- Do not put many unrelated units into one step
+- In filling and translation, usually one target per sentence
+- In question, the passage must be in English
+- Question is for comprehension of the English passage, not for guessing without reading
 
 [SPACING]
 Do not place all appearances of the same unit back-to-back.
-Between guided practice and later review of the same unit, place at least 2 other steps.
+Between Round 2 and Round 4 for the same unit, place at least 2 other steps.
+
+[COVERAGE]
+Every unit must be covered evenly.
+Explanation and matching alone are never enough.
+Each unit must get:
+- one early introduction step
+- one guided step
+- one productive English-output step
+- one later review step
 
 [DESCRIPTION]
-DESCRIPTION is a short generator hint only.
+DESCRIPTION is a short generation hint only.
 Write concrete instructions such as:
 - translation direction
 - sentence count
-- what the user does
+- what the user matches, fills, or reads
 - context
-- what contrast or form to emphasize
+- contrast or form focus
 
-Good examples:
-- user matches english targets to learner-language meanings
+Good:
 - explain the meaning difference and irregular forms
+- user matches english targets to learner-language meanings
 - learner-language-to-english translation; 2 short sentences; travel context
-- user fills the missing phrasal verb particle in english sentences
-- english reading passage; one comprehension question; daily routine context
+- user fills the missing english preposition; daily routine context
+- english passage about school; one comprehension question about the targets
 
 DESCRIPTION must not:
 - repeat TARGETS or MODE
-- use vague pedagogy words like recall, review, delayed recall, guided practice
-- mention unsupported media like images or audio
+- use vague pedagogy labels like recall, review, delayed recall, guided practice
+- mention unsupported media
 - include exact exercise content
 
 [OUTPUT]
@@ -172,15 +150,14 @@ EXERCISE_ID: <question | explanation | filling | translation | matching>
 MODE: <none | word-bank | typing>
 TARGETS: <comma-separated unit IDs>
 
-[FINAL CHECKS]
-- all units are covered evenly
-- each unit appears at least 3 times when size allows
-- every unit is introduced in the first half
-- no unit starts in typing, question, or translation
-- typing appears only after 2 earlier appearances
-- typing always requires English output
-- translation + typing is only LEARNER_LANGUAGE-to-English
-- question always means English reading comprehension
-- later review is actually later, not immediate
-- productive steps stay low-load
-- DESCRIPTION is short and concrete
+[CHECKS]
+- about 5 × N steps unless LESSON_SIZE says otherwise
+- all units introduced by early Round 2
+- no unit starts in typing or question
+- typing only after 2 earlier appearances
+- typing never asks for LEARNER_LANGUAGE output
+- matching never has fewer than 2 pairs
+- step load never exceeds limits
+- explanation is used only where it has a clear purpose
+- later review really happens later
+- all units are distributed evenly

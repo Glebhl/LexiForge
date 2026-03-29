@@ -6,6 +6,8 @@ from collections import Counter
 from typing import Iterable
 
 from models.task_generation_models import (
+    ExplanationCard,
+    ExplanationExercise,
     FillInTheBlankExercise,
     MatchingExercise,
     MultipleChoiceExercise,
@@ -90,6 +92,36 @@ def parse_fill_in_the_blank_exercise(text: str) -> FillInTheBlankExercise:
         mode="word-bank",
         answers=answers,
         audio=False,
+    )
+
+
+def parse_explanation_exercise(text: str) -> ExplanationExercise:
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not normalized:
+        raise ValueError("Explanation exercise response is empty.")
+
+    card_matches = list(
+        re.finditer(
+            r"(?ms)^TITLE:[ \t]*(.*?)\nHTML:[ \t]*\n?(.*?)(?=^TITLE:|\Z)",
+            normalized,
+        )
+    )
+    if not card_matches:
+        raise ValueError("Explanation exercise contains no cards.")
+
+    cards: list[ExplanationCard] = []
+    for match in card_matches:
+        name = match.group(1).strip()
+        content = match.group(2).strip()
+        if not name:
+            raise ValueError("Explanation card name is empty.")
+        if not content:
+            raise ValueError(f"Explanation card {name!r} has empty HTML content.")
+        cards.append(ExplanationCard(name=name, content=content))
+
+    return ExplanationExercise(
+        task_id="explanation",
+        cards=tuple(cards),
     )
 
 

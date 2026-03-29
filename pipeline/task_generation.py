@@ -11,6 +11,7 @@ from llm_gateway import OpenAITextClient
 
 from models import MacroPlanStep
 from .task_generation_parsers import (
+    parse_explanation_exercise,
     parse_fill_in_the_blank_exercise,
     parse_matching_exercise,
     parse_multiple_choice_exercise,
@@ -18,6 +19,7 @@ from .task_generation_parsers import (
 )
 from models import VocabularyCard
 from models import (
+    ExplanationExercise,
     FillInTheBlankExercise,
     MatchingExercise,
     MultipleChoiceExercise,
@@ -39,6 +41,11 @@ class TaskGenerator:
         lerner_level: str,
     ) -> None:
         self._generator_by_exercise_id = {
+            "explanation": ExplanationTaskGenerator(
+                lesson_language=lesson_language,
+                translation_language=translation_language,
+                lerner_level=lerner_level,
+            ),
             "filling": FillingTaskGenerator(
                 lesson_language=lesson_language,
                 translation_language=translation_language,
@@ -67,8 +74,6 @@ class TaskGenerator:
         for step in macro_plan:
             try:
                 exercise_id = step.exercise_id.strip().lower()
-                if exercise_id == "explanation":  # Not supported yet
-                    continue
 
                 generator = self._generator_by_exercise_id.get(exercise_id)
                 if generator is None:
@@ -170,6 +175,11 @@ class BaseTaskGenerator(Generic[ParsedExerciseT]):
         
         return "\n".join(lines)
     
+
+class ExplanationTaskGenerator(BaseTaskGenerator[ExplanationExercise]):
+    prompt_filename = "explanation_task_generation.txt"
+    parser = staticmethod(parse_explanation_exercise)
+
 
 class FillingTaskGenerator(BaseTaskGenerator[FillInTheBlankExercise]):
     prompt_filename = "filling_task_generation.txt"

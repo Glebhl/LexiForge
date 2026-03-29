@@ -5,6 +5,18 @@ from typing import Literal
 
 
 @dataclass(frozen=True, slots=True)
+class ExplanationCard:
+    name: str
+    content: str
+
+
+@dataclass(frozen=True, slots=True)
+class ExplanationExercise:
+    task_id: Literal["explanation"]
+    cards: tuple[ExplanationCard, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class FillInTheBlankExercise:
     task_id: Literal["filling"]
     sentence: tuple[str, ...]
