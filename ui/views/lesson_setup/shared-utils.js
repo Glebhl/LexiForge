@@ -1,8 +1,6 @@
 (function registerLessonSetupSharedUtils(globalObject) {
   function emitBackendEvent(eventName, payload) {
-    if (globalObject.backend && typeof globalObject.backend.emitEvent === "function") {
-      globalObject.backend.emitEvent(eventName, payload || {});
-    }
+    return globalObject.appBridge.emitBackendEvent(eventName, payload || {});
   }
 
   function formatDeckLabel(count) {

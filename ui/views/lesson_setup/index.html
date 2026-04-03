@@ -7,8 +7,6 @@
     <link href="styles/content.css" rel="stylesheet" />
     <link href="styles/layout.css" rel="stylesheet" />
     <link href="styles/interactive.css" rel="stylesheet" />
-
-    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
   </head>
   <body>
     <main>
@@ -117,13 +115,7 @@
       </div>
     </template>
 
-    <script>
-      window.backend = null;
-
-      new QWebChannel(qt.webChannelTransport, function (channel) {
-        window.backend = channel.objects.backend;
-      });
-    </script>
+    <script src="../../assets/scripts/pywebview-bridge.js"></script>
     <script src="shared-utils.js"></script>
     <script src="lesson-shell.js"></script>
   </body>

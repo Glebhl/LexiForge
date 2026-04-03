@@ -3,92 +3,98 @@ import logging
 import sys
 from pathlib import Path
 
+import webview
 from dotenv import load_dotenv
-from PySide6.QtGui import QIcon
-from PySide6.QtWebChannel import QWebChannel
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import QApplication, QMainWindow
 
-from app import Backend
-from app import Router
-from app import setup_logging
-from ui.controllers import LessonSetupController
+from app.backend import Backend
+from app.logging_config import setup_logging
+from app.router import Router
 
 logger = logging.getLogger(__name__)
-ASSETS_DIR = Path(__file__).resolve().parent / "ui" / "assets" / "icons"
+PROJECT_ROOT = Path(__file__).resolve().parent
+ASSETS_DIR = PROJECT_ROOT / "ui" / "assets" / "icons"
 APP_ICON_PATH = ASSETS_DIR / "logo.ico"
+APP_USER_MODEL_ID = "glosium.desktop.app"
 
 
-class MainWindow(QMainWindow):
-    """Main application window that hosts the WebEngine view and JS <-> Python bridge."""
-
+class GlosiumApp:
     def __init__(self) -> None:
-        super().__init__()
-        logger.debug("MainWindow initialization started")
-
-        self._configure_window()
-        self._create_web_view()
-        self._init_backend_and_routing()
-        self._init_web_channel()
-        self._open_initial_page()
-
-        logger.info("MainWindow initialization completed")
-
-    def _configure_window(self) -> None:
-        """Configure basic window properties."""
-        self.setWindowTitle("Glosium")
-        self.setWindowIcon(QIcon(str(APP_ICON_PATH)))
-
-    def _create_web_view(self) -> None:
-        """Create and attach the WebEngine view."""
-        self.web_view = QWebEngineView(self)
-        self.setCentralWidget(self.web_view)
-        logger.debug("WebEngine view created and set as central widget")
-
-    def _init_backend_and_routing(self) -> None:
-        """Initialize backend bridge object and router."""
         self.backend = Backend()
-        logger.debug("Backend object created")
+        self.router: Router | None = None
+        self._window_shown = False
+        self._native_icon = None
+        self.window = webview.create_window(
+            "Glosium",
+            js_api=self.backend,
+            width=1200,
+            height=860,
+            min_size=(800, 600),
+            background_color="#121314",
+        )
+        self.window.events.before_show += self._apply_windows_icon
 
-        self.router = Router(self.web_view, self.backend)
-        logger.debug("Router created")
+    def bootstrap(self) -> None:
+        from ui.controllers.lesson_setup import LessonSetupController
 
-    def _init_web_channel(self) -> None:
-        """Initialize QWebChannel for JS <-> Python communication."""
-        self.web_channel = QWebChannel(self.web_view.page())
-        self.web_channel.registerObject("backend", self.backend)
-        self.web_view.page().setWebChannel(self.web_channel)
-        logger.debug("WebChannel configured and backend registered as 'backend'")
-
-    def _open_initial_page(self) -> None:
-        """Navigate to the initial controller/page."""
+        logger.debug("Bootstrapping pywebview window")
+        self.router = Router(self.window, self.backend, PROJECT_ROOT)
+        self.window.events.loaded += self._show_window_once
         self.router.navigate_to(LessonSetupController)
-        logger.debug("Navigated to VocabPlannerController")
+
+    def _show_window_once(self) -> None:
+        if self._window_shown:
+            return
+
+        self._window_shown = True
+        self.window.show()
+        logger.info("Application started successfully")
+
+    def _apply_windows_icon(self) -> None:
+        if sys.platform != "win32":
+            return
+
+        if not APP_ICON_PATH.exists():
+            logger.warning("Application icon was not found: %s", APP_ICON_PATH)
+            return
+
+        native_window = getattr(self.window, "native", None)
+        if native_window is None:
+            logger.warning("Native window handle is unavailable; icon override was skipped")
+            return
+
+        try:
+            import clr
+
+            clr.AddReference("System.Drawing")
+            from System.Drawing import Icon
+
+            self._native_icon = Icon(str(APP_ICON_PATH))
+            native_window.Icon = self._native_icon
+            native_window.ShowIcon = True
+            logger.debug("Windows app icon was applied from %s", APP_ICON_PATH)
+        except Exception:  # noqa: BLE001
+            logger.warning("Failed to apply the Windows app icon", exc_info=True)
 
 
 def main() -> int:
-    """Application entry point."""
     setup_logging(logging.DEBUG, log_to_file=True)
 
-    logger.debug("dotenv initialization")
-    load_dotenv()
-    logger.debug("dotenv was initializated")
+    try:
+        logger.debug("dotenv initialization")
+        load_dotenv()
+        logger.debug("dotenv was initialized")
 
-    logger.debug("Application startup")
+        logger.debug("Application startup")
 
-    if sys.platform == "win32":
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("glosium.desktop.app")
+        if sys.platform == "win32":
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_USER_MODEL_ID)
 
-    app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(str(APP_ICON_PATH)))
-
-    main_window = MainWindow()
-    main_window.resize(1200, 860)
-    main_window.setMinimumSize(700, 500)
-    main_window.show()
-
-    logger.info("Application started successfully")
-    return app.exec()
+        app = GlosiumApp()
+        webview.start(app.bootstrap, icon=str(APP_ICON_PATH))
+        return 0
+    except Exception:  # noqa: BLE001
+        logger.critical("Application terminated due to a critical startup error", exc_info=True)
+        return 1
 
 
 if __name__ == "__main__":

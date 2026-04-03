@@ -5,146 +5,104 @@
 
   let nextTranslationWordId = 0;
 
-  const translationSession = {
-    answerArea: null,
-    keyboardArea: null,
-    mode: WORD_BANK_MODE,
-    rootElement: null,
-    selectedWordIds: [],
-    typingInput: null,
-  };
-
-  function resetSession(rootElement, answerArea, keyboardArea, typingInput) {
-    translationSession.answerArea = answerArea;
-    translationSession.keyboardArea = keyboardArea;
-    translationSession.mode = WORD_BANK_MODE;
-    translationSession.rootElement = rootElement;
-    translationSession.selectedWordIds = [];
-    translationSession.typingInput = typingInput;
-  }
-
   function createKeyboardWord(text) {
     nextTranslationWordId += 1;
     return utils.createWordKey(text, nextTranslationWordId);
   }
 
-  function removeSelectedWordId(wordId) {
-    const selectedWordIds = translationSession.selectedWordIds;
-
-    for (let index = 0; index < selectedWordIds.length; index += 1) {
-      if (selectedWordIds[index] === wordId) {
-        selectedWordIds.splice(index, 1);
-        return;
-      }
-    }
-  }
-
-  function getWordBankAnswerText() {
-    if (!translationSession.answerArea) {
-      return "";
-    }
-
-    const answerKeyElements = translationSession.answerArea.querySelectorAll(".task-key");
-    const textById = new Map();
-
-    for (const keyElement of answerKeyElements) {
-      textById.set(keyElement.dataset.id, utils.normalizeInlineText(keyElement.textContent));
-    }
-
-    const answerWords = [];
-
-    for (const wordId of translationSession.selectedWordIds) {
-      const word = textById.get(wordId);
-
-      if (word) {
-        answerWords.push(word);
-      }
-    }
-
-    return utils.normalizeInlineText(answerWords.join(" "));
-  }
-
-  function getTypingAnswerText() {
-    return utils.normalizeInlineText(
-      translationSession.typingInput ? translationSession.typingInput.value : "",
-    );
-  }
-
-  function updateContinueState() {
-    if (translationSession.mode === TYPING_MODE) {
-      utils.setContinueEnabled(getTypingAnswerText().length > 0);
-      return;
-    }
-
-    utils.setContinueEnabled(translationSession.selectedWordIds.length > 0);
-  }
-
-  function switchMode(nextMode) {
-    const mode = nextMode === TYPING_MODE ? TYPING_MODE : WORD_BANK_MODE;
-    const isWordBankMode = mode === WORD_BANK_MODE;
-
-    translationSession.mode = mode;
-    translationSession.rootElement.classList.toggle("is-translation-word-bank", isWordBankMode);
-    translationSession.rootElement.classList.toggle("is-translation-typing", !isWordBankMode);
-
-    if (!isWordBankMode && translationSession.typingInput) {
-      if (utils.normalizeInlineText(translationSession.typingInput.value).length === 0) {
-        translationSession.typingInput.value = getWordBankAnswerText();
-      }
-
-      translationSession.typingInput.focus();
-    }
-
-    updateContinueState();
-  }
-
-  function handleWordClick(event) {
-    if (translationSession.mode !== WORD_BANK_MODE) {
-      return;
-    }
-
-    const keyElement = event.target.closest(".task-key");
-
-    if (!keyElement) {
-      return;
-    }
-
-    const isInKeyboard = translationSession.keyboardArea.contains(keyElement);
-    const wordId = keyElement.dataset.id;
-
-    utils.runFlipAnimation(
-      [translationSession.keyboardArea, translationSession.answerArea],
-      function () {
-        if (isInKeyboard) {
-          translationSession.answerArea.append(keyElement);
-          translationSession.selectedWordIds.push(wordId);
-        } else {
-          translationSession.keyboardArea.append(keyElement);
-          removeSelectedWordId(wordId);
-        }
-
-        updateContinueState();
-      },
-    );
-  }
-
-  function mount(rootElement, payload) {
+  function createTaskController(rootElement, payload) {
     const answerArea = rootElement.querySelector(".task-answer--translation");
     const keyboardArea = rootElement.querySelector(".task-keyboard");
     const typingInput = rootElement.querySelector(".task-answer__typing-input");
     const modeSwitchRoot = rootElement.querySelector(".task-keyboard__mode-switch");
     const promptElement = rootElement.querySelector(".translation-prompt");
-    const keyboardWords = Array.isArray(payload && payload.keyboard) ? payload.keyboard : [];
-    const initialMode = payload && payload.mode ? payload.mode : WORD_BANK_MODE;
+    const keyboardWords = Array.isArray(payload.keyboard) ? payload.keyboard : [];
+    const initialMode = payload.mode || WORD_BANK_MODE;
+    const state = {
+      mode: WORD_BANK_MODE,
+      selectedWordIds: [],
+    };
 
-    resetSession(rootElement, answerArea, keyboardArea, typingInput);
-
-    promptElement.textContent = payload && payload.sentence ? String(payload.sentence) : "";
+    promptElement.textContent = payload.sentence ? String(payload.sentence) : "";
     answerArea.replaceChildren();
     keyboardArea.replaceChildren();
 
     for (const word of keyboardWords) {
       keyboardArea.append(createKeyboardWord(word));
+    }
+
+    function removeSelectedWordId(wordId) {
+      state.selectedWordIds = state.selectedWordIds.filter(function (id) {
+        return id !== wordId;
+      });
+    }
+
+    function getWordBankAnswerText() {
+      const answerWords = Array.from(answerArea.querySelectorAll(".task-key")).map(
+        function (keyElement) {
+          return utils.normalizeInlineText(keyElement.textContent);
+        },
+      );
+
+      return utils.normalizeInlineText(answerWords.join(" "));
+    }
+
+    function getTypingAnswerText() {
+      return utils.normalizeInlineText(typingInput ? typingInput.value : "");
+    }
+
+    function updateContinueState() {
+      if (state.mode === TYPING_MODE) {
+        utils.setContinueEnabled(getTypingAnswerText().length > 0);
+        return;
+      }
+
+      utils.setContinueEnabled(state.selectedWordIds.length > 0);
+    }
+
+    function switchMode(nextMode) {
+      const isTypingMode = nextMode === TYPING_MODE;
+
+      state.mode = isTypingMode ? TYPING_MODE : WORD_BANK_MODE;
+      rootElement.classList.toggle("is-translation-word-bank", !isTypingMode);
+      rootElement.classList.toggle("is-translation-typing", isTypingMode);
+
+      if (isTypingMode && typingInput) {
+        if (getTypingAnswerText().length === 0) {
+          typingInput.value = getWordBankAnswerText();
+        }
+
+        typingInput.focus();
+      }
+
+      updateContinueState();
+    }
+
+    function handleWordClick(event) {
+      if (state.mode !== WORD_BANK_MODE) {
+        return;
+      }
+
+      const keyElement = event.target.closest(".task-key");
+
+      if (!keyElement) {
+        return;
+      }
+
+      const wordId = keyElement.dataset.id;
+      const isInKeyboard = keyboardArea.contains(keyElement);
+
+      utils.runFlipAnimation([keyboardArea, answerArea], function () {
+        if (isInKeyboard) {
+          answerArea.append(keyElement);
+          state.selectedWordIds.push(wordId);
+        } else {
+          keyboardArea.append(keyElement);
+          removeSelectedWordId(wordId);
+        }
+
+        updateContinueState();
+      });
     }
 
     keyboardArea.addEventListener("click", handleWordClick);
@@ -153,43 +111,20 @@
 
     globalObject.lessonModeSwitch.attach(modeSwitchRoot, switchMode, initialMode);
     updateContinueState();
+
+    return {
+      getAnswer: function () {
+        return state.mode === TYPING_MODE ? getTypingAnswerText() : getWordBankAnswerText();
+      },
+      setValidity: function (isCorrect) {
+        const shellElement = rootElement.querySelector(".task-answer-shell--translation");
+
+        if (shellElement) {
+          shellElement.classList.toggle("task-answer--invalid", !Boolean(isCorrect));
+        }
+      },
+    };
   }
 
-  function highlightTranslation(isCorrect) {
-    if (!translationSession.rootElement) {
-      return;
-    }
-
-    const shellElement = translationSession.rootElement.querySelector(
-      ".task-answer-shell--translation",
-    );
-
-    if (shellElement) {
-      shellElement.classList.toggle("task-answer--invalid", !Boolean(isCorrect));
-    }
-  }
-
-  globalObject.lessonTaskRegistry.register("translation", {
-    mount: mount,
-  });
-  globalObject.getTranslationAnswerString = function getTranslationAnswerString() {
-    return translationSession.mode === TYPING_MODE
-      ? getTypingAnswerText()
-      : getWordBankAnswerText();
-  };
-  globalObject.highlightTranslation = highlightTranslation;
-  globalObject.initTranslation = function initTranslation(
-    rootElement,
-    sentenceText,
-    keyboardWords,
-    initialMode,
-  ) {
-    mount(rootElement, {
-      keyboard: keyboardWords,
-      mode: initialMode,
-      sentence: sentenceText,
-    });
-    return highlightTranslation;
-  };
+  globalObject.lessonTaskRegistry.register("translation", createTaskController);
 })(window);
-

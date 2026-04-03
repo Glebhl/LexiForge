@@ -1,14 +1,6 @@
 # Glosium
 
-## Localizations
-
-- [Русский](i18n/ru.md)
-- [Español](i18n/es.md)
-- [中文](i18n/zh.md)
-
-## Overview
-
-Glosium is a desktop prototype for AI-assisted language learning built with `PySide6`, `Qt WebEngine`, and an HTML/CSS/JavaScript UI. The app lets a learner describe what they want to study and then builds a lesson from that.
+Glosium is a desktop prototype for AI-assisted language learning built with `pywebview` and an HTML/CSS/JavaScript UI. The app lets a learner describe what they want to study and then builds a lesson from that.
 
 ## Project Layout
 
@@ -21,7 +13,6 @@ Glosium/
 |   |-- router.py
 |   |-- settings.py
 |   |-- logging_config.py
-|   |-- exception_logging.py
 |-- models/                         # Typed models for cards, macro plan steps, and generated exercises
 |-- pipeline/                       # Vocabulary generation, macro planning, task generation, and parsing
 |-- llm_gateway/                    # OpenAI client wrappers and cache helpers

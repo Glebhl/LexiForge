@@ -1,16 +1,22 @@
 (function registerLessonTaskRegistry(globalObject) {
-  const taskModules = {};
+  const taskFactories = {};
 
-  function registerTask(type, taskModule) {
-    taskModules[type] = taskModule;
+  function registerTask(type, createTaskController) {
+    taskFactories[type] = createTaskController;
   }
 
-  function getTask(type) {
-    return taskModules[type] || null;
+  function createTask(type, rootElement, payload) {
+    const createTaskController = taskFactories[type];
+
+    if (typeof createTaskController !== "function") {
+      return null;
+    }
+
+    return createTaskController(rootElement, payload || {}) || {};
   }
 
   globalObject.lessonTaskRegistry = {
-    get: getTask,
+    create: createTask,
     register: registerTask,
   };
 })(window);

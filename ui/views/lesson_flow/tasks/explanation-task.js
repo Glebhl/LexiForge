@@ -12,8 +12,8 @@
     return cardElement;
   }
 
-  function mount(rootElement, payload) {
-    const cards = Array.isArray(payload && payload.cards) ? payload.cards : [];
+  function createTaskController(rootElement, payload) {
+    const cards = Array.isArray(payload.cards) ? payload.cards : [];
     const fragment = document.createDocumentFragment();
 
     for (const card of cards) {
@@ -22,12 +22,9 @@
 
     rootElement.replaceChildren(fragment);
     utils.setContinueEnabled(true);
+
+    return {};
   }
 
-  globalObject.lessonTaskRegistry.register("explanation", {
-    mount: mount,
-  });
-  globalObject.initExplanation = function initExplanation(container, cardsContent) {
-    mount(container, { cards: cardsContent });
-  };
+  globalObject.lessonTaskRegistry.register("explanation", createTaskController);
 })(window);

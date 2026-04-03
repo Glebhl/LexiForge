@@ -11,6 +11,7 @@ body {
 main {
   position: absolute;
   inset: var(--shell-block-gap) var(--shell-inline-gap);
+  bottom: 20px;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 20px;

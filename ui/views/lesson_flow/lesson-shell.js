@@ -7,10 +7,23 @@
   const skipButton = document.getElementById("skip");
 
   const shellState = {
+    activeTaskController: createEmptyTaskController(),
     activeTaskElement: null,
+    lastTaskRevision: 0,
+    lastValidationRevision: 0,
     transitionFallbackMs: 500,
     transitionToken: 0,
   };
+
+  function createEmptyTaskController() {
+    return {
+      destroy: function () {},
+      getAnswer: function () {
+        return "";
+      },
+      setValidity: function () {},
+    };
+  }
 
   function setStep(stepIndex, totalSteps) {
     const normalizedTotal = Number.isFinite(Number(totalSteps))
@@ -81,19 +94,24 @@
   }
 
   function mountTask(taskType, taskElement, payload) {
-    const taskModule = globalObject.lessonTaskRegistry.get(taskType);
+    const taskController = globalObject.lessonTaskRegistry.create(
+      taskType,
+      taskElement,
+      payload || {},
+    );
 
-    if (!taskModule || typeof taskModule.mount !== "function") {
+    if (!taskController) {
       throw new Error("Task_module_not_found:" + taskType);
     }
 
-    taskModule.mount(taskElement, payload || {});
+    return Object.assign(createEmptyTaskController(), taskController);
   }
 
   function setTask(taskType, direction, payload) {
     const transitionDirection = direction || "next";
     const nextTaskElement = createTaskElement(taskType);
     const previousTaskElement = shellState.activeTaskElement;
+    const previousTaskController = shellState.activeTaskController;
     const transitionToken = shellState.transitionToken + 1;
     const transitionClasses = getTaskTransitionClasses(transitionDirection);
 
@@ -101,7 +119,11 @@
     shellState.activeTaskElement = nextTaskElement;
 
     utils.setContinueEnabled(false);
-    mountTask(taskType, nextTaskElement, payload || {});
+    shellState.activeTaskController = mountTask(taskType, nextTaskElement, payload || {});
+
+    if (previousTaskController && typeof previousTaskController.destroy === "function") {
+      previousTaskController.destroy();
+    }
 
     cleanupStage(previousTaskElement);
 
@@ -128,30 +150,51 @@
     });
   }
 
-  function emitBackendEvent(eventName, payload) {
-    if (globalObject.backend && typeof globalObject.backend.emitEvent === "function") {
-      globalObject.backend.emitEvent(eventName, payload);
+  function getActiveTaskAnswerString() {
+    return shellState.activeTaskController.getAnswer();
+  }
+
+  function setActiveTaskValidity(isCorrect) {
+    shellState.activeTaskController.setValidity(Boolean(isCorrect));
+  }
+
+  function applyState(state) {
+    const nextState = state || {};
+    const taskState = nextState.task || null;
+    const validationState = nextState.validation || null;
+
+    setStep(nextState.stepIndex || 0, nextState.totalSteps || 0);
+
+    if (taskState && taskState.revision !== shellState.lastTaskRevision) {
+      shellState.lastTaskRevision = taskState.revision;
+      shellState.lastValidationRevision = 0;
+      setTask(taskState.type, taskState.direction, taskState.payload);
+    }
+
+    if (
+      validationState &&
+      validationState.revision !== shellState.lastValidationRevision
+    ) {
+      shellState.lastValidationRevision = validationState.revision;
+      setActiveTaskValidity(validationState.isCorrect);
     }
   }
 
   continueButton.addEventListener("click", function () {
-    emitBackendEvent("btn-click", { id: "continue" });
+    globalObject.appBridge.emitBackendEvent("btn-click", {
+      id: "continue",
+      answer: getActiveTaskAnswerString(),
+    });
   });
 
   skipButton.addEventListener("click", function () {
-    emitBackendEvent("btn-click", { id: "skip" });
+    globalObject.appBridge.emitBackendEvent("btn-click", { id: "skip" });
   });
 
-  globalObject.setStep = setStep;
-  globalObject.setTask = setTask;
+  globalObject.appBridge.observeState("lesson_flow_state", applyState, {
+    stepIndex: 0,
+    totalSteps: 0,
+    task: null,
+    validation: null,
+  });
 })(window);
-
-// setTask(
-//   "translation",
-//   "next",
-//   {
-//     "sentence": "This is a very nice book.",
-//     "keyboard": ["Это", "очень", "книга", "хорошая", "лишние", "три", "слова"],
-//     "mode": "word-bank"
-//   }
-// )

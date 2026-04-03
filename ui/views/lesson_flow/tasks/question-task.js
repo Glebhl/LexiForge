@@ -26,12 +26,12 @@
         return;
       }
 
-      const optionElements = answerField.querySelectorAll(".item");
+      const optionElements = Array.from(answerField.querySelectorAll(".item"));
       const isCorrect = optionText === correctAnswer;
 
-      for (const item of optionElements) {
+      optionElements.forEach(function (item) {
         item.className = "item unselected";
-      }
+      });
 
       optionElement.className = "item";
       optionElement.classList.add(isCorrect ? "correct" : "wrong");
@@ -43,12 +43,12 @@
 
       answerField.dataset.locked = "true";
 
-      for (const item of optionElements) {
+      optionElements.forEach(function (item) {
         item.tabIndex = -1;
         item.setAttribute("aria-disabled", "true");
         item.classList.remove("unselected");
         item.classList.add("is-idle");
-      }
+      });
     }
 
     optionElement.addEventListener("click", selectOption);
@@ -64,11 +64,11 @@
     return optionElement;
   }
 
-  function mount(rootElement, payload) {
-    const questionText = payload && payload.question ? String(payload.question) : "";
-    const paragraphText = payload && payload.paragraph ? String(payload.paragraph) : "";
-    const options = Array.isArray(payload && payload.options) ? payload.options : [];
-    const correctAnswer = normalizeCorrectAnswer(options, payload ? payload.answer : undefined);
+  function createTaskController(rootElement, payload) {
+    const questionText = payload.question ? String(payload.question) : "";
+    const paragraphText = payload.paragraph ? String(payload.paragraph) : "";
+    const options = Array.isArray(payload.options) ? payload.options : [];
+    const correctAnswer = normalizeCorrectAnswer(options, payload.answer);
     const answerField = rootElement.querySelector(".answer-field");
     const labelElement = answerField.querySelector(".lesson-card__label");
 
@@ -87,23 +87,9 @@
     }
 
     utils.setContinueEnabled(false);
+
+    return {};
   }
 
-  globalObject.lessonTaskRegistry.register("question", {
-    mount: mount,
-  });
-  globalObject.initQuestion = function initQuestion(
-    rootElement,
-    question,
-    paragraph,
-    options,
-    answer,
-  ) {
-    mount(rootElement, {
-      answer: answer,
-      options: options,
-      paragraph: paragraph,
-      question: question,
-    });
-  };
+  globalObject.lessonTaskRegistry.register("question", createTaskController);
 })(window);

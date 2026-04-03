@@ -14,42 +14,18 @@
     );
   }
 
-  function hydrateCard(cardElement, word, unit, part, level, transcription, translation, defenition, example) {
-    cardElement.querySelector(".lesson-card__word").textContent = word;
-    cardElement.querySelector(".meta-pill__value--unit").textContent = unit;
-    cardElement.querySelector(".meta-pill__value--part").textContent = part;
-    cardElement.querySelector(".meta-pill__value--level").textContent = level;
-    cardElement.querySelector(".lesson-card__transcription").textContent = transcription;
-    cardElement.querySelector(".lesson-card__translation").textContent = translation;
-    cardElement.querySelector(".lesson-card__definition").textContent = defenition;
-    cardElement.querySelector(".lesson-card__example").textContent = example;
+  function hydrateCard(cardElement, card) {
+    cardElement.querySelector(".lesson-card__word").textContent = card.word || "";
+    cardElement.querySelector(".meta-pill__value--unit").textContent = card.unit || "";
+    cardElement.querySelector(".meta-pill__value--part").textContent = card.part || "";
+    cardElement.querySelector(".meta-pill__value--level").textContent = card.level || "";
+    cardElement.querySelector(".lesson-card__transcription").textContent = card.transcription || "";
+    cardElement.querySelector(".lesson-card__translation").textContent = card.translation || "";
+    cardElement.querySelector(".lesson-card__definition").textContent = card.definition || "";
+    cardElement.querySelector(".lesson-card__example").textContent = card.example || "";
   }
 
-  function addCard(word, unit, part, level, transcription, translation, defenition, example, cardId) {
-    const fragment = templateElement.content.cloneNode(true);
-    const cardElement = fragment.querySelector(".lesson-card");
-    const resolvedCardId =
-      cardId || "card-" + Date.now() + "-" + Math.random().toString(16).slice(2);
-
-    cardElement.dataset.cardId = resolvedCardId;
-    hydrateCard(
-      cardElement,
-      word,
-      unit,
-      part,
-      level,
-      transcription,
-      translation,
-      defenition,
-      example,
-    );
-
-    cardListElement.append(fragment);
-
-    utils.doubleAnimationFrame(function () {
-      cardElement.classList.add("fade-enter-active");
-    });
-
+  function finalizeEnter(cardElement) {
     function handleCardEnter(event) {
       if (event.target !== cardElement || event.propertyName !== "opacity") {
         return;
@@ -60,9 +36,53 @@
     }
 
     cardElement.addEventListener("transitionend", handleCardEnter);
+    utils.doubleAnimationFrame(function () {
+      cardElement.classList.add("fade-enter-active");
+    });
+  }
+
+  function createCardElement(card) {
+    const fragment = templateElement.content.cloneNode(true);
+    const cardElement = fragment.querySelector(".lesson-card");
+
+    cardElement.dataset.cardId = String(card.id || "");
+    hydrateCard(cardElement, card);
+    cardListElement.append(fragment);
+    finalizeEnter(cardElement);
+
+    return cardElement;
+  }
+
+  function renderCards(cards) {
+    const normalizedCards = Array.isArray(cards) ? cards : [];
+    const incomingIds = new Set(
+      normalizedCards.map(function (card) {
+        return String(card.id || "");
+      }),
+    );
+
+    Array.from(cardListElement.querySelectorAll(".lesson-card")).forEach(function (cardElement) {
+      if (!incomingIds.has(cardElement.dataset.cardId || "")) {
+        cardElement.remove();
+      }
+    });
+
+    normalizedCards.forEach(function (card) {
+      const cardId = String(card.id || "");
+      let cardElement = cardListElement.querySelector(
+        '.lesson-card[data-card-id="' + cardId + '"]',
+      );
+
+      if (!cardElement) {
+        cardElement = createCardElement(card);
+      } else {
+        hydrateCard(cardElement, card);
+      }
+
+      cardListElement.append(cardElement);
+    });
 
     updateDeckLabel();
-    return resolvedCardId;
   }
 
   function finalizeRemoval(cardElement, previousPositions, callback) {
@@ -99,17 +119,6 @@
     cardElement.addEventListener("transitionend", handleCardExit);
   }
 
-  function removeCard(cardId) {
-    const cardElement = cardListElement.querySelector('.lesson-card[data-card-id="' + cardId + '"]');
-    removeCardElement(cardElement);
-  }
-
-  function syncCardIds() {
-    cardListElement.querySelectorAll(".lesson-card").forEach(function (cardElement, index) {
-      cardElement.dataset.cardId = String(index);
-    });
-  }
-
   function setHint(hint) {
     hintElement.innerHTML = hint || "";
   }
@@ -120,12 +129,20 @@
     promptElement.disabled = Boolean(isGenerating);
   }
 
-  function getPromtText() {
+  function getPromptText() {
     return promptElement.value;
   }
 
+  function applyState(state) {
+    const nextState = state || {};
+
+    renderCards(nextState.cards);
+    setHint(nextState.hint || "");
+    setGenerating(Boolean(nextState.isGenerating));
+  }
+
   generateButton.addEventListener("click", function () {
-    utils.emitBackendEvent("btn-click", { id: "generate" });
+    utils.emitBackendEvent("btn-click", { id: "generate", prompt: getPromptText() });
   });
 
   startButton.addEventListener("click", function () {
@@ -147,12 +164,11 @@
     });
   });
 
-  globalObject.addCard = addCard;
-  globalObject.getPromtText = getPromtText;
-  globalObject.removeCard = removeCard;
-  globalObject.syncCardIds = syncCardIds;
-  globalObject.setGenerating = setGenerating;
-  globalObject.setHint = setHint;
+  globalObject.appBridge.observeState("lesson_setup_state", applyState, {
+    cards: [],
+    hint: "",
+    isGenerating: false,
+  });
 
   updateDeckLabel();
 })(window);

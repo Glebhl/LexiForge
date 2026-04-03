@@ -1,7 +1,4 @@
-from .card_generation import VocabularyCardGenerator
-from .lesson_planning import MacroPlanner
-from .answer_matcher import AnswerMatcher
-from .task_generation import TaskGenerator
+from __future__ import annotations
 
 __all__ = [
     "VocabularyCardGenerator",
@@ -9,3 +6,22 @@ __all__ = [
     "AnswerMatcher",
     "TaskGenerator",
 ]
+
+_EXPORT_MAP = {
+    "VocabularyCardGenerator": ("pipeline.card_generation", "VocabularyCardGenerator"),
+    "MacroPlanner": ("pipeline.lesson_planning", "MacroPlanner"),
+    "AnswerMatcher": ("pipeline.answer_matcher", "AnswerMatcher"),
+    "TaskGenerator": ("pipeline.task_generation", "TaskGenerator"),
+}
+
+
+def __getattr__(name: str):
+    from importlib import import_module
+
+    try:
+        module_name, attr_name = _EXPORT_MAP[name]
+    except KeyError as exc:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from exc
+
+    module = import_module(module_name)
+    return getattr(module, attr_name)

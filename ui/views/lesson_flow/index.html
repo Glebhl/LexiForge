@@ -8,8 +8,6 @@
     <link href="styles/content.css" rel="stylesheet" />
     <link href="styles/interactive.css" rel="stylesheet" />
     <link href="styles/task-modes.css" rel="stylesheet" />
-
-    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
   </head>
   <body>
     <main>
@@ -212,13 +210,7 @@
       <button class="task-choice is-idle" type="button"></button>
     </template>
 
-    <script>
-      window.backend = null;
-
-      new QWebChannel(qt.webChannelTransport, function (channel) {
-        window.backend = channel.objects.backend;
-      });
-    </script>
+    <script src="../../assets/scripts/pywebview-bridge.js"></script>
     <script src="shared-utils.js"></script>
     <script src="mode-switch.js"></script>
     <script src="task-registry.js"></script>
