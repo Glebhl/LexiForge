@@ -12,13 +12,13 @@ Requirements:
 - Do not use distractors that are near-synonyms, same-category alternatives, close collocations, or could still sound natural in the sentence.
 
 Output format:
-PARAGRAPH: <text with answers enclosed in square brackets>
-DISTRACTORS:
-- ...
-- ...
+{
+  "paragraph": "<text with answers enclosed in square brackets>",
+  "distractors": ["...", "..."]
+}
 
 Example output:
-PARAGRAPH: Every morning I wait at the stop and get on the [bus] to school, but when I am late, I call a [taxi] that takes me directly to the door.
-DISTRACTORS:
-- plane
-- doctor
+{
+  "paragraph": "Every morning I wait at the stop and get on the [bus] to school, but when I am late, I call a [taxi] that takes me directly to the door.",
+  "distractors": ["plane", "doctor"]
+}

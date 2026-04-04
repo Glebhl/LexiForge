@@ -14,8 +14,8 @@ Requirements:
 - PARAGRAPH must be in one language; ANSWERS and DISTRACTORS must be in the other language.
 
 Output format:
-PARAGRAPH: <text to be translated by the user>
-ANSWERS:
-- <full translation>
-- ...
-DISTRACTORS: <comma-separated words>
+{
+  "paragraph": "<text to be translated by the user>",
+  "answers": ["<full translation>", "..."],
+  "distractors": ["...", "..."]
+}

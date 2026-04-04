@@ -119,6 +119,7 @@
     shellState.activeTaskElement = nextTaskElement;
 
     utils.setContinueEnabled(false);
+    skipButton.disabled = taskType === "loading";
     shellState.activeTaskController = mountTask(taskType, nextTaskElement, payload || {});
 
     if (previousTaskController && typeof previousTaskController.destroy === "function") {

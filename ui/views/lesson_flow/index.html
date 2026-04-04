@@ -69,6 +69,15 @@
       <div class="lesson-task"></div>
     </template>
 
+    <template id="tpl-loading">
+      <div class="lesson-task">
+        <article class="lesson-card">
+          <p class="lesson-card__label loading-title"></p>
+          <p class="loading-message"></p>
+        </article>
+      </div>
+    </template>
+
     <template id="tpl-explanation-card">
       <article class="lesson-card">
         <div class="lesson-card__label"></div>
@@ -115,8 +124,8 @@
           </div>
           <div class="task-hint-wrap">
             <div class="task-hint">
-              Tip: click a word to place it into the next slot. Click a placed
-              word to remove it.
+              Tip: click a word to place it into the next slot, or hold and
+              drag it into any blank. Click a placed word to remove it.
             </div>
           </div>
         </div>
@@ -176,8 +185,8 @@
           </div>
           <div class="task-hint-wrap">
             <div class="task-hint">
-              Tip: click a word to place it into the next slot. Click a placed
-              word to remove it.
+              Tip: click to append a word, or hold and drag it into the exact
+              position you want. Click a placed word to remove it.
             </div>
           </div>
         </div>
@@ -215,6 +224,7 @@
     <script src="mode-switch.js"></script>
     <script src="task-registry.js"></script>
     <script src="tasks/explanation-task.js"></script>
+    <script src="tasks/loading-task.js"></script>
     <script src="tasks/matching-task.js"></script>
     <script src="tasks/translation-task.js"></script>
     <script src="tasks/filling-task.js"></script>

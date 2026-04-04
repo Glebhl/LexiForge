@@ -22,6 +22,8 @@
       mode: WORD_BANK_MODE,
       selectedWordIds: [],
     };
+    let activeDrag = null;
+    let suppressWordClick = false;
 
     promptElement.textContent = payload.sentence ? String(payload.sentence) : "";
     answerArea.replaceChildren();
@@ -31,9 +33,11 @@
       keyboardArea.append(createKeyboardWord(word));
     }
 
-    function removeSelectedWordId(wordId) {
-      state.selectedWordIds = state.selectedWordIds.filter(function (id) {
-        return id !== wordId;
+    function syncSelectedWordIds() {
+      state.selectedWordIds = Array.from(answerArea.querySelectorAll(".task-key")).map(function (
+        keyElement,
+      ) {
+        return keyElement.dataset.id;
       });
     }
 
@@ -78,8 +82,182 @@
       updateContinueState();
     }
 
+    function commitWordBankMutation(mutateDom) {
+      utils.runFlipAnimation([keyboardArea, answerArea], function () {
+        mutateDom();
+        syncSelectedWordIds();
+        updateContinueState();
+      });
+    }
+
+    function insertAtRecordedLocation(parentElement, beforeNode, wordElement) {
+      if (beforeNode && beforeNode.parentNode === parentElement) {
+        parentElement.insertBefore(wordElement, beforeNode);
+        return;
+      }
+
+      parentElement.append(wordElement);
+    }
+
+    function clearDragDropState() {
+      keyboardArea.classList.remove("is-drop-target");
+      answerArea.classList.remove("is-drop-target");
+    }
+
+    function settleDraggedWord(dragState, mutateDom) {
+      utils.settleFloatingWordDrag(dragState, [keyboardArea, answerArea], function () {
+        clearDragDropState();
+        mutateDom();
+        syncSelectedWordIds();
+        updateContinueState();
+      });
+    }
+
+    function restoreDraggedWord(dragState) {
+      settleDraggedWord(dragState, function () {
+        insertAtRecordedLocation(
+          dragState.restoreParent,
+          dragState.restoreBeforeNode,
+          dragState.wordElement,
+        );
+        dragState.placeholder.remove();
+      });
+    }
+
+    function moveDraggedWordToKeyboard(dragState) {
+      settleDraggedWord(dragState, function () {
+        dragState.placeholder.remove();
+        keyboardArea.append(dragState.wordElement);
+      });
+    }
+
+    function moveDraggedWordToAnswer(dragState) {
+      settleDraggedWord(dragState, function () {
+        dragState.placeholder.replaceWith(dragState.wordElement);
+      });
+    }
+
+    function updateDragTarget(dragState, pointerX, pointerY) {
+      const isOverAnswer = utils.isPointInsideElement(answerArea, pointerX, pointerY);
+      const isOverKeyboard = utils.isPointInsideElement(keyboardArea, pointerX, pointerY);
+
+      if (isOverAnswer) {
+        const beforeNode = utils.findWordInsertBeforeNode(
+          answerArea,
+          pointerX,
+          pointerY,
+          dragState.wordElement,
+        );
+
+        const placeholderNeedsMove =
+          dragState.placeholder.parentNode !== answerArea ||
+          dragState.placeholder.nextSibling !== beforeNode;
+
+        if (placeholderNeedsMove) {
+          utils.runFlipAnimation([answerArea], function () {
+            if (beforeNode) {
+              answerArea.insertBefore(dragState.placeholder, beforeNode);
+            } else {
+              answerArea.append(dragState.placeholder);
+            }
+          }, 120);
+        }
+
+        dragState.dropTarget = "answer";
+        return;
+      }
+
+      dragState.dropTarget = isOverKeyboard ? "keyboard" : null;
+    }
+
+    function finishDrag(pointerEvent, forceRestore) {
+      if (!activeDrag) {
+        return;
+      }
+
+      const dragState = activeDrag;
+
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp, true);
+      window.removeEventListener("pointercancel", handlePointerCancel, true);
+
+      if (!dragState.didStart) {
+        activeDrag = null;
+        return;
+      }
+
+      if (pointerEvent) {
+        utils.moveFloatingWordDrag(dragState, pointerEvent.clientX, pointerEvent.clientY);
+        updateDragTarget(dragState, pointerEvent.clientX, pointerEvent.clientY);
+      }
+
+      if (forceRestore) {
+        restoreDraggedWord(dragState);
+      } else if (dragState.dropTarget === "answer") {
+        moveDraggedWordToAnswer(dragState);
+      } else if (
+        dragState.dropTarget === "keyboard" &&
+        dragState.restoreParent !== keyboardArea
+      ) {
+        moveDraggedWordToKeyboard(dragState);
+      } else {
+        restoreDraggedWord(dragState);
+      }
+
+      activeDrag = null;
+      suppressWordClick = true;
+
+      window.setTimeout(function () {
+        suppressWordClick = false;
+      }, 0);
+    }
+
+    function handlePointerMove(event) {
+      if (!activeDrag || event.pointerId !== activeDrag.pointerId) {
+        return;
+      }
+
+      if (!activeDrag.didStart) {
+        const deltaX = event.clientX - activeDrag.startX;
+        const deltaY = event.clientY - activeDrag.startY;
+        const movedEnough = Math.hypot(deltaX, deltaY) >= 6;
+
+        if (!movedEnough) {
+          return;
+        }
+
+        activeDrag.didStart = true;
+        Object.assign(activeDrag, utils.beginFloatingWordDrag(activeDrag.wordElement, event.clientX, event.clientY));
+      }
+
+      event.preventDefault();
+      utils.moveFloatingWordDrag(activeDrag, event.clientX, event.clientY);
+      updateDragTarget(activeDrag, event.clientX, event.clientY);
+    }
+
+    function handlePointerUp(event) {
+      if (!activeDrag || event.pointerId !== activeDrag.pointerId) {
+        return;
+      }
+
+      finishDrag(event, false);
+    }
+
+    function handlePointerCancel(event) {
+      if (!activeDrag || event.pointerId !== activeDrag.pointerId) {
+        return;
+      }
+
+      finishDrag(event, true);
+    }
+
     function handleWordClick(event) {
       if (state.mode !== WORD_BANK_MODE) {
+        return;
+      }
+
+      if (suppressWordClick) {
+        event.preventDefault();
         return;
       }
 
@@ -89,25 +267,55 @@
         return;
       }
 
-      const wordId = keyElement.dataset.id;
       const isInKeyboard = keyboardArea.contains(keyElement);
 
       utils.runFlipAnimation([keyboardArea, answerArea], function () {
         if (isInKeyboard) {
           answerArea.append(keyElement);
-          state.selectedWordIds.push(wordId);
         } else {
           keyboardArea.append(keyElement);
-          removeSelectedWordId(wordId);
         }
 
+        syncSelectedWordIds();
         updateContinueState();
       });
     }
 
+    function handlePointerDown(event) {
+      if (state.mode !== WORD_BANK_MODE || event.button !== 0) {
+        return;
+      }
+
+      const keyElement = event.target.closest(".task-key");
+
+      if (!keyElement || !rootElement.contains(keyElement)) {
+        return;
+      }
+
+      event.preventDefault();
+
+      activeDrag = {
+        didStart: false,
+        dropTarget: null,
+        pointerId: event.pointerId,
+        restoreBeforeNode: keyElement.nextSibling,
+        restoreParent: keyElement.parentNode,
+        startX: event.clientX,
+        startY: event.clientY,
+        wordElement: keyElement,
+      };
+
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp, true);
+      window.addEventListener("pointercancel", handlePointerCancel, true);
+    }
+
+    rootElement.addEventListener("pointerdown", handlePointerDown);
     keyboardArea.addEventListener("click", handleWordClick);
     answerArea.addEventListener("click", handleWordClick);
-    typingInput.addEventListener("input", updateContinueState);
+    if (typingInput) {
+      typingInput.addEventListener("input", updateContinueState);
+    }
 
     globalObject.lessonModeSwitch.attach(modeSwitchRoot, switchMode, initialMode);
     updateContinueState();

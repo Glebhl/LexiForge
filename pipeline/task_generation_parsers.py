@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import re
+import json
 import random
 from collections import Counter
-from typing import Iterable
+from typing import Any, Iterable
 
 from models.task_generation_models import (
     ExplanationCard,
@@ -74,14 +74,14 @@ def build_word_bank(strings: Iterable[str]) -> list[str]:
 
 
 def parse_fill_in_the_blank_exercise(text: str) -> FillInTheBlankExercise:
-    sections = _collect_sections(text)
-    raw_text = _require_section(sections, "PARAGRAPH")
-    answers = re.findall(r"\[([^\[\]]*)\]", raw_text)
-    distractors = tuple(_parse_list(_require_section(sections, "DISTRACTORS")))
+    payload = _load_json_object(text)
+    raw_text = _require_string(payload, "paragraph")
+    answers = _extract_answers_from_brackets(raw_text)
+    distractors = tuple(_require_string_list(payload, "distractors"))
 
     if not answers:
         raise ValueError("Fill-in-the-blank exercise contains no answers.")
-    
+
     keyboard = [*answers, *distractors]
     random.shuffle(keyboard)
 
@@ -90,34 +90,27 @@ def parse_fill_in_the_blank_exercise(text: str) -> FillInTheBlankExercise:
         sentence=tuple(_split_text_into_sentence_parts(raw_text)),
         keyboard=tuple(keyboard),
         mode="word-bank",
-        answers=answers,
+        answers=tuple(answers),
         audio=False,
     )
 
 
 def parse_explanation_exercise(text: str) -> ExplanationExercise:
-    normalized = text.replace("\r\n", "\n").replace("\r", "\n").strip()
-    if not normalized:
-        raise ValueError("Explanation exercise response is empty.")
+    cards = _parse_explanation_cards_block(text)
+    if cards is None:
+        payload = _load_json_object(text)
+        raw_cards = payload.get("cards")
+        if not isinstance(raw_cards, list) or not raw_cards:
+            raise ValueError("Explanation exercise contains no cards.")
 
-    card_matches = list(
-        re.finditer(
-            r"(?ms)^TITLE:[ \t]*(.*?)\nHTML:[ \t]*\n?(.*?)(?=^TITLE:|\Z)",
-            normalized,
-        )
-    )
-    if not card_matches:
-        raise ValueError("Explanation exercise contains no cards.")
+        cards = []
+        for raw_card in raw_cards:
+            if not isinstance(raw_card, dict):
+                raise ValueError("Explanation card must be a JSON object.")
 
-    cards: list[ExplanationCard] = []
-    for match in card_matches:
-        name = match.group(1).strip()
-        content = match.group(2).strip()
-        if not name:
-            raise ValueError("Explanation card name is empty.")
-        if not content:
-            raise ValueError(f"Explanation card {name!r} has empty HTML content.")
-        cards.append(ExplanationCard(name=name, content=content))
+            name = _require_string(raw_card, "name")
+            content = _require_string(raw_card, "content")
+            cards.append(ExplanationCard(name=name, content=content))
 
     return ExplanationExercise(
         task_id="explanation",
@@ -126,28 +119,37 @@ def parse_explanation_exercise(text: str) -> ExplanationExercise:
 
 
 def parse_matching_exercise(text: str) -> MatchingExercise:
-    pairs = tuple(_parse_matching_pairs(_require_section(_collect_sections(text), "COLUMNS")))
-    if not pairs:
+    payload = _load_json_object(text)
+    raw_pairs = payload.get("pairs")
+    if not isinstance(raw_pairs, list) or not raw_pairs:
         raise ValueError("Matching exercise contains no pairs.")
+
+    pairs: list[tuple[str, str]] = []
+    for raw_pair in raw_pairs:
+        if not isinstance(raw_pair, (list, tuple)) or len(raw_pair) != 2:
+            raise ValueError("Each matching pair must be an array of two strings.")
+        left, right = raw_pair
+        pairs.append((_coerce_non_empty_string(left, "matching pair left"), _coerce_non_empty_string(right, "matching pair right")))
+
     return MatchingExercise(
         task_id="matching",
-        pairs=pairs,
+        pairs=tuple(pairs),
         answers=(),
         audio=False,
     )
 
 
 def parse_multiple_choice_exercise(text: str) -> MultipleChoiceExercise:
-    sections = _collect_sections(text)
-    options = tuple(_parse_options(_require_section(sections, "OPTIONS")))
+    payload = _load_json_object(text)
+    options = tuple(_require_string_list(payload, "options"))
     if not options:
         raise ValueError("Multiple-choice exercise contains no options.")
 
-    answer_index = _parse_answer_index(_require_section(sections, "ANSWER"), options)
+    answer_index = _parse_answer_index(payload.get("answer"), options)
     return MultipleChoiceExercise(
         task_id="question",
-        question=_require_section(sections, "QUESTION"),
-        paragraph=_require_section(sections, "PASSAGE"),
+        question=_require_string(payload, "question"),
+        paragraph=_require_string(payload, "passage"),
         options=options,
         answer=answer_index,
         audio=False,
@@ -155,16 +157,16 @@ def parse_multiple_choice_exercise(text: str) -> MultipleChoiceExercise:
 
 
 def parse_translation_exercise(text: str) -> TranslationExercise:
-    sections = _collect_sections(text)
-    answers = tuple(_parse_list(_require_section(sections, "ANSWERS")))
-    distractors = tuple(_parse_list(_require_section(sections, "DISTRACTORS")))
+    payload = _load_json_object(text)
+    answers = tuple(_require_string_list(payload, "answers"))
+    distractors = tuple(_require_string_list(payload, "distractors"))
 
     keyboard = [*build_word_bank(answers), *distractors]
     random.shuffle(keyboard)
 
     return TranslationExercise(
         task_id="translation",
-        sentence=_require_section(sections, "PARAGRAPH"),
+        sentence=_require_string(payload, "paragraph"),
         keyboard=tuple(keyboard),
         mode="word-bank",
         answers=answers,
@@ -172,110 +174,161 @@ def parse_translation_exercise(text: str) -> TranslationExercise:
     )
 
 
-SECTION_HEADER_RE = re.compile(
-    r"^(PARAGRAPH|ANSWERS|DISTRACTORS|PASSAGE|QUESTION|OPTIONS|ANSWER|COLUMNS|TYPING_LANGUAGE):[ \t]*(.*)$",
-    re.MULTILINE,
-)
-OPTION_LINE_RE = re.compile(r"^[A-Z]\.\s*(.+)$")
-BLANK_RE = re.compile(r"\[([^\[\]]+)\]")
+def _load_json_object(text: str) -> dict[str, Any]:
+    normalized = text.strip()
+    if not normalized:
+        raise ValueError("LLM response is empty.")
+
+    candidates = [normalized]
+    object_start = normalized.find("{")
+    object_end = normalized.rfind("}")
+    if object_start >= 0 and object_end > object_start:
+        candidates.append(normalized[object_start : object_end + 1])
+
+    best_error: json.JSONDecodeError | None = None
+    best_candidate = normalized
+    for candidate in candidates:
+        try:
+            payload = json.loads(candidate)
+        except json.JSONDecodeError as exc:
+            if best_error is None or exc.pos < best_error.pos:
+                best_error = exc
+                best_candidate = candidate
+            continue
+        if isinstance(payload, dict):
+            return payload
+
+    if best_error is not None:
+        context_start = max(0, best_error.pos - 120)
+        context_end = min(len(best_candidate), best_error.pos + 120)
+        context = best_candidate[context_start:context_end].replace("\n", "\\n")
+        if context_start > 0:
+            context = "..." + context
+        if context_end < len(best_candidate):
+            context = context + "..."
+        raise ValueError(
+            "LLM response is not a valid JSON object. "
+            f"JSONDecodeError: {best_error.msg} at line={best_error.lineno}, column={best_error.colno}, pos={best_error.pos}. "
+            f"Context: {context}"
+        ) from best_error
+
+    raise ValueError("LLM response is not a valid JSON object.")
 
 
-def _collect_sections(text: str) -> dict[str, str]:
-    normalized = text.replace("\r\n", "\n").replace("\r", "\n").strip()
-    matches = list(SECTION_HEADER_RE.finditer(normalized))
-    if not matches:
-        raise ValueError("No recognizable sections found in LLM response.")
+def _parse_explanation_cards_block(text: str) -> list[ExplanationCard] | None:
+    normalized = text.strip()
+    if not normalized or "===CARD===" not in normalized:
+        return None
 
-    sections: dict[str, str] = {}
-    for index, match in enumerate(matches):
-        name = match.group(1).upper()
-        inline_value = match.group(2).strip()
-        value_start = match.end()
-        value_end = matches[index + 1].start() if index + 1 < len(matches) else len(normalized)
-        trailing_value = normalized[value_start:value_end].strip()
-
-        if inline_value and trailing_value:
-            value = f"{inline_value}\n{trailing_value}"
-        else:
-            value = inline_value or trailing_value
-
-        sections[name] = value.strip()
-
-    return sections
-
-
-def _require_section(sections: dict[str, str], name: str) -> str:
-    value = _optional_section(sections, name)
-    if not value:
-        raise ValueError(f"Missing required section: {name}")
-    return value
-
-
-def _optional_section(sections: dict[str, str], name: str) -> str:
-    return sections.get(name.upper(), "").strip()
-
-
-def _parse_matching_pairs(raw_value: str) -> list[tuple[str, str]]:
-    pairs: list[tuple[str, str]] = []
-    for raw_line in raw_value.splitlines():
-        line = raw_line.strip()
-        if not line:
+    cards: list[ExplanationCard] = []
+    chunks = normalized.split("===CARD===")
+    for chunk in chunks:
+        body = chunk.strip()
+        if not body:
             continue
 
-        separator = " / " if " / " in line else "/"
-        if separator not in line:
-            raise ValueError(f"Invalid matching pair line: {raw_line!r}")
+        end_marker = body.find("===END_CARD===")
+        if end_marker >= 0:
+            body = body[:end_marker].strip()
 
-        left, right = line.split(separator, maxsplit=1)
-        pairs.append((left.strip(), right.strip()))
+        lines = body.splitlines()
+        if not lines:
+            continue
 
-    return pairs
+        first_line = lines[0].strip()
+        if not first_line.startswith("NAME:"):
+            raise ValueError("Explanation card must start with 'NAME:'.")
+
+        name = _coerce_non_empty_string(first_line[len("NAME:") :], "name")
+
+        remaining = lines[1:]
+        while remaining and not remaining[0].strip():
+            remaining = remaining[1:]
+
+        if not remaining or remaining[0].strip() != "HTML:":
+            raise ValueError("Explanation card must contain an 'HTML:' section.")
+
+        content = "\n".join(remaining[1:]).strip()
+        if not content:
+            raise ValueError("Explanation card HTML content is empty.")
+
+        cards.append(ExplanationCard(name=name, content=content))
+
+    return cards or None
 
 
-def _parse_options(raw_value: str) -> list[str]:
-    return [
-        match.group(1).strip()
-        for line in raw_value.splitlines()
-        if (match := OPTION_LINE_RE.match(line.strip()))
-    ]
+def _require_string(payload: dict[str, Any], key: str) -> str:
+    return _coerce_non_empty_string(payload.get(key), key)
 
 
-def _parse_list(raw_value: str) -> list[str]:
-    value = raw_value.strip()
-    if not value:
-        return []
+def _coerce_non_empty_string(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"Field {label!r} must be a non-empty string.")
+    return value.strip()
 
-    bullet_items = [
-        stripped[1:].strip()
-        for line in value.splitlines()
-        if (stripped := line.strip()).startswith("-")
-    ]
-    if bullet_items:
-        return [item for item in bullet_items if item]
 
-    if "\n" in value:
-        return [line.strip() for line in value.splitlines() if line.strip()]
+def _require_string_list(payload: dict[str, Any], key: str) -> list[str]:
+    raw_value = payload.get(key)
+    if not isinstance(raw_value, list):
+        raise ValueError(f"Field {key!r} must be a JSON array.")
 
-    return [item.strip() for item in value.split(",") if item.strip()]
+    values: list[str] = []
+    for item in raw_value:
+        values.append(_coerce_non_empty_string(item, key))
+    return values
+
+
+def _extract_answers_from_brackets(raw_value: str) -> list[str]:
+    answers: list[str] = []
+    cursor = 0
+
+    while True:
+        start = raw_value.find("[", cursor)
+        if start < 0:
+            break
+        end = raw_value.find("]", start + 1)
+        if end < 0:
+            break
+
+        answer = raw_value[start + 1 : end].strip()
+        if answer:
+            answers.append(answer)
+        cursor = end + 1
+
+    return answers
 
 
 def _split_text_into_sentence_parts(raw_value: str) -> list[str]:
     parts: list[str] = []
     cursor = 0
 
-    for match in BLANK_RE.finditer(raw_value):
-        parts.append(raw_value[cursor:match.start()])
-        cursor = match.end()
+    while True:
+        start = raw_value.find("[", cursor)
+        if start < 0:
+            break
+        end = raw_value.find("]", start + 1)
+        if end < 0:
+            break
+        parts.append(raw_value[cursor:start])
+        cursor = end + 1
 
     parts.append(raw_value[cursor:])
     return parts
 
 
-def _parse_answer_index(raw_value: str, options: tuple[str, ...]) -> int:
-    answer = raw_value.strip()
-    if not answer:
-        raise ValueError("Multiple-choice exercise answer is empty.")
+def _parse_answer_index(raw_value: Any, options: tuple[str, ...]) -> int:
+    if isinstance(raw_value, bool):
+        raise ValueError("Multiple-choice answer must not be boolean.")
 
+    if isinstance(raw_value, int):
+        if 0 <= raw_value < len(options):
+            return raw_value
+        raise ValueError(f"Multiple-choice answer index is out of range: {raw_value}")
+
+    if not isinstance(raw_value, str) or not raw_value.strip():
+        raise ValueError("Multiple-choice answer is empty.")
+
+    answer = raw_value.strip()
     if len(answer) == 1 and answer.isalpha():
         index = ord(answer.upper()) - ord("A")
         if 0 <= index < len(options):

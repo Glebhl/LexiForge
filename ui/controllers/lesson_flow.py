@@ -16,15 +16,15 @@ class LessonFlowController:
     Controls lesson flow using pywebview shared state instead of injected JS snippets.
     """
 
-    def __init__(self, router, view, backend, lesson_plan, lesson_language, translation_language):
+    def __init__(self, router, view, backend, lesson_session, lesson_language, translation_language):
         self.url = "ui/views/lesson_flow/index.html"
         self.disable_transition = True
         self.router = router
         self.view = view
         self.backend = backend
 
-        self._lesson_plan = lesson_plan
-        self._tasks_total = len(self._lesson_plan)
+        self._lesson_session = lesson_session
+        self._tasks_total = self._lesson_session.total_task_count
         self._lesson_language = lesson_language
         self._translation_language = translation_language
 
@@ -33,6 +33,7 @@ class LessonFlowController:
         }
 
         self._task_index = 0
+        self._waiting_task_index: int | None = None
         self._task_id = ""
         self._task: dict[str, Any] = {}
         self._answers: list[str] = []
@@ -45,6 +46,7 @@ class LessonFlowController:
 
         self._task_loaders: dict[str, Callable[[Any], None]] = {
             "explanation": self._load_explanation_task,
+            "loading": self._load_loading_task,
             "matching": self._load_matching_task,
             "translation": self._load_translation_task,
             "filling": self._load_filling_task,
@@ -52,6 +54,7 @@ class LessonFlowController:
         }
         self._task_verifiers: dict[str, Callable[[], bool] | None] = {
             "explanation": None,
+            "loading": None,
             "matching": None,
             "translation": self._verify_translation_task,
             "filling": self._verify_filling_task,
@@ -67,6 +70,7 @@ class LessonFlowController:
         self._answer_matcher = AnswerMatcher(
             lesson_language=self._lesson_language,
         )
+        self._lesson_session.set_listener(self._handle_session_update)
 
     def on_load_finished(self):
         if self._initial_task_opened:
@@ -75,7 +79,7 @@ class LessonFlowController:
 
         self._initial_task_opened = True
         logger.debug("UI load finished, opening the first task")
-        self._open_next_task()
+        self._advance_to_task(1)
 
     def on_ui_event(self, name: str, payload: dict):
         logger.debug("UI event received: name=%s payload=%s", name, payload)
@@ -88,6 +92,7 @@ class LessonFlowController:
         handler(payload)
 
     def _publish_state(self) -> None:
+        self._tasks_total = max(self._tasks_total, self._lesson_session.total_task_count)
         self.backend.set_state("lesson_flow_state", {
             "stepIndex": self._task_index,
             "totalSteps": self._tasks_total,
@@ -95,43 +100,101 @@ class LessonFlowController:
             "validation": self._validation_state,
         })
 
+    def _handle_session_update(self) -> None:
+        self._tasks_total = max(self._lesson_session.total_task_count, self._lesson_session.available_task_count)
+
+        if self._waiting_task_index is not None:
+            if self._try_open_task(self._waiting_task_index):
+                return
+
+            if not self._lesson_session.is_generating and self._lesson_session.has_more_stages:
+                self._lesson_session.ensure_next_stage_generation()
+
+            if self._lesson_session.error_message:
+                self._show_loading_task(
+                    title="Lesson generation failed",
+                    message=self._lesson_session.error_message,
+                )
+                return
+
+        self._publish_state()
+
     def _handle_button_click(self, payload: dict):
         button_id = payload.get("id")
         self._pending_answer = payload.get("answer")
         logger.debug("Button clicked: id=%s", button_id)
 
         if button_id == "skip":
-            self._open_next_task()
+            self._complete_active_task(skipped=True, is_correct=None)
             return
 
         if button_id == "continue":
+            if self._task_id == "loading":
+                return
             self._check_task_completion()
             return
 
         logger.warning("Unknown button id received: %s", button_id)
 
-    def _open_next_task(self) -> None:
-        self._task_index += 1
-        self._pending_answer = None
-
-        if self._task_index > self._tasks_total:
-            logger.info("All tasks completed, navigating back")
-            self.router.go_back()
+    def _complete_active_task(self, *, skipped: bool, is_correct: bool | None) -> None:
+        if self._task_id == "loading" or self._task_index <= 0:
             return
 
-        self._task = self._lesson_plan[self._task_index - 1]
-        self._task_id = self._task.get("task_id", "")
-        self._answers = self._task.get("answers") or []
+        answer = "" if self._pending_answer is None else str(self._pending_answer)
+        self._lesson_session.record_task_result(
+            task_index=self._task_index - 1,
+            user_answer=answer,
+            is_correct=is_correct,
+            skipped=skipped,
+        )
+        self._advance_to_task(self._task_index + 1)
+
+    def _advance_to_task(self, task_index: int) -> None:
+        self._pending_answer = None
         self._validation_state = None
+
+        if self._try_open_task(task_index):
+            return
+
+        if self._lesson_session.error_message:
+            self._show_loading_task(
+                title="Lesson generation failed",
+                message=self._lesson_session.error_message,
+            )
+            return
+
+        if self._lesson_session.is_generating or self._lesson_session.has_more_stages:
+            self._waiting_task_index = task_index
+            self._show_loading_task(
+                title="Generating the next part of the lesson",
+                message="The next task will appear soon.",
+            )
+            self._lesson_session.ensure_next_stage_generation()
+            return
+
+        logger.info("All tasks completed, navigating back")
+        self.router.go_back()
+
+    def _try_open_task(self, task_index: int) -> bool:
+        if task_index < 1 or self._lesson_session.available_task_count < task_index:
+            return False
+
+        self._waiting_task_index = None
+        self._task_index = task_index
+        self._task = self._lesson_session.get_task_payload(task_index - 1)
+        self._task_id = str(self._task.get("task_id", ""))
+        self._answers = self._task.get("answers") or []
+        self._tasks_total = max(self._tasks_total, self._lesson_session.total_task_count)
 
         loader = self._task_loaders.get(self._task_id)
         if not loader:
             logger.error("Unknown task type: %s (task_index=%d)", self._task_id, self._task_index)
-            self._open_next_task()
-            return
+            self._complete_active_task(skipped=True, is_correct=None)
+            return True
 
         logger.info("Opening task: index=%d/%d id=%s", self._task_index, self._tasks_total, self._task_id)
         loader(self._task)
+        return True
 
     def _render_task(self, task_type: str, content: Any) -> None:
         self._task_revision += 1
@@ -142,6 +205,16 @@ class LessonFlowController:
             "revision": self._task_revision,
         }
         self._publish_state()
+
+    def _show_loading_task(self, *, title: str, message: str) -> None:
+        self._task_id = "loading"
+        self._task = {
+            "task_id": "loading",
+            "title": title,
+            "message": message,
+        }
+        self._answers = []
+        self._render_task("loading", self._task)
 
     def _set_active_task_validity(self, is_correct: bool) -> None:
         self._validation_revision += 1
@@ -164,10 +237,13 @@ class LessonFlowController:
     def _on_check_result(self, is_correct: bool) -> None:
         logger.info("Task check result: task_id=%s is_correct=%s", self._task_id, is_correct)
         if is_correct:
-            self._open_next_task()
+            self._complete_active_task(skipped=False, is_correct=True)
 
     def _load_explanation_task(self, content: Any) -> None:
         self._render_task("explanation", content)
+
+    def _load_loading_task(self, content: Any) -> None:
+        self._render_task("loading", content)
 
     def _load_matching_task(self, content: Any) -> None:
         self._render_task("matching", content)
@@ -192,7 +268,7 @@ class LessonFlowController:
 
         if python_match:
             logger.debug(
-                "Translation answer matched by Python checker: raw_user_answer=%r expected_answers=%r",
+                "Translation answer matched by Python checker: user_answer=%r expected_answers=%r",
                 answer,
                 expected_answers,
             )
@@ -206,7 +282,7 @@ class LessonFlowController:
         )
 
         logger.debug(
-            "Translation answer received: raw_user_answer=%r evaluation=%s correct_answer=%s",
+            "Translation answer received: user_answer=%r expected_answers=%r, evaluation=%s correct_answer=%s",
             answer,
             match_result.evaluation,
             match_result.correct_answer,
@@ -234,9 +310,9 @@ class LessonFlowController:
 
         if python_match:
             logger.debug(
-                "Filling answer matched by Python checker: raw_user_answer=%r parsed_user_answer=%r expected_answers=%r",
-                raw_answer,
+                "Filling answer matched by Python checker: user_answer=%r expected_answers=%r expected_answers=%r",
                 user_answer,
+                expected_answers,
                 expected_answers,
             )
             self._set_active_task_validity(True)
@@ -250,9 +326,9 @@ class LessonFlowController:
         )
 
         logger.debug(
-            "Filling answer received: raw_user_answer=%r parsed_user_answer=%r evaluation=%s correct_answer=%s",
-            raw_answer,
+            "Filling answer received: parsed_user_answer=%r expected_answers=%s evaluation=%s correct_answer=%s",
             user_answer,
+            expected_answers,
             match_result.evaluation,
             match_result.correct_answer,
         )

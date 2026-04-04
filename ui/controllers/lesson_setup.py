@@ -43,8 +43,9 @@ class LessonSetupController:
         self._hint = ""
         self._next_card_id = 0
 
+        # Placeholders for settings tab
         self._lesson_language: str | None = None
-        self._translation_language: str | None = None
+        self._lerner_language: str | None = None
         self._lerner_level: str | None = None
         self._user_request: str | None = None
 
@@ -126,7 +127,6 @@ class LessonSetupController:
             return
 
         self._generation_error_message = None
-        self._user_request = clean_query
         self._set_card_generating(True)
         self._ensure_lesson_settings()
 
@@ -135,7 +135,7 @@ class LessonSetupController:
         worker = CardGenerationWorker(
             query=clean_query,
             lesson_language=self._lesson_language or "",
-            translation_language=self._translation_language or "",
+            translation_language=self._lerner_language or "",
         )
         worker_thread = Thread(
             target=worker.run,
@@ -185,13 +185,21 @@ class LessonSetupController:
                 for index, entry in enumerate(self._cards):
                     logger.debug("Lesson card %d: %s", index, entry["card"])
 
+                logger.debug(
+                    "Starting lesson generation with user_request=%r lerner_level=%s lesson_language=%s lerner_language=%s",
+                    self._user_request,
+                    self._lerner_level,
+                    self._lesson_language,
+                    self._lerner_language,
+                )
+
                 self.router.navigate_to(
                     LoadingScreenController,
                     [entry["card"] for entry in self._cards if isinstance(entry["card"], VocabularyCard)],
                     self._user_request,
                     self._lerner_level or "",
                     self._lesson_language or "",
-                    self._translation_language or "",
+                    self._lerner_language or "",
                 )
 
     def _on_card_closed(self, payload: dict):
@@ -216,12 +224,12 @@ class LessonSetupController:
         return self._dev_fixtures
 
     def _ensure_lesson_settings(self) -> None:
-        if self._lesson_language is not None and self._translation_language is not None and self._lerner_level is not None:
+        if self._lesson_language is not None and self._lerner_language is not None and self._lerner_level is not None:
             return
 
         from app.settings import get_settings_store
 
         settings = get_settings_store()
         self._lesson_language = settings.get_value("lesson/language") or ""
-        self._translation_language = settings.get_value("lesson/lerner_language") or ""
+        self._lerner_language = settings.get_value("lesson/lerner_language") or ""
         self._lerner_level = settings.get_value("lesson/learner_level") or ""

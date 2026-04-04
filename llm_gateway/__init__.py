@@ -1,34 +1,61 @@
 from __future__ import annotations
 
-from .cache import ConversationState, PromptCachingConfig
 from .client import LLMTextClient, OpenAITextClient
-from .providers.openai import (
-    OpenAIChatSession,
-    REASONING_EFFORT_HIGH,
-    REASONING_EFFORT_LOW,
-    REASONING_EFFORT_MEDIUM,
-    REASONING_EFFORT_MINIMAL,
-    REASONING_EFFORT_NONE,
-    REASONING_EFFORT_XHIGH,
-    REASONING_EFFORTS,
-    SERVICE_TIER_AUTO,
-    SERVICE_TIER_FLEX,
-    SERVICE_TIERS,
-    TEXT_VERBOSITIES,
-    TEXT_VERBOSITY_HIGH,
-    TEXT_VERBOSITY_LOW,
-    TEXT_VERBOSITY_MEDIUM,
+from .core import ChatSessionProtocol, TextProviderProtocol
+from .providers.base import BaseProvider
+from .providers.google import (
+    GOOGLE_REASONING_EFFORT_HIGH,
+    GOOGLE_REASONING_EFFORT_LOW,
+    GOOGLE_REASONING_EFFORT_MEDIUM,
+    GOOGLE_REASONING_EFFORT_MINIMAL,
+    GOOGLE_REASONING_EFFORTS,
+    GOOGLE_SERVICE_TIER_FLEX,
+    GOOGLE_SERVICE_TIER_PRIORITY,
+    GOOGLE_SERVICE_TIER_STANDARD,
+    GOOGLE_SERVICE_TIERS,
+    GoogleProvider,
 )
+from .providers.openai import OpenAIProvider
+from .providers.openai import (
+    OPENAI_REASONING_EFFORT_HIGH,
+    OPENAI_REASONING_EFFORT_LOW,
+    OPENAI_REASONING_EFFORT_MEDIUM,
+    OPENAI_REASONING_EFFORT_MINIMAL,
+    OPENAI_REASONING_EFFORT_NONE,
+    OPENAI_REASONING_EFFORT_XHIGH,
+    OPENAI_REASONING_EFFORTS,
+    OPENAI_SERVICE_TIER_AUTO,
+    OPENAI_SERVICE_TIER_FLEX,
+    OPENAI_SERVICE_TIERS,
+    OPENAI_TEXT_VERBOSITIES,
+    OPENAI_TEXT_VERBOSITY_HIGH,
+    OPENAI_TEXT_VERBOSITY_LOW,
+    OPENAI_TEXT_VERBOSITY_MEDIUM,
+)
+from .types import LLMMessage, LLMResponse, LLMTokenUsage
 
-PromptCacheConfig = PromptCachingConfig
+OpenAIChatSession = ChatSessionProtocol
 
 __all__ = [
-    "ConversationState",
+    "ChatSessionProtocol",
+    "BaseProvider",
+    "LLMMessage",
+    "LLMResponse",
     "LLMTextClient",
+    "LLMTokenUsage",
+    "GoogleProvider",
+    "GOOGLE_REASONING_EFFORT_MINIMAL",
+    "GOOGLE_REASONING_EFFORT_LOW",
+    "GOOGLE_REASONING_EFFORT_MEDIUM",
+    "GOOGLE_REASONING_EFFORT_HIGH",
+    "GOOGLE_REASONING_EFFORTS",
+    "GOOGLE_SERVICE_TIER_STANDARD",
+    "GOOGLE_SERVICE_TIER_FLEX",
+    "GOOGLE_SERVICE_TIER_PRIORITY",
+    "GOOGLE_SERVICE_TIERS",
     "OpenAIChatSession",
+    "OpenAIProvider",
     "OpenAITextClient",
-    "PromptCacheConfig",
-    "PromptCachingConfig",
     "REASONING_EFFORT_NONE",
     "REASONING_EFFORT_MINIMAL",
     "REASONING_EFFORT_LOW",
@@ -43,4 +70,5 @@ __all__ = [
     "TEXT_VERBOSITY_MEDIUM",
     "TEXT_VERBOSITY_HIGH",
     "TEXT_VERBOSITIES",
+    "TextProviderProtocol",
 ]

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from app.settings import get_settings_store
 from app.language_registry import get_language_display_name
@@ -12,31 +14,31 @@ from models import VocabularyCard
 
 logger = logging.getLogger(__name__)
 
-CARD_FIELDS = (
-    "LEXEME",
-    "LEXICAL_UNIT",
-    "PART_OF_SPEECH",
-    "LEVEL",
-    "TRANSCRIPTION",
-    "TRANSLATION",
-    "MEANING",
-    "EXAMPLE",
+CARD_JSON_FIELDS = (
+    "lexeme",
+    "lexical_unit",
+    "part_of_speech",
+    "level",
+    "transcription",
+    "translation",
+    "meaning",
+    "meaning_english",
+    "example",
 )
-CARD_FIELDS_SET = set(CARD_FIELDS)
+CARD_JSON_FIELD_SET = set(CARD_JSON_FIELDS)
 
 
 class VocabularyCardStreamParser:
     """
     Parses the text stream produced by the LLM into complete vocabulary cards.
 
-    The UI does not need half-filled snapshots, so the parser keeps partial state
-    internally and emits a card only when the current block is complete.
+    Supports both JSON Lines (one card object per line) and regular JSON arrays.
+    The parser emits cards as soon as each full JSON object becomes available.
     """
 
     def __init__(self) -> None:
-        self._line_buffer = ""
-        self._pending_fields: dict[str, str] = {}
-        self._chunk_count = 0
+        self._buffer = ""
+        self._decoder = json.JSONDecoder()
 
     def feed(self, chunk: str) -> list[VocabularyCard]:
         completed_cards: list[VocabularyCard] = []
@@ -44,76 +46,138 @@ class VocabularyCardStreamParser:
             logger.debug("Received empty chunk from vocabulary card stream.")
             return completed_cards
 
-        self._chunk_count += 1
-        self._line_buffer += chunk
-        while True:
-            newline_index = self._line_buffer.find("\n")
-            if newline_index < 0:
-                break
-
-            line = self._line_buffer[:newline_index].rstrip("\r")
-            self._line_buffer = self._line_buffer[newline_index + 1 :]
-            completed_cards.extend(self._consume_line(line))
-
+        self._buffer += chunk
+        completed_cards.extend(self._consume_available(final=False))
         return completed_cards
 
     def finalize(self) -> list[VocabularyCard]:
         completed_cards: list[VocabularyCard] = []
-        if self._line_buffer.strip():
-            completed_cards.extend(self._consume_line(self._line_buffer.rstrip("\r")))
-        self._line_buffer = ""
-        completed_cards.extend(self._flush_pending_card())
+        completed_cards.extend(self._consume_available(final=True))
+        trailing = self._buffer.strip()
+        self._buffer = ""
+        if trailing:
+            raise ValueError("Vocabulary card response ended with incomplete JSON content.")
         return completed_cards
 
-    def _consume_line(self, line: str) -> list[VocabularyCard]:
-        stripped = line.strip()
-        if not stripped:
-            return self._flush_pending_card()
-
-        field_name, separator, raw_value = stripped.partition(":")
-        if not separator:
-            return []
-
-        field_name = field_name.strip().upper()
-        if field_name not in CARD_FIELDS_SET:
-            logger.debug("Ignoring unknown field in stream: %s", field_name)
-            return []
-
+    def _consume_available(self, *, final: bool) -> list[VocabularyCard]:
         completed_cards: list[VocabularyCard] = []
-        if field_name == "LEXEME" and self._pending_fields:
-            # Some responses omit the blank line between cards, so a new lexeme is
-            # a safe boundary for flushing the previous card before starting the next one.
-            completed_cards.extend(self._flush_pending_card())
 
-        self._pending_fields[field_name] = raw_value.strip()
+        while True:
+            self._discard_prefix_tokens()
+            if not self._buffer:
+                break
+
+            if self._buffer.startswith("```"):
+                if not self._discard_code_fence(final=final):
+                    break
+                continue
+
+            if self._buffer[0] != "{":
+                if final:
+                    raise ValueError(
+                        f"Vocabulary card response must contain JSON objects, got: {self._buffer[:40]!r}"
+                    )
+                break
+
+            try:
+                payload, end_index = self._decoder.raw_decode(self._buffer)
+            except json.JSONDecodeError:
+                if final:
+                    raise ValueError("Vocabulary card response is not valid JSON.") from None
+                break
+
+            self._buffer = self._buffer[end_index:]
+            completed_cards.extend(self._coerce_cards(payload))
+
         return completed_cards
 
-    def _flush_pending_card(self) -> list[VocabularyCard]:
-        if not self._pending_fields:
-            return []
+    def _discard_prefix_tokens(self) -> None:
+        while self._buffer:
+            stripped = self._buffer.lstrip()
+            if stripped is not self._buffer:
+                self._buffer = stripped
+                continue
 
-        missing_fields = [field for field in CARD_FIELDS if not self._pending_fields.get(field)]
+            if self._buffer[:1] in {"[", "]", ","}:
+                self._buffer = self._buffer[1:]
+                continue
+
+            break
+
+    def _discard_code_fence(self, *, final: bool) -> bool:
+        newline_index = self._buffer.find("\n")
+        if newline_index < 0:
+            if final:
+                self._buffer = ""
+                return True
+            return False
+
+        self._buffer = self._buffer[newline_index + 1 :]
+        return True
+
+    def _coerce_cards(self, payload: Any) -> list[VocabularyCard]:
+        if isinstance(payload, dict):
+            return [self._build_card(payload)]
+        if isinstance(payload, list):
+            cards: list[VocabularyCard] = []
+            for item in payload:
+                if not isinstance(item, dict):
+                    raise ValueError("Each vocabulary card must be a JSON object.")
+                cards.append(self._build_card(item))
+            return cards
+        raise ValueError("Vocabulary card response must contain JSON objects.")
+
+    def _build_card(self, payload: dict[str, Any]) -> VocabularyCard:
+        normalized = self._normalize_payload(payload)
+        missing_fields = [field for field in CARD_JSON_FIELDS if not normalized.get(field)]
         if missing_fields:
-            logger.debug(
-                "Skipping incomplete vocabulary card, missing fields: %s",
-                ", ".join(missing_fields),
+            raise ValueError(
+                "Vocabulary card JSON object is missing required fields: "
+                + ", ".join(missing_fields)
             )
-            self._pending_fields = {}
-            return []
 
         card = VocabularyCard(
-            lexeme=self._pending_fields["LEXEME"],
-            lexical_unit=self._pending_fields["LEXICAL_UNIT"],
-            part_of_speech=self._pending_fields["PART_OF_SPEECH"],
-            translation=self._pending_fields["TRANSLATION"],
-            level=self._pending_fields["LEVEL"],
-            transcription=self._pending_fields["TRANSCRIPTION"],
-            meaning=self._pending_fields["MEANING"],
-            example=self._pending_fields["EXAMPLE"],
+            lexeme=normalized["lexeme"],
+            lexical_unit=normalized["lexical_unit"],
+            part_of_speech=normalized["part_of_speech"],
+            translation=normalized["translation"],
+            level=normalized["level"],
+            transcription=normalized["transcription"],
+            meaning=normalized["meaning"],
+            meaning_english=normalized["meaning_english"],
+            example=normalized["example"],
         )
-        self._pending_fields = {}
-        logger.debug("Parsed vocabulary card for lexeme '%s'.", card.lexeme)
-        return [card]
+        logger.debug(
+            "Parsed vocabulary card: lexeme=%r, lexical_unit=%r, part_of_speech=%r, "
+            "translation=%r, level=%r, transcription=%r, meaning=%r, "
+            "meaning_english=%r, example=%r",
+            card.lexeme,
+            card.lexical_unit,
+            card.part_of_speech,
+            card.translation,
+            card.level,
+            card.transcription,
+            card.meaning,
+            card.meaning_english,
+            card.example,
+        )
+        return card
+
+    def _normalize_payload(self, payload: dict[str, Any]) -> dict[str, str]:
+        normalized: dict[str, str] = {}
+        for raw_key, raw_value in payload.items():
+            if not isinstance(raw_key, str):
+                continue
+
+            key = raw_key.strip().lower()
+            if key not in CARD_JSON_FIELD_SET:
+                continue
+
+            if not isinstance(raw_value, str) or not raw_value.strip():
+                raise ValueError(f"Vocabulary card field {raw_key!r} must be a non-empty string.")
+            normalized[key] = raw_value.strip()
+
+        return normalized
 
 
 class VocabularyCardGenerator:
@@ -122,6 +186,7 @@ class VocabularyCardGenerator:
         lesson_language: str,
         lerner_language: str,
     ) -> None:
+        self._lerner_language = lerner_language
         settings = get_settings_store()
         self._text_client = LLMTextClient(
             model=settings.get_value("models/card_generation"),
@@ -132,9 +197,7 @@ class VocabularyCardGenerator:
 
         prompt_path = Path("prompts") / lesson_language / "vocabulary_card_generation.txt"
         logger.debug("Loading vocabulary card prompt from %s", prompt_path)
-        self._system_prompt = prompt_path.read_text(encoding="utf-8").format(
-            language=get_language_display_name(lerner_language)
-        )
+        self._system_prompt = prompt_path.read_text(encoding="utf-8")
         logger.debug(
             "Initialized VocabularyCardGenerator with lesson_language='%s', lerner_language='%s'.",
             lesson_language,
@@ -149,9 +212,10 @@ class VocabularyCardGenerator:
     def stream_cards(self, query: str) -> Iterator[VocabularyCard]:
         parser = VocabularyCardStreamParser()
         emitted_count = 0
+        user_prompt = self._build_user_prompt(query)
         for text_delta in self._text_client.stream_text(
             system_prompt=self._system_prompt,
-            user_text=query,
+            user_text=user_prompt,
         ):
             for card in parser.feed(text_delta):
                 emitted_count += 1
@@ -160,3 +224,12 @@ class VocabularyCardGenerator:
         for card in parser.finalize():
             emitted_count += 1
             yield card
+
+    def _build_user_prompt(self, query: str) -> str:
+        learner_language = get_language_display_name(self._lerner_language) or self._lerner_language
+        lines = [
+            "LERNER_LANGUAGE: " + learner_language,
+            "REQUEST:",
+            (query or "").strip(),
+        ]
+        return "\n".join(lines)

@@ -3,24 +3,24 @@ lesson:
   lerner_language: ru
   learner_level: B2
 models:
-  card_generation: openai:gpt-5.4-nano
-  lesson_planning: openai:o3
-  task_generation: openai:gpt-5.4-mini
-  answer_matcher: openai:gpt-5.4-nano
+  card_generation: google:gemini-3.1-flash-lite-preview
+  lesson_planning: google:gemini-3-flash-preview
+  task_generation: google:gemini-3-flash-preview
+  answer_matcher: google:gemini-3-flash-preview
 pipeline:
   card_generation:
-    reasoning_effort: none
-    text_verbosity: low
+    reasoning_effort: low
+    text_verbosity: null
     service_tier: flex
   lesson_planning:
     reasoning_effort: low
     text_verbosity: null
     service_tier: flex
   task_generation:
-    reasoning_effort: none
-    text_verbosity: low
+    reasoning_effort: low
+    text_verbosity: null
     service_tier: flex
   answer_matcher:
-    reasoning_effort: none
-    text_verbosity: low
+    reasoning_effort: low
+    text_verbosity: null
     service_tier: flex

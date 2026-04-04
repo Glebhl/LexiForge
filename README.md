@@ -113,10 +113,8 @@ python main.py
 Set up .env file with this parameters for debugging
 ```env
 GLOSIUM_DEV_CARDS=1
-GLOSIUM_DEV_MACRO_PLAN=1
 GLOSIUM_DEV_LESSON=1
 GLOSIUM_DEV_CARDS_FILE=dev_fixtures/cards.json
-GLOSIUM_DEV_MACRO_PLAN_FILE=dev_fixtures/macro_plan.txt
 GLOSIUM_DEV_LESSON_FILE=dev_fixtures/lesson.json
 ```
 

@@ -10,6 +10,7 @@ class VocabularyCard:
     translation: str
     transcription: str
     meaning: str
+    meaning_english: str
     example: str
 
     def to_dict(self) -> dict[str, str]:
@@ -21,5 +22,6 @@ class VocabularyCard:
             "LEVEL": self.level,
             "TRANSCRIPTION": self.transcription,
             "MEANING": self.meaning,
+            "MEANING_ENGLISH": self.meaning_english,
             "EXAMPLE": self.example,
         }

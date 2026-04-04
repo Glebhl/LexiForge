@@ -1,59 +1,41 @@
 from __future__ import annotations
 
-from typing import Iterator, Protocol, runtime_checkable
+from abc import ABC, abstractmethod
+from collections.abc import Iterator, Sequence
+from typing import Any
+
+from ..types import LLMMessage, LLMResponse
 
 
-@runtime_checkable
-class ChatSessionProtocol(Protocol):
-    def add_message(self, role: str, content: str) -> None: ...
+class BaseProvider(ABC):
+    name: str
 
-    def ask(
+    @abstractmethod
+    def request_response(
         self,
-        user_text: str,
         *,
-        stream: bool | None = None,
+        messages: Sequence[LLMMessage],
+        model: str,
+        reasoning_effort: str | None = None,
+        text_verbosity: str | None = None,
+        service_tier: str | None = None,
+        provider_options: dict[str, Any] | None = None,
         temperature: float | None = None,
         max_output_tokens: int | None = None,
-    ) -> str | Iterator[str]: ...
+    ) -> LLMResponse:
+        raise NotImplementedError
 
-    def create_response(
+    @abstractmethod
+    def stream_response(
         self,
         *,
-        stream: bool | None = None,
+        messages: Sequence[LLMMessage],
+        model: str,
+        reasoning_effort: str | None = None,
+        text_verbosity: str | None = None,
+        service_tier: str | None = None,
+        provider_options: dict[str, Any] | None = None,
         temperature: float | None = None,
         max_output_tokens: int | None = None,
-    ) -> str | Iterator[str]: ...
-
-
-@runtime_checkable
-class TextProviderProtocol(Protocol):
-    provider_name: str
-    model_name: str
-    model_spec: str
-
-    def generate_text(
-        self,
-        *,
-        system_prompt: str | None,
-        user_text: str,
-        stream: bool | None = None,
-        temperature: float | None = None,
-        max_output_tokens: int | None = None,
-    ) -> str | Iterator[str]: ...
-
-    def stream_text(
-        self,
-        *,
-        system_prompt: str | None,
-        user_text: str,
-        temperature: float | None = None,
-        max_output_tokens: int | None = None,
-    ) -> Iterator[str]: ...
-
-    def create_chat(
-        self,
-        *,
-        system_prompt: str | None = None,
-        stream: bool | None = None,
-        use_response_chain: bool = False,
-    ) -> ChatSessionProtocol: ...
+    ) -> Iterator[str]:
+        raise NotImplementedError

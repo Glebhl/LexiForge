@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from threading import Thread
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,8 @@ class LoadingScreenController:
         self._translation_language = translation_language
         self._generation_started = False
         self._generation_error_message: str | None = None
-        self._lesson_generation_thread: Thread | None = None
+        self._lesson_session = None
+        self._lesson_opened = False
 
     def on_load_finished(self):
         if self._generation_started:
@@ -55,44 +55,43 @@ class LoadingScreenController:
                 logger.info("Stop button clicked on loading screen; action is not implemented yet")
 
     def _start_lesson_generation(self) -> None:
-        if self._lesson_generation_thread is not None and self._lesson_generation_thread.is_alive():
+        if self._lesson_session is not None:
             logger.warning("Lesson generation is already running; ignoring duplicate start request")
             return
 
         self._generation_error_message = None
 
-        from ui.services.lesson_generation_workers import LessonGenerationWorker
+        from ui.services import LessonGenerationSession
 
-        worker = LessonGenerationWorker(
+        session = LessonGenerationSession(
             cards=self._cards,
             user_request=self._user_request,
             lerner_level=self._learner_level,
             lesson_language=self._lesson_language,
             translation_language=self._translation_language,
         )
-        worker_thread = Thread(
-            target=worker.run,
-            kwargs={
-                "on_lesson_generated": self._handle_lesson_generation,
-                "on_generation_failed": self._handle_lesson_generation_error,
-                "on_finished": self._finish_lesson_generation,
-            },
-            daemon=True,
-        )
-        self._lesson_generation_thread = worker_thread
-        worker_thread.start()
+        self._lesson_session = session
+        session.set_listener(self._handle_lesson_session_update)
+        session.start()
 
-    def _handle_lesson_generation(self, lesson_plan: object) -> None:
-        if not isinstance(lesson_plan, list):
-            logger.error("Lesson generation returned an invalid payload type: %s", type(lesson_plan).__name__)
-            self._generation_error_message = "Lesson generation returned invalid data."
+    def _handle_lesson_session_update(self) -> None:
+        if self._lesson_session is None:
             return
 
+        error_message = self._lesson_session.error_message
+        if error_message:
+            self._handle_lesson_generation_error(error_message)
+            return
+
+        if self._lesson_opened or self._lesson_session.available_task_count < 1:
+            return
+
+        self._lesson_opened = True
         from ui.controllers.lesson_flow import LessonFlowController
 
         self.router.replace_current(
             LessonFlowController,
-            lesson_plan,
+            self._lesson_session,
             self._lesson_language,
             self._translation_language,
         )
@@ -105,8 +104,5 @@ class LoadingScreenController:
             logger.exception("Unhandled exception while handling a lesson generation error")
 
     def _finish_lesson_generation(self) -> None:
-        try:
-            if self._generation_error_message:
-                logger.warning("Lesson generation finished with an error: %s", self._generation_error_message)
-        finally:
-            self._lesson_generation_thread = None
+        if self._generation_error_message:
+            logger.warning("Lesson generation finished with an error: %s", self._generation_error_message)

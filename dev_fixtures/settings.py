@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 _ROOT_DIR = Path(__file__).resolve().parent.parent
 _DEFAULT_FIXTURES_DIR = _ROOT_DIR / "dev_fixtures"
 _DEFAULT_CARDS_PATH = _DEFAULT_FIXTURES_DIR / "cards.json"
-_DEFAULT_MACRO_PLAN_PATH = _DEFAULT_FIXTURES_DIR / "macro_plan.txt"
 _DEFAULT_LESSON_PATH = _DEFAULT_FIXTURES_DIR / "lesson.json"
 _TRUE_VALUES = {"1", "true", "yes", "on"}
 
@@ -39,8 +38,6 @@ def _resolve_path(raw_path: str | None, *, fallback: Path) -> Path:
 class DevFixtureSettings:
     preload_cards: bool
     cards_path: Path
-    use_macro_plan_fixture: bool
-    macro_plan_path: Path
     use_lesson_fixture: bool
     lesson_path: Path
 
@@ -49,11 +46,6 @@ class DevFixtureSettings:
         return cls(
             preload_cards=_env_flag("GLOSIUM_DEV_CARDS"),
             cards_path=_resolve_path(os.getenv("GLOSIUM_DEV_CARDS_FILE"), fallback=_DEFAULT_CARDS_PATH),
-            use_macro_plan_fixture=_env_flag("GLOSIUM_DEV_MACRO_PLAN"),
-            macro_plan_path=_resolve_path(
-                os.getenv("GLOSIUM_DEV_MACRO_PLAN_FILE"),
-                fallback=_DEFAULT_MACRO_PLAN_PATH,
-            ),
             use_lesson_fixture=_env_flag("GLOSIUM_DEV_LESSON"),
             lesson_path=_resolve_path(os.getenv("GLOSIUM_DEV_LESSON_FILE"), fallback=_DEFAULT_LESSON_PATH),
         )
@@ -65,13 +57,6 @@ class DevFixtureSettings:
         cards = [self._build_card(item) for item in raw_data]
         logger.info("Loaded %d dev fixture cards from %s", len(cards), self.cards_path)
         return cards
-
-    def load_macro_plan_text(self) -> str:
-        macro_plan = self.macro_plan_path.read_text(encoding="utf-8").strip()
-        if not macro_plan:
-            raise ValueError("Macro plan fixture file is empty.")
-        logger.info("Loaded macro plan fixture from %s", self.macro_plan_path)
-        return macro_plan
 
     def load_lesson_plan(self) -> list[dict[str, Any]]:
         lesson_plan = json.loads(self.lesson_path.read_text(encoding="utf-8"))
@@ -93,6 +78,7 @@ class DevFixtureSettings:
             translation=self._require_str(normalized, "translation"),
             transcription=self._require_str(normalized, "transcription"),
             meaning=self._require_str(normalized, "meaning"),
+            meaning_english=self._optional_str(normalized, "meaning_english") or self._require_str(normalized, "meaning"),
             example=self._require_str(normalized, "example"),
         )
 
@@ -101,3 +87,10 @@ class DevFixtureSettings:
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"Card fixture field {key!r} must be a non-empty string.")
         return value.strip()
+
+    def _optional_str(self, payload: dict[str, Any], key: str) -> str | None:
+        value = payload.get(key)
+        if not isinstance(value, str):
+            return None
+        stripped = value.strip()
+        return stripped or None

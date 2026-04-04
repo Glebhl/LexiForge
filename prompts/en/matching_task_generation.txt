@@ -7,7 +7,10 @@ Requirements:
 - Do not shuffle the columns.
 
 Output format:
-COLUMNS:
-... / ...
-... / ...
-... / ...
+{
+  "pairs": [
+    ["...", "..."],
+    ["...", "..."],
+    ["...", "..."]
+  ]
+}

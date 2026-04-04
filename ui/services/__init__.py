@@ -2,14 +2,14 @@ from __future__ import annotations
 
 __all__ = [
     "CardGenerationWorker",
-    "LessonGenerationWorker",
+    "LessonGenerationSession",
     "is_filling_answer_correct",
     "is_translation_answer_correct",
 ]
 
 _EXPORT_MAP = {
     "CardGenerationWorker": ("ui.services.lesson_generation_workers", "CardGenerationWorker"),
-    "LessonGenerationWorker": ("ui.services.lesson_generation_workers", "LessonGenerationWorker"),
+    "LessonGenerationSession": ("ui.services.lesson_generation_session", "LessonGenerationSession"),
     "is_filling_answer_correct": ("ui.services.answer_precheck", "is_filling_answer_correct"),
     "is_translation_answer_correct": ("ui.services.answer_precheck", "is_translation_answer_correct"),
 }

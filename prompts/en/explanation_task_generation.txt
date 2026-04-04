@@ -23,10 +23,17 @@ HTML rules:
 - Use <h2> for the main idea, <h3> for subpoints, <p> for short explanations, <ul><li> for patterns/examples, <blockquote> for one short tip only if useful.
 
 Output format:
-TITLE: <short block title>
-HTML:
-<html fragment>
+Return plain text, not JSON.
+For each card use exactly this structure:
 
-TITLE: <short block title>
+===CARD===
+NAME: <short block title>
 HTML:
 <html fragment>
+===END_CARD===
+
+Important:
+- Put the full HTML fragment after `HTML:` and before `===END_CARD===`.
+- Do not escape quotes for JSON.
+- Do not wrap HTML in markdown fences.
+- If there are several cards, repeat the same block format.

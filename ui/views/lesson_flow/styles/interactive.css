@@ -54,6 +54,35 @@
   background: var(--color-surface-active);
 }
 
+.task-key--dragging {
+  cursor: grabbing;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+  transition: none;
+}
+
+.task-key-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border: 1px dashed var(--color-border-hover);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 16px;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.task-blank.is-drop-target {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+body.is-word-dragging,
+body.is-word-dragging * {
+  user-select: none;
+}
+
 .task-keyboard__mode-button {
   padding: 8px 10px;
   border: 1px solid transparent;
