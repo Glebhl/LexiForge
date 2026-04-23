@@ -2,6 +2,7 @@
   const utils = globalObject.lessonSetupSharedUtils;
   const templateElement = document.getElementById("card-template");
   const cardListElement = document.getElementById("cards");
+  const emptyStateElement = document.getElementById("cards-empty-text");
   const deckAmountElement = document.getElementById("deck-amount");
   const hintElement = document.getElementById("hint");
   const promptElement = document.getElementById("prompt");
@@ -50,9 +51,9 @@
   }
 
   function updateDeckLabel() {
-    deckAmountElement.textContent = utils.formatDeckLabel(
-      cardListElement.querySelectorAll(".lesson-card").length,
-    );
+    const cardCount = cardListElement.querySelectorAll(".lesson-card").length;
+
+    deckAmountElement.textContent = utils.formatDeckLabel(cardCount);
   }
 
   function updateActionState() {
@@ -61,6 +62,7 @@
     generateButton.disabled = isGenerating;
     promptElement.disabled = isGenerating;
     startButton.disabled = isGenerating || !hasCards;
+    emptyStateElement.classList.toggle("card-grid__empty-text--hidden", hasCards);
   }
 
   function hydrateCard(cardElement, card) {

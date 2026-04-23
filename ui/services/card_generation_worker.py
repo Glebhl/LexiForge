@@ -27,7 +27,6 @@ class CardGenerationWorker:
         self,
         *,
         on_card_generated: Callable[[VocabularyCard], None],
-        on_generation_failed: Callable[[str], None],
         on_finished: Callable[[], None],
     ) -> None:
         started_at = time.perf_counter()
@@ -49,7 +48,6 @@ class CardGenerationWorker:
                 on_card_generated(card)
         except Exception as exc:  # noqa: BLE001
             logger.exception("Vocabulary generation failed")
-            on_generation_failed(str(exc))
         finally:
             logger.debug(
                 "Vocabulary generation worker finished in %.2fs",

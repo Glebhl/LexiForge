@@ -2,8 +2,7 @@ lesson:
   language: en
   lerner_language: ru
   learner_level: B2
-  disabled_tasks:
-  - question
+  disabled_tasks: []
 models:
   card_generation: google:gemini-3.1-flash-lite-preview
   lesson_planning:

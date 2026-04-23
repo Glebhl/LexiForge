@@ -85,9 +85,11 @@ class LessonSetupController:
         self._settings_store = get_settings_store()
         self._disabled_task_ids: list[str] = self._settings_store.get_value("lesson/disabled_tasks") or []
         self._learner_level: str | None = self._settings_store.get_value("lesson/learner_level")
-        self._lesson_language: str | None = None
-        self._lerner_language: str | None = None
         self._user_request: str | None = None
+
+        # Lesson
+        self._lesson_language: str = "en"
+        self._lerner_language: str = "ru"
 
     def on_load_finished(self):
         self._cards = []
@@ -228,7 +230,6 @@ class LessonSetupController:
         )
         worker.run(
             on_card_generated=self._handle_card_generated,
-            on_generation_failed=self._handle_card_generation_error,
             on_finished=self._finish_card_generation
         )
         
@@ -237,13 +238,6 @@ class LessonSetupController:
             self._append_card(card)
         except Exception:  # noqa: BLE001
             logger.exception("Unhandled exception while appending a generated vocabulary card")
-
-    def _handle_card_generation_error(self, message: str) -> None:
-        try:
-            self._generation_error_message = message
-            logger.error("Vocabulary generation failed: %s", message)
-        except Exception:  # noqa: BLE001
-            logger.exception("Unhandled exception while handling a vocabulary generation error")
 
     def _finish_card_generation(self) -> None:
         try:
