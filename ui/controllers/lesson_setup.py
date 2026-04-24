@@ -260,11 +260,12 @@ class LessonSetupController:
                     logger.debug("Lesson card %d: %s", index, entry["card"])
 
                 logger.debug(
-                    "Starting lesson generation with user_request=%r lerner_level=%s lesson_language=%s lerner_language=%s",
+                    "Starting lesson generation with user_request=%r lerner_level=%s lesson_language=%s lerner_language=%s, disabled_task_ids=%s",
                     self._user_request,
                     self._learner_level,
                     self._lesson_language,
                     self._lerner_language,
+                    self._disabled_task_ids,
                 )
 
                 self.router.navigate_to(

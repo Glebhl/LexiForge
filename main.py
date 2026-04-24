@@ -26,8 +26,8 @@ class GlosiumApp:
         self.window = webview.create_window(
             "Glosium",
             js_api=self.backend,
-            width=1400,
-            height=860,
+            width=1480,
+            height=900,
             min_size=(800, 600),
             background_color="#121314",
         )
