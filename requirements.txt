@@ -1,6 +1,7 @@
 openai==2.29.0
 google-genai==1.70.0
 python-dotenv==1.2.2
+pythonnet=3.0.5
 PyYAML==6.0.3
 keyring==25.6.0
 pywebview==6.1
