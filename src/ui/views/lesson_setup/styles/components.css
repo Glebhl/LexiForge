@@ -1,0 +1,307 @@
+.lesson-setup-header {
+  padding: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-shell);
+}
+
+.mobile-view-tabs {
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: var(--shadow-shell);
+}
+
+.mobile-view-tab {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  transition: var(--duration-moderate) var(--easing-standard);
+}
+
+.mobile-view-tab.is-active {
+  border-color: rgba(123, 97, 255, 0.36);
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.94), rgba(32, 227, 178, 0.72));
+  color: white;
+  box-shadow: 0 8px 24px rgba(123, 97, 255, 0.2);
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-shell);
+}
+
+.settings-title {
+  color: var(--color-text);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  --settings-fade-size: 24px;
+  --settings-top-fade-start-alpha: 1;
+  --settings-bottom-fade-start-alpha: 0;
+  --settings-scrollbar-width: 10px;
+  --settings-scrollbar-gap: 6px;
+  --settings-scrollbar-safe-area: calc(var(--settings-scrollbar-width) + var(--settings-scrollbar-gap));
+  --color-scroll-track: rgba(255, 255, 255, 0.06);
+  --color-scroll-thumb: rgba(255, 255, 255, 0.22);
+  padding-right: var(--settings-scrollbar-gap);
+  scrollbar-color: var(--color-scroll-thumb) var(--color-scroll-track);
+  scrollbar-gutter: stable;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    rgb(0 0 0 / var(--settings-top-fade-start-alpha)) 0,
+    #000 var(--settings-fade-size),
+    #000 calc(100% - var(--settings-fade-size)),
+    rgb(0 0 0 / var(--settings-bottom-fade-start-alpha)) 100%
+  ),
+  linear-gradient(#000, #000);
+  -webkit-mask-size:
+    calc(100% - var(--settings-scrollbar-safe-area)) 100%,
+    var(--settings-scrollbar-safe-area) 100%;
+  -webkit-mask-position:
+    left top,
+    right top;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: linear-gradient(
+    180deg,
+    rgb(0 0 0 / var(--settings-top-fade-start-alpha)) 0,
+    #000 var(--settings-fade-size),
+    #000 calc(100% - var(--settings-fade-size)),
+    rgb(0 0 0 / var(--settings-bottom-fade-start-alpha)) 100%
+  ),
+  linear-gradient(#000, #000);
+  mask-size:
+    calc(100% - var(--settings-scrollbar-safe-area)) 100%,
+    var(--settings-scrollbar-safe-area) 100%;
+  mask-position:
+    left top,
+    right top;
+  mask-repeat: no-repeat;
+}
+
+.settings-content::-webkit-scrollbar {
+  width: var(--settings-scrollbar-width);
+}
+
+.settings-content::-webkit-scrollbar-track {
+  background: var(--color-scroll-track);
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+  background: var(--color-scroll-thumb);
+  border-radius: 999px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-group-title {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.settings-item-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: var(--shadow-card);
+}
+
+.settings-item-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-item-title {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.settings-item-description {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.settings-summary-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.settings-summary-label {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.settings-summary-value {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: var(--shadow-card);
+}
+
+.brand-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.status-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  box-shadow: var(--shadow-chip);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent-strong);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.language-flag {
+  height: 18px;
+  border-radius: 5px;
+}
+
+.hint-text {
+  margin-top: 10px;
+  width: 20px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.lesson-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.lesson-card__section-label {
+  margin-bottom: 6px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+}
+
+/* @media (max-width: 800px) {
+  .lesson-setup-header,
+  .settings-panel,
+  .lesson-card {
+    border-radius: 14px;
+  }
+
+  .lesson-setup-header {
+    padding: 12px;
+  }
+
+  .settings-panel {
+    padding: 14px;
+  }
+
+  .settings-title {
+    font-size: 18px;
+  }
+
+  .settings-content {
+    gap: 12px;
+  }
+
+  .settings-item-shell {
+    padding: 12px;
+  }
+
+  .lesson-card {
+    padding: 14px;
+  }
+} */
