@@ -216,15 +216,17 @@
 
 .status-chip-list {
   display: flex;
+  align-items: end;
   flex-wrap: wrap;
   gap: 8px;
 }
 
 .chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 15px;
+  padding: 0 15px;
+  height: 32px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
@@ -274,34 +276,9 @@
   letter-spacing: 1.5px;
 }
 
-/* @media (max-width: 800px) {
-  .lesson-setup-header,
-  .settings-panel,
-  .lesson-card {
-    border-radius: 14px;
+@media (max-width: 420px) {
+  .status-chip-list {
+    flex-direction: column;
   }
+}
 
-  .lesson-setup-header {
-    padding: 12px;
-  }
-
-  .settings-panel {
-    padding: 14px;
-  }
-
-  .settings-title {
-    font-size: 18px;
-  }
-
-  .settings-content {
-    gap: 12px;
-  }
-
-  .settings-item-shell {
-    padding: 12px;
-  }
-
-  .lesson-card {
-    padding: 14px;
-  }
-} */
