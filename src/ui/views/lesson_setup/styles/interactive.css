@@ -29,10 +29,6 @@
 
 .mobile-view-tab:hover {
   color: var(--color-text);
-  background: rgba(255, 255, 255, 0.055);
-}
-
-.mobile-view-tab.is-active:hover {
   background: var(--color-surface);
 }
 
