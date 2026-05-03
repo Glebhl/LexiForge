@@ -14,7 +14,6 @@ export class OpenRouterClient {
   constructor(options = {}) {
     this.apiKey = options.apiKey || DEFAULT_API_KEY;
     this.baseUrl = options.baseUrl || DEFAULT_BASE_URL;
-    this.fetch = options.fetch || globalThis.fetch.bind(globalThis);
     this.defaultHeaders = options.headers || {};
     this.appTitle = options.appTitle;
     this.siteUrl = options.siteUrl;
@@ -68,7 +67,7 @@ export class OpenRouterClient {
   }
 
   async listProviders(options = {}) {
-    const response = await this.fetch(this.url("/providers"), {
+    const response = await fetch(this.url("/providers"), {
       method: "GET",
       headers: this.headers(options.headers),
       signal: options.signal,
@@ -79,7 +78,7 @@ export class OpenRouterClient {
   }
 
   async postJson(path, body, options = {}) {
-    return this.fetch(this.url(path), {
+    return fetch(this.url(path), {
       method: "POST",
       headers: this.headers(options.headers),
       body: JSON.stringify(body),
@@ -123,14 +122,6 @@ export class OpenRouterClient {
   url(path) {
     return `${this.baseUrl}${path}`;
   }
-}
-
-export function createOpenRouterClient(options) {
-  return new OpenRouterClient(options);
-}
-
-function getStoredApiKey() {
-  return globalThis.localStorage?.getItem("openrouter_api_key") || "";
 }
 
 async function readResponseBody(response) {

@@ -1,31 +1,30 @@
-import { createOpenRouterClient } from "../../../llm_gateway/index.js";
+import { OpenRouterClient } from "../llm_gateway/index.js";
 
-export class CardsGeneration {
+export class CardsGenerator {
   constructor(lessonLanguage, options = {}) {
     this.lessonLanguage = lessonLanguage;
-    this.options = options;
     this.model = options.model || "google/gemini-3.1-flash-lite-preview";
-    this.fetch = options.fetch || globalThis.fetch.bind(globalThis);
-    this.client = options.client || createOpenRouterClient(options.openRouter || options);
+    this.client = new OpenRouterClient(options);
     this.prompt = "";
   }
 
   static async create(lessonLanguage, options = {}) {
-    const cardsGeneration = new CardsGeneration(lessonLanguage, options);
-    await cardsGeneration.loadPrompt();
-    return cardsGeneration;
+    const cardsGenerator = new CardsGenerator(lessonLanguage, options);
+    await cardsGenerator.loadPrompt();
+    return cardsGenerator;
   }
 
   async loadPrompt() {
     const promptPath = new URL(
-      `../../../prompts/${this.lessonLanguage}/vocabulary_card_generation.txt`,
+      `../prompts/${this.lessonLanguage}/cards/vocabulary_generate.txt`,
       import.meta.url,
     );
-    const response = await this.fetch(promptPath);
+    const response = await fetch(promptPath);
 
     if (!response.ok) {
       throw new Error(`Could not load prompt from ${promptPath}. Status: ${response.status}`);
     }
+    console.debug("Loaded cards generator prompt");
 
     this.prompt = await response.text();
   }
