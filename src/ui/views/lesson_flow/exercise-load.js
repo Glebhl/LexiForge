@@ -158,7 +158,7 @@ export async function showNextExercise() {
   if (queue.length === 0) {
     if (lessonComplete()) return [true, () => true];
     elements.skipBtn.disabled = true;
-    showLoadingScreen(elements);
+    showLoadingScreen(elements, mountTask);
     await new Promise((resolve) => { pendingResolve = resolve; });
   }
 
