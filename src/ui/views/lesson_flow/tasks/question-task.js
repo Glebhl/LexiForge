@@ -1,12 +1,12 @@
 export function loadTask(elements, content) {
-  const tpl = document.getElementById("tpl-question");
-  elements.container.replaceChildren(tpl.content.cloneNode(true));
-
-  // TODO: render `content` into the question template,
-  // bind user interactions, manage elements.continueBtn.disabled.
+  elements.mountTask("tpl-question", (root) => {
+    root.querySelector(".question-content").textContent = content?.question || "";
+    root.querySelector(".question-paragraph").textContent = content?.paragraph || content?.passage || "";
+    elements.continueBtn.disabled = false;
+    elements.skipBtn.disabled = false;
+  });
 
   return function verify() {
-    // TODO: return whether the current answer is correct.
     return true;
   };
 }

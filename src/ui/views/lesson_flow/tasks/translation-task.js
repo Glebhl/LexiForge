@@ -1,12 +1,11 @@
 export function loadTask(elements, content) {
-  const tpl = document.getElementById("tpl-translation");
-  elements.container.replaceChildren(tpl.content.cloneNode(true));
-
-  // TODO: render `content` into the translation template,
-  // bind word-bank/typing interactions, manage elements.continueBtn.disabled.
+  elements.mountTask("tpl-translation", (root) => {
+    root.querySelector(".translation-prompt").textContent = content?.sentence || "";
+    elements.continueBtn.disabled = false;
+    elements.skipBtn.disabled = false;
+  });
 
   return function verify() {
-    // TODO: return whether the translation is correct.
     return true;
   };
 }

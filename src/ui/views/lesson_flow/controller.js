@@ -15,12 +15,15 @@ export class Controller {
   }
   
   async mount(router, options = {}) {
+    this.router = router;
     this.lessonGenerator = options.lessonGenerator;
     this.lessonGenerator.subscribeNewTaskAppeared(this.appendExercise.bind(this));
     this.lessonGenerator.subscribeLastTaskAppeared(finishStage);
+    this.stageIdx = this.lessonGenerator.stageIdx;
     setStagesAmount(this.lessonGenerator.stagesAmount);
     elements.btnContinue.addEventListener("click", this.onContinueClick.bind(this));
     elements.btnSkip.addEventListener("click", this.onSkipClick.bind(this));
+    this.showNextExercise().catch((error) => console.error(error));
   }
 
   async unmount() {
@@ -37,7 +40,7 @@ export class Controller {
         console.log("You've completed all exercises");
         return;
       };
-      this.stageIdx = this.lessonGenerator.requestNextStage();
+      this.stageIdx = await this.lessonGenerator.requestNextStage();
     }
 
     [this.isFinalInStage, this.exerciseVerifier] = await showNextExercise();

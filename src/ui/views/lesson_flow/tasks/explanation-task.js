@@ -1,9 +1,9 @@
 export function loadTask(elements, content) {
-  const tpl = document.getElementById("tpl-explanation");
-  elements.container.replaceChildren(tpl.content.cloneNode(true));
-
-  // TODO: render `content` (markdown string) into the explanation template,
-  // manage elements.continueBtn.disabled.
+  elements.mountTask("tpl-explanation", (root) => {
+    root.textContent = content || "";
+    elements.continueBtn.disabled = false;
+    elements.skipBtn.disabled = false;
+  });
 
   return function verify() {
     return true;
