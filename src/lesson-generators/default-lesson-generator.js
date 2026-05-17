@@ -58,7 +58,7 @@ export class DefaultLessonGenerator {
     return { ...lessonSettings, goals };
   }
 
-  getNextSпше tageId() {
+  getNextStageId() {
     const nextStageIdx = this.stageIdx + 1;
     const stageId = this.stages[nextStageIdx];
 
