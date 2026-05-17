@@ -111,16 +111,10 @@ body.is-word-dragging * {
 .matching-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 5px 16px;
   margin-top: 14px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-}
-
-.matching-grid__column {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
 }
 
 .task-choice,

@@ -54,8 +54,7 @@ export function loadTask(elements, mountTask, content) {
 
   mountTask("tpl-matching", (root) => {
     const pairs = normalizePairs(content);
-    const leftColumn = root.querySelector(".matching-grid__column--left");
-    const rightColumn = root.querySelector(".matching-grid__column--right");
+    const matchingGrid = root.querySelector(".matching-grid");
     const selected = {
       left: null,
       right: null,
@@ -67,12 +66,17 @@ export function loadTask(elements, mountTask, content) {
       elements.continueBtn.disabled = !isComplete;
     }
 
-    for (const pair of pairs) {
-      leftColumn.append(createChoice(pair.left, pair.id, "left"));
-    }
+    const shuffledRightPairs = shuffle(pairs);
 
-    for (const pair of shuffle(pairs)) {
-      rightColumn.append(createChoice(pair.right, pair.id, "right"));
+    for (const [index, pair] of pairs.entries()) {
+      matchingGrid.append(
+        createChoice(pair.left, pair.id, "left"),
+        createChoice(
+          shuffledRightPairs[index].right,
+          shuffledRightPairs[index].id,
+          "right",
+        ),
+      );
     }
 
     function clearSelection(side) {
@@ -139,7 +143,7 @@ export function loadTask(elements, mountTask, content) {
       checkSelectedPair();
     }
 
-    root.querySelector(".matching-grid").addEventListener("click", (event) => {
+    matchingGrid.addEventListener("click", (event) => {
       const choice = event.target.closest(".task-choice");
 
       if (choice) {
