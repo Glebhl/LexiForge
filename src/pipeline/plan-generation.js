@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { STUB_FLAGS, PLAN_STUB } from "./stubs.js";
 
 export class PlanGenerator {
   constructor(lessonLanguage, stageId, options = {}) {
@@ -39,6 +40,17 @@ export class PlanGenerator {
   }
 
   async *streamPlan({ userPrompt }) {
+    if (STUB_FLAGS.plan) {
+      // Stubs
+      console.debug("PlanGenerator: using stub instead of LLM call");
+      for (const line of PLAN_STUB.split("\n")) {
+        if (line.trim()) {
+          yield JSON.parse(line.trim());
+        }
+      }
+      return;
+    }
+
     let buffer = "";
 
     for await (const chunk of this.client.streamChat({

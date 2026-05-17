@@ -1,5 +1,15 @@
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-const DEFAULT_API_KEY = getStoredApiKey();
+const DEFAULT_API_KEY = getAPIKey();
+
+function getAPIKey() {
+  const key = localStorage?.getItem("openrouter_api_key") || "";
+  if (key) {
+    console.debug("OpenRouter API key was loaded");
+  } else {
+    console.warn("OpenRouter API key was not loaded");
+  }
+  return key;
+}
 
 export class OpenRouterError extends Error {
   constructor(message, details = {}) {

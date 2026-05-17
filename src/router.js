@@ -46,8 +46,6 @@ export class Router {
     this.currentScreen = await this.mountRouteController(path, routeUrl, options);
     this.currentPath = path;
     this.currentOptions = options;
-
-    return this.currentScreen;
   }
 
   async goBack() {

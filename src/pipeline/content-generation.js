@@ -53,7 +53,7 @@ export class ContentGenerator {
     console.info("Generating lesson content.", { exercise_id, description });
 
     const userPrompt = this.buildUserPrompt({ description });
-    console.debug("User prompt:\n", userPrompt);
+    console.debug(`User prompt:\n${userPrompt}`);
 
     const response = await this.client.chat({
       model: this.model,
@@ -67,6 +67,8 @@ export class ContentGenerator {
     if (exercise_id === "explanation") {
       return content;
     }
+
+    console.debug(`Task content:\n${content}`);
     return JSON.parse(content);
   }
 

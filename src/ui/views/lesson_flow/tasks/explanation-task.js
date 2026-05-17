@@ -1,30 +1,11 @@
-(function registerExplanationTask(globalObject) {
-  const utils = globalObject.lessonSharedUtils;
+export function loadTask(elements, content) {
+  const tpl = document.getElementById("tpl-explanation");
+  elements.container.replaceChildren(tpl.content.cloneNode(true));
 
-  function renderCard(card) {
-    const cardElement = utils.cloneTemplateElement("tpl-explanation-card", "article");
-    const titleElement = cardElement.querySelector(".lesson-card__label");
-    const contentElement = cardElement.querySelector(".md-content");
+  // TODO: render `content` (markdown string) into the explanation template,
+  // manage elements.continueBtn.disabled.
 
-    titleElement.textContent = card && card.name ? String(card.name) : "";
-    contentElement.innerHTML = card && card.content ? String(card.content) : "";
-
-    return cardElement;
-  }
-
-  function createTaskController(rootElement, payload) {
-    const cards = Array.isArray(payload.cards) ? payload.cards : [];
-    const fragment = document.createDocumentFragment();
-
-    for (const card of cards) {
-      fragment.append(renderCard(card));
-    }
-
-    rootElement.replaceChildren(fragment);
-    utils.setContinueEnabled(true);
-
-    return {};
-  }
-
-  globalObject.lessonTaskRegistry.register("explanation", createTaskController);
-})(window);
+  return function verify() {
+    return true;
+  };
+}

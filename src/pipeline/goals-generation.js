@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { STUB_FLAGS, GOALS_STUB } from "./stubs.js";
 
 export class GoalsGenerator {
   constructor(lessonLanguage, options = {}) {
@@ -34,14 +35,22 @@ export class GoalsGenerator {
     const userPrompt = this.buildUserPrompt(lessonSettings);
     console.debug("User prompt:\n", userPrompt);
     
-    const response = await this.client.chat({
-      model: this.model,
-      messages: [
-        { role: "system", content: this.prompt },
-        { role: "user", content: userPrompt },
-      ],
-    });
-    return JSON.parse(response.choices?.[0]?.message?.content || "");
+    let content;
+    if (STUB_FLAGS.goals) {
+      // Stubs
+      console.debug("GoalsGenerator: using stub instead of LLM call");
+      content = GOALS_STUB;
+    } else {
+      const response = await this.client.chat({
+        model: this.model,
+        messages: [
+          { role: "system", content: this.prompt },
+          { role: "user", content: userPrompt },
+        ],
+      });
+      content = response.choices?.[0]?.message?.content || "";
+    }
+    return JSON.parse(content);
   }
 
   buildUserPrompt(lessonSettings) {

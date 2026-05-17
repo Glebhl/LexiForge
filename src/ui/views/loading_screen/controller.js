@@ -13,17 +13,16 @@ export class Controller {
   async mount(router, lessonSettings = {}) {
     this.router = router;
     this.lessonGenerator = new DefaultLessonGenerator();
-    this.lessonGenerator.subscribeFirstTaskAppeared(this.onFisrtTaskAppeared);
-    this.lessonGenerator.subscribeNewTaskAppeared(this.onNewTaskAppeared);
-    this.lessonGenerator.generateLesson(lessonSettings);
+    this.lessonGenerator.subscribeFirstTaskAppeared(this.onFisrtTaskAppeared.bind(this));
+    await this.lessonGenerator.generateLesson(lessonSettings);
   }
 
-  onFisrtTaskAppeared() {
-    console.log("First task");
-  }
-
-  onNewTaskAppeared() {
-    console.log("New task");
+  async onFisrtTaskAppeared() {
+    console.log("Opening lesson flow page");
+    await this.router.navigateTo({
+      path: "/lesson",
+      options: { lessonGenerator: this.lessonGenerator },
+    });
   }
 
   async unmount() {
