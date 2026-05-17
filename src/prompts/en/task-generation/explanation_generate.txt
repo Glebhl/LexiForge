@@ -1,9 +1,9 @@
-Create 1 or more short explanation blocks.
+Create one short explanation as a single HTML fragment.
 
 Goal:
 - Explain the meanings, usage, contrast, form, or word formation requested in DESCRIPTION.
 - Cover all focus units named in DESCRIPTION, and all TARGETS if TARGETS are provided.
-- Split into small blocks when there are several distinct points. One block = one clear subtopic.
+- Split several distinct points into clear HTML sections inside the same fragment.
 
 Rules:
 - This exercise is explanation only.
@@ -24,16 +24,5 @@ HTML rules:
 
 Output format:
 Return plain text, not JSON.
-For each card use exactly this structure:
-
-===CARD===
-NAME: <short block title>
-HTML:
-<html fragment>
-===END_CARD===
-
-Important:
-- Put the full HTML fragment after `HTML:` and before `===END_CARD===`.
-- Do not escape quotes for JSON.
-- Do not wrap HTML in markdown fences.
-- If there are several cards, repeat the same block format.
+Return only one complete HTML fragment.
+Do not add separators, block markers, titles outside HTML, JSON, markdown fences, or escaped quotes.
