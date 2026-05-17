@@ -68,9 +68,11 @@ export function loadTask(elements, mountTask, content) {
   const keyboardWords = shuffle([...correctAnswers, ...distractors]);
 
   let getUserAnswers = () => [];
+  let showInvalidAnswer = () => {};
 
   mountTask("tpl-filling", (root) => {
     const answerArea = root.querySelector(".task-answer--filling");
+    const answerShell = root.querySelector(".task-answer-shell--filling");
     const keyboardArea = root.querySelector(".task-keyboard");
     const modeSwitchRoot = root.querySelector(".task-keyboard__mode-switch");
 
@@ -100,6 +102,16 @@ export function loadTask(elements, mountTask, content) {
       setContinueEnabled(elements, allFilled);
     }
 
+    function clearInvalidAnswer() {
+      answerShell.classList.remove("task-answer--invalid");
+    }
+
+    showInvalidAnswer = () => {
+      answerShell.classList.remove("task-answer--invalid");
+      answerShell.offsetWidth;
+      answerShell.classList.add("task-answer--invalid");
+    };
+
     function syncInputsFromWords() {
       blanks.forEach((blank, index) => {
         const input = blank.querySelector(".task-blank__input");
@@ -122,9 +134,25 @@ export function loadTask(elements, mountTask, content) {
 
     function clearDropHighlights() {
       for (const blank of blanks) {
-        blank.classList.remove("is-drop-target");
+        blank.classList.remove("is-drop-preview");
+        delete blank.dataset.dropPreview;
+        blank.style.removeProperty("--drop-preview-width");
       }
       keyboardArea.classList.remove("is-drop-target");
+    }
+
+    function previewDropBlank(targetBlank, wordElement) {
+      for (const blank of blanks) {
+        const isTarget = blank === targetBlank;
+        blank.classList.toggle("is-drop-preview", isTarget);
+        if (isTarget) {
+          blank.dataset.dropPreview = normalizeInlineText(wordElement.textContent);
+          blank.style.setProperty("--drop-preview-width", `${wordElement.getBoundingClientRect().width}px`);
+        } else {
+          delete blank.dataset.dropPreview;
+          blank.style.removeProperty("--drop-preview-width");
+        }
+      }
     }
 
     function moveWordToBlank(wordElement, targetBlank) {
@@ -144,6 +172,8 @@ export function loadTask(elements, mountTask, content) {
     const drag = attachWordDrag(root, {
       isEnabled: () => state.mode === WORD_BANK_MODE,
       containers,
+      placeholderClassName: "task-key-placeholder--hidden",
+      placeholderText: () => "",
       onMove(dragState, pointerX, pointerY) {
         let hoveredBlank = null;
         for (const blank of blanks) {
@@ -154,9 +184,7 @@ export function loadTask(elements, mountTask, content) {
         }
         dragState.data.dropBlank = hoveredBlank;
         keyboardArea.classList.toggle("is-drop-target", isPointInside(keyboardArea, pointerX, pointerY));
-        for (const blank of blanks) {
-          blank.classList.toggle("is-drop-target", blank === hoveredBlank);
-        }
+        previewDropBlank(hoveredBlank, dragState.wordElement);
       },
       onDrop(dragState, settle, pointerX, pointerY) {
         const { dropBlank } = dragState.data;
@@ -167,6 +195,7 @@ export function loadTask(elements, mountTask, content) {
             clearDropHighlights();
             moveWordToBlank(dragState.wordElement, dropBlank);
             dragState.placeholder.remove();
+            clearInvalidAnswer();
             updateContinueState();
           });
           return true;
@@ -177,6 +206,7 @@ export function loadTask(elements, mountTask, content) {
             clearDropHighlights();
             dragState.placeholder.remove();
             keyboardArea.append(dragState.wordElement);
+            clearInvalidAnswer();
             updateContinueState();
           });
           return true;
@@ -207,6 +237,7 @@ export function loadTask(elements, mountTask, content) {
         } else {
           keyboardArea.append(wordElement);
         }
+        clearInvalidAnswer();
         updateContinueState();
       });
     }
@@ -215,7 +246,10 @@ export function loadTask(elements, mountTask, content) {
     answerArea.addEventListener("click", handleWordClick);
 
     for (const blank of blanks) {
-      blank.querySelector(".task-blank__input").addEventListener("input", updateContinueState);
+      blank.querySelector(".task-blank__input").addEventListener("input", () => {
+        clearInvalidAnswer();
+        updateContinueState();
+      });
     }
 
     attachModeSwitch(modeSwitchRoot, switchMode, WORD_BANK_MODE);
@@ -226,10 +260,15 @@ export function loadTask(elements, mountTask, content) {
 
   return function verify() {
     const userAnswers = getUserAnswers();
-    if (userAnswers.length !== correctAnswers.length) return false;
+    if (userAnswers.length !== correctAnswers.length) {
+      showInvalidAnswer();
+      return false;
+    }
 
-    return correctAnswers.every(
+    const isCorrect = correctAnswers.every(
       (expected, index) => normalizeInlineText(userAnswers[index]) === normalizeInlineText(expected),
     );
+    if (!isCorrect) showInvalidAnswer();
+    return isCorrect;
   };
 }

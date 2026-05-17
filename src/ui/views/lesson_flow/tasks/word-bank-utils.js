@@ -120,20 +120,26 @@ export function runFlipAnimation(containers, mutate, durationMs = FLIP_DURATION_
   animateNodesFromRects(collectWordNodes(containers), startingRects, durationMs);
 }
 
-function createPlaceholder(wordElement, rect) {
+function createPlaceholder(wordElement, rect, options = {}) {
   const placeholder = document.createElement("div");
+  const placeholderText = typeof options.placeholderText === "function"
+    ? options.placeholderText(wordElement)
+    : wordElement.textContent || "";
 
-  placeholder.className = "task-key-placeholder";
-  placeholder.textContent = wordElement.textContent || "";
+  placeholder.className = [
+    "task-key-placeholder",
+    options.placeholderClassName || "",
+  ].filter(Boolean).join(" ");
+  placeholder.textContent = placeholderText;
   placeholder.style.width = `${rect.width}px`;
   placeholder.style.height = `${rect.height}px`;
 
   return placeholder;
 }
 
-function beginFloatingDrag(wordElement, pointerX, pointerY) {
+function beginFloatingDrag(wordElement, pointerX, pointerY, options = {}) {
   const rect = wordElement.getBoundingClientRect();
-  const placeholder = createPlaceholder(wordElement, rect);
+  const placeholder = createPlaceholder(wordElement, rect, options);
   const originalStyle = wordElement.getAttribute("style");
 
   wordElement.parentNode.insertBefore(placeholder, wordElement);
@@ -258,7 +264,12 @@ export function attachWordDrag(rootElement, options) {
       if (Math.hypot(deltaX, deltaY) < DRAG_START_DISTANCE) return;
 
       activeDrag.didStart = true;
-      Object.assign(activeDrag, beginFloatingDrag(activeDrag.wordElement, event.clientX, event.clientY));
+      Object.assign(activeDrag, beginFloatingDrag(
+        activeDrag.wordElement,
+        event.clientX,
+        event.clientY,
+        options,
+      ));
     }
 
     event.preventDefault();

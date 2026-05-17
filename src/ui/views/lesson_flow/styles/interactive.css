@@ -74,6 +74,13 @@
   box-shadow: none;
 }
 
+.task-key-placeholder--hidden {
+  visibility: hidden;
+  border-color: transparent;
+  background: transparent;
+  color: transparent;
+}
+
 .task-blank.is-drop-target {
   background: rgba(255, 255, 255, 0.035);
 }

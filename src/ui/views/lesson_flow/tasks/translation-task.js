@@ -32,9 +32,11 @@ export function loadTask(elements, mountTask, content) {
   const keyboardWords = buildKeyboardWords(correctAnswers, distractors);
 
   let getUserAnswer = () => "";
+  let showInvalidAnswer = () => {};
 
   mountTask("tpl-translation", (root) => {
     const answerArea = root.querySelector(".task-answer--translation");
+    const answerShell = root.querySelector(".task-answer-shell--translation");
     const keyboardArea = root.querySelector(".task-keyboard");
     const typingInput = root.querySelector(".task-answer__typing-input");
     const modeSwitchRoot = root.querySelector(".task-keyboard__mode-switch");
@@ -69,6 +71,16 @@ export function loadTask(elements, mountTask, content) {
       setContinueEnabled(elements, filled);
     }
 
+    function clearInvalidAnswer() {
+      answerShell.classList.remove("task-answer--invalid");
+    }
+
+    showInvalidAnswer = () => {
+      answerShell.classList.remove("task-answer--invalid");
+      answerShell.offsetWidth;
+      answerShell.classList.add("task-answer--invalid");
+    };
+
     function switchMode(nextMode) {
       const typing = nextMode === TYPING_MODE;
       state.mode = typing ? TYPING_MODE : WORD_BANK_MODE;
@@ -96,7 +108,7 @@ export function loadTask(elements, mountTask, content) {
             || dragState.placeholder.nextSibling !== beforeNode;
 
           if (needsMove) {
-            runFlipAnimation([answerArea], () => {
+            runFlipAnimation(containers, () => {
               if (beforeNode) {
                 answerArea.insertBefore(dragState.placeholder, beforeNode);
               } else {
@@ -106,8 +118,24 @@ export function loadTask(elements, mountTask, content) {
           }
 
           dragState.data.dropTarget = "answer";
+        } else if (overKeyboard) {
+          const beforeNode = findInsertBeforeNode(keyboardArea, pointerX, pointerY, dragState.wordElement);
+          const needsMove = dragState.placeholder.parentNode !== keyboardArea
+            || dragState.placeholder.nextSibling !== beforeNode;
+
+          if (needsMove) {
+            runFlipAnimation(containers, () => {
+              if (beforeNode) {
+                keyboardArea.insertBefore(dragState.placeholder, beforeNode);
+              } else {
+                keyboardArea.append(dragState.placeholder);
+              }
+            }, FLIP_PLACEHOLDER_MS);
+          }
+
+          dragState.data.dropTarget = "keyboard";
         } else {
-          dragState.data.dropTarget = overKeyboard ? "keyboard" : null;
+          dragState.data.dropTarget = null;
         }
       },
       onDrop(dragState, settle) {
@@ -116,15 +144,16 @@ export function loadTask(elements, mountTask, content) {
         if (target === "answer") {
           settle(() => {
             dragState.placeholder.replaceWith(dragState.wordElement);
+            clearInvalidAnswer();
             updateContinueState();
           });
           return true;
         }
 
-        if (target === "keyboard" && dragState.restoreParent !== keyboardArea) {
+        if (target === "keyboard") {
           settle(() => {
-            dragState.placeholder.remove();
-            keyboardArea.append(dragState.wordElement);
+            dragState.placeholder.replaceWith(dragState.wordElement);
+            clearInvalidAnswer();
             updateContinueState();
           });
           return true;
@@ -152,13 +181,17 @@ export function loadTask(elements, mountTask, content) {
         } else {
           keyboardArea.append(wordElement);
         }
+        clearInvalidAnswer();
         updateContinueState();
       });
     }
 
     keyboardArea.addEventListener("click", handleWordClick);
     answerArea.addEventListener("click", handleWordClick);
-    typingInput.addEventListener("input", updateContinueState);
+    typingInput.addEventListener("input", () => {
+      clearInvalidAnswer();
+      updateContinueState();
+    });
 
     attachModeSwitch(modeSwitchRoot, switchMode, WORD_BANK_MODE);
     updateContinueState();
@@ -168,10 +201,15 @@ export function loadTask(elements, mountTask, content) {
 
   return function verify() {
     const userAnswer = normalizeInlineText(getUserAnswer());
-    if (userAnswer.length === 0) return false;
+    if (userAnswer.length === 0) {
+      showInvalidAnswer();
+      return false;
+    }
 
-    return correctAnswers.some(
+    const isCorrect = correctAnswers.some(
       (expected) => normalizeInlineText(expected) === userAnswer,
     );
+    if (!isCorrect) showInvalidAnswer();
+    return isCorrect;
   };
 }
