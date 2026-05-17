@@ -34,13 +34,11 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding: 15px 20px;
 }
 
 .lesson-task {
   position: absolute;
-  width: calc(100% - 40px);
-  height: calc(100% - 15px);
+  inset: 15px 20px;
   overflow-x: hidden;
   overflow-y: auto;
   transition: transform var(--duration-slow) ease;
@@ -83,7 +81,12 @@
 }
 
 @media (max-width: 900px) {
+  .lesson-progress {
+    gap: 10px;
+    padding: 12px;
+  }
+
   .lesson-task {
-    width: calc(100% - 24px);
+    inset: 12px;
   }
 }

@@ -1,3 +1,8 @@
+.lesson-shell,
+.lesson-shell * {
+  min-width: 0;
+}
+
 .lesson-shell {
   position: absolute;
   inset: var(--shell-block-gap) var(--shell-inline-gap);
@@ -127,4 +132,34 @@
 
 .lesson-button--continue:active:not(:disabled) {
   filter: brightness(0.94);
+}
+
+@media (max-width: 800px) {
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    overflow: hidden;
+  }
+
+  main {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .lesson-shell {
+    inset: 14px;
+  }
+
+  .lesson-shell__header {
+    padding: 12px;
+  }
+
+  .lesson-shell__footer {
+    padding: 10px 12px;
+  }
 }
