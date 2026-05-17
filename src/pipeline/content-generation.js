@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { CONTENT_STUBS, STUB_FLAGS } from "./stubs.js";
 
 const PROMPT_FILES = {
   question: "reading_mcq_generate.txt",
@@ -55,14 +56,24 @@ export class ContentGenerator {
     const userPrompt = this.buildUserPrompt({ description });
     console.debug(`User prompt:\n${userPrompt}`);
 
-    const response = await this.client.chat({
-      model: this.model,
-      messages: [
-        { role: "system", content: this.prompts[exercise_id] },
-        { role: "user", content: userPrompt },
-      ],
-    });
-    const content = response.choices?.[0]?.message?.content || "";
+    let content;
+    if (STUB_FLAGS.content) {
+      console.debug("ContentGenerator: using stub instead of LLM call", { exercise_id });
+      content = CONTENT_STUBS[exercise_id];
+
+      if (!content) {
+        throw new Error(`No content stub for exercise_id: ${exercise_id}`);
+      }
+    } else {
+      const response = await this.client.chat({
+        model: this.model,
+        messages: [
+          { role: "system", content: this.prompts[exercise_id] },
+          { role: "user", content: userPrompt },
+        ],
+      });
+      content = response.choices?.[0]?.message?.content || "";
+    }
 
     if (exercise_id === "explanation") {
       return content;
