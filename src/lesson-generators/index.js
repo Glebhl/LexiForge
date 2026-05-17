@@ -1,1 +1,1 @@
-export { DefaultLessonGenerator } from "./default-lesson-generator.js"
+export { DefaultLessonGenerator } from "./default-lesson-generator.js";

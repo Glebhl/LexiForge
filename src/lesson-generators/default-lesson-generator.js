@@ -1,56 +1,93 @@
-import { GoalsGenerator, PlanGenerator, ContentGenerator } from "../pipeline/index.js"
+import { GoalsGenerator, PlanGenerator, ContentGenerator } from "../pipeline/index.js";
+
+const DEFAULT_STAGES = ["presentation"];
+const noop = async () => {};
+const callbackOrNoop = (callback) => (
+  typeof callback === "function" ? callback : noop
+);
 
 export class DefaultLessonGenerator {
-  constructor() {
-    this.onFirstTaskAppeared = null;
-    this.onNewTaskAppeared = null;
-    this.onLastTaskAppeared = null;
-    this.stages = ["presentation"];
+  constructor({ stages = DEFAULT_STAGES } = {}) {
+    this.onFirstTaskAppeared = noop;
+    this.onNewTaskAppeared = noop;
+    this.onLastTaskAppeared = noop;
+    this.stages = [...stages];
     this.stagesAmount = this.stages.length;
     this.stageIdx = -1;
-    this.contentGenerator;
-    this.lessonSettings;
+    this.contentGenerator = null;
+    this.lessonSettings = null;
   }
-  
+
   subscribeFirstTaskAppeared(callback) {
-    this.onFirstTaskAppeared = callback;
+    this.onFirstTaskAppeared = callbackOrNoop(callback);
   }
-  
+
   subscribeNewTaskAppeared(callback) {
-    this.onNewTaskAppeared = callback;
+    this.onNewTaskAppeared = callbackOrNoop(callback);
   }
 
   subscribeLastTaskAppeared(callback) {
-    this.onLastTaskAppeared = callback;
+    this.onLastTaskAppeared = callbackOrNoop(callback);
   }
-  
+
   async generateLesson(lessonSettings) {
     console.debug("Starting lesson generation with settings", lessonSettings);
-    this.lessonSettings = lessonSettings;
-    const goalsGenerator = await GoalsGenerator.create(lessonSettings.lessonLanguage);
-    this.contentGenerator = await ContentGenerator.create(lessonSettings.lessonLanguage);
-    lessonSettings["goals"] = await goalsGenerator.generate(lessonSettings);
-    console.debug("Generated lesson goals:\n", lessonSettings.goals)
+    this.lessonSettings = await this.buildLessonSettings(lessonSettings);
+    this.contentGenerator = await ContentGenerator.create(this.lessonSettings.lessonLanguage);
+    console.debug("Generated lesson goals:\n", this.lessonSettings.goals);
     await this.requestNextStage();
   }
 
   async requestNextStage() {
-    this.stageIdx++;
-    const stageId = this.stages[this.stageIdx];
+    const stageId = this.getNextStageId();
     console.debug(`Generating stage #${this.stageIdx} ${stageId}`);
-    const planGenerator = await PlanGenerator.create(this.lessonSettings.lessonLanguage, stageId);
+
     let exerciseIdx = 0;
-    for await (const exercise of planGenerator.generate(this.lessonSettings)) {
-      const exerciseContent = await this.contentGenerator.generate(exercise)
-      if (this.stageIdx === 0 && exerciseIdx === 0) {
-        console.debug("Fisrt task appeared");
-        await this.onFirstTaskAppeared();
-      }
-      console.debug("A new exercise appeared:", exerciseContent);
-      await this.onNewTaskAppeared(exercise.exercise_id, exerciseContent);
+    for await (const exercise of this.generateStagePlan(stageId)) {
+      await this.generateExercise(exercise, exerciseIdx);
       exerciseIdx++;
     }
+
     await this.onLastTaskAppeared();
     return this.stageIdx;
+  }
+
+  async buildLessonSettings(lessonSettings) {
+    const goalsGenerator = await GoalsGenerator.create(lessonSettings.lessonLanguage);
+    const goals = await goalsGenerator.generate(lessonSettings);
+    return { ...lessonSettings, goals };
+  }
+
+  getNextSпше tageId() {
+    const nextStageIdx = this.stageIdx + 1;
+    const stageId = this.stages[nextStageIdx];
+
+    if (!stageId) {
+      throw new Error(`No lesson stage found at index ${nextStageIdx}`);
+    }
+
+    this.stageIdx = nextStageIdx;
+    return stageId;
+  }
+
+  async *generateStagePlan(stageId) {
+    const planGenerator = await PlanGenerator.create(this.lessonSettings.lessonLanguage, stageId);
+    yield* planGenerator.generate(this.lessonSettings);
+  }
+
+  async generateExercise(exercise, exerciseIdx) {
+    const exerciseContent = await this.contentGenerator.generate(exercise);
+
+    if (this.isFirstExercise(exerciseIdx)) {
+      console.debug("First task appeared");
+      await this.onFirstTaskAppeared();
+    }
+
+    console.debug("A new exercise appeared:", exerciseContent);
+    await this.onNewTaskAppeared(exercise.exercise_id, exerciseContent);
+  }
+
+  isFirstExercise(exerciseIdx) {
+    return this.stageIdx === 0 && exerciseIdx === 0;
   }
 }
