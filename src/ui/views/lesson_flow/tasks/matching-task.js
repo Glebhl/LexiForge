@@ -49,10 +49,10 @@ function setChoiceState(choice, stateName) {
   choice.classList.add(stateName);
 }
 
-export function loadTask(elements, content) {
+export function loadTask(elements, mountTask, content) {
   let isComplete = false;
 
-  elements.mountTask("tpl-matching", (root) => {
+  mountTask("tpl-matching", (root) => {
     const pairs = normalizePairs(content);
     const leftColumn = root.querySelector(".matching-grid__column--left");
     const rightColumn = root.querySelector(".matching-grid__column--right");

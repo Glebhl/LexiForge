@@ -21,8 +21,6 @@ const elements = {
   skipBtn: document.getElementById("skip"),
 };
 
-elements.mountTask = mountTask;
-
 const queue = [];
 let stagesRemaining = 0;
 let stageFinished = false;
@@ -154,18 +152,17 @@ export function finishStage() {
 }
 
 export async function showNextExercise() {
+  elements.continueBtn.disabled = true;
+
   if (queue.length === 0) {
     if (lessonComplete()) return [true, () => true];
-    elements.continueBtn.disabled = true;
-    elements.skipBtn.disabled = true;
+    elements.skipBtn.disabled = true;  // TODO make it enable again
     showLoadingScreen(elements);
     await new Promise((resolve) => { pendingResolve = resolve; });
   }
 
-  elements.continueBtn.disabled = true;
-  
   const { exercise_id, content } = queue.shift();
-  const verifier = taskControllers[exercise_id].loadTask(elements, content);
+  const verifier = taskControllers[exercise_id].loadTask(elements, mountTask, content);
 
   const isFinalInStage = stageFinished && queue.length === 0;
   if (isFinalInStage) stageFinished = false;
