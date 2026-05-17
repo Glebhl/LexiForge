@@ -141,6 +141,7 @@ export function setStagesAmount(amount) {
 }
 
 export function appendExercise(exercise_id, content) {
+  elements.skipBtn.disabled = false;
   queue.push({ exercise_id, content });
   notify();
 }

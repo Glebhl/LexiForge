@@ -23,7 +23,7 @@ export class Controller {
     setStagesAmount(this.lessonGenerator.stagesAmount);
     elements.btnContinue.addEventListener("click", this.onContinueClick.bind(this));
     elements.btnSkip.addEventListener("click", this.onSkipClick.bind(this));
-    this.showNextExercise().catch((error) => console.error(error));
+    this.showNextExercise();
   }
 
   async unmount() {
