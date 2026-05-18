@@ -121,7 +121,11 @@
 
 .lesson-button--continue {
   border: none;
-  background: linear-gradient(135deg, rgba(32, 227, 178, 1), rgba(32, 227, 178, 0.7));
+  background: linear-gradient(
+    135deg,
+    rgba(32, 227, 178, 1),
+    rgba(32, 227, 178, 0.7)
+  );
   color: #05110d;
   box-shadow: var(--shadow-cta);
 }

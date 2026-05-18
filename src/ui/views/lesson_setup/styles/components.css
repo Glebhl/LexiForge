@@ -44,20 +44,23 @@
   --settings-bottom-fade-start-alpha: 0;
   --settings-scrollbar-width: 10px;
   --settings-scrollbar-gap: 6px;
-  --settings-scrollbar-safe-area: calc(var(--settings-scrollbar-width) + var(--settings-scrollbar-gap));
+  --settings-scrollbar-safe-area: calc(
+    var(--settings-scrollbar-width) + var(--settings-scrollbar-gap)
+  );
   --color-scroll-track: rgba(255, 255, 255, 0.06);
   --color-scroll-thumb: rgba(255, 255, 255, 0.22);
   padding-right: var(--settings-scrollbar-gap);
   scrollbar-color: var(--color-scroll-thumb) var(--color-scroll-track);
   scrollbar-gutter: stable;
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    rgb(0 0 0 / var(--settings-top-fade-start-alpha)) 0,
-    #000 var(--settings-fade-size),
-    #000 calc(100% - var(--settings-fade-size)),
-    rgb(0 0 0 / var(--settings-bottom-fade-start-alpha)) 100%
-  ),
-  linear-gradient(#000, #000);
+  -webkit-mask-image:
+    linear-gradient(
+      180deg,
+      rgb(0 0 0 / var(--settings-top-fade-start-alpha)) 0,
+      #000 var(--settings-fade-size),
+      #000 calc(100% - var(--settings-fade-size)),
+      rgb(0 0 0 / var(--settings-bottom-fade-start-alpha)) 100%
+    ),
+    linear-gradient(#000, #000);
   -webkit-mask-size:
     calc(100% - var(--settings-scrollbar-safe-area)) 100%,
     var(--settings-scrollbar-safe-area) 100%;
@@ -65,14 +68,15 @@
     left top,
     right top;
   -webkit-mask-repeat: no-repeat;
-  mask-image: linear-gradient(
-    180deg,
-    rgb(0 0 0 / var(--settings-top-fade-start-alpha)) 0,
-    #000 var(--settings-fade-size),
-    #000 calc(100% - var(--settings-fade-size)),
-    rgb(0 0 0 / var(--settings-bottom-fade-start-alpha)) 100%
-  ),
-  linear-gradient(#000, #000);
+  mask-image:
+    linear-gradient(
+      180deg,
+      rgb(0 0 0 / var(--settings-top-fade-start-alpha)) 0,
+      #000 var(--settings-fade-size),
+      #000 calc(100% - var(--settings-fade-size)),
+      rgb(0 0 0 / var(--settings-bottom-fade-start-alpha)) 100%
+    ),
+    linear-gradient(#000, #000);
   mask-size:
     calc(100% - var(--settings-scrollbar-safe-area)) 100%,
     var(--settings-scrollbar-safe-area) 100%;
@@ -213,6 +217,20 @@
   box-shadow: var(--shadow-chip);
 }
 
+.chip--link {
+  text-decoration: none;
+  transition:
+    border-color var(--duration-normal) var(--easing-standard),
+    background-color var(--duration-normal) var(--easing-standard),
+    color var(--duration-normal) var(--easing-standard);
+}
+
+.chip--link:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
@@ -259,4 +277,3 @@
     flex-direction: column;
   }
 }
-

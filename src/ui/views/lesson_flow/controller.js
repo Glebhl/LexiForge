@@ -1,33 +1,67 @@
-import { appendExercise, showNextExercise, finishStage, setStagesAmount } from "./exercise-load.js"
+import {
+  appendExercise,
+  bindExerciseLoader,
+  finishStage,
+  setStagesAmount,
+  showNextExercise,
+  unbindExerciseLoader,
+} from "./exercise-load.js";
 
-const elements = {
-  btnContinue: document.getElementById("continue"),
-  btnSkip: document.getElementById("skip"),
-};
+function getElements() {
+  return {
+    container: document.getElementById("taskStage"),
+    btnContinue: document.getElementById("continue"),
+    btnSkip: document.getElementById("skip"),
+  };
+}
 
 export class Controller {
   constructor() {
-    this.router;
-    this.lessonGenerator;
-    this.exerciseVerifier;
+    this.router = null;
+    this.lessonGenerator = null;
+    this.exerciseVerifier = null;
+    this.elements = {};
     this.isFinalInStage = false;
     this.stageIdx = -1;
+    this.handleContinueClick = this.onContinueClick.bind(this);
+    this.handleSkipClick = this.onSkipClick.bind(this);
   }
-  
+
   async mount(router, options = {}) {
     this.router = router;
     this.lessonGenerator = options.lessonGenerator;
-    this.lessonGenerator.subscribeNewTaskAppeared(this.appendExercise.bind(this));
+
+    if (!this.lessonGenerator) {
+      throw new Error("Lesson generator was not provided");
+    }
+
+    this.elements = getElements();
+    bindExerciseLoader({
+      container: this.elements.container,
+      continueBtn: this.elements.btnContinue,
+      skipBtn: this.elements.btnSkip,
+    });
+    this.lessonGenerator.subscribeNewTaskAppeared(
+      this.appendExercise.bind(this),
+    );
     this.lessonGenerator.subscribeLastTaskAppeared(finishStage);
     this.stageIdx = this.lessonGenerator.stageIdx;
     setStagesAmount(this.lessonGenerator.stagesAmount);
-    elements.btnContinue.addEventListener("click", this.onContinueClick.bind(this));
-    elements.btnSkip.addEventListener("click", this.onSkipClick.bind(this));
+    this.elements.btnContinue.addEventListener(
+      "click",
+      this.handleContinueClick,
+    );
+    this.elements.btnSkip.addEventListener("click", this.handleSkipClick);
     this.showNextExercise();
   }
 
   async unmount() {
-
+    this.elements.btnContinue?.removeEventListener(
+      "click",
+      this.handleContinueClick,
+    );
+    this.elements.btnSkip?.removeEventListener("click", this.handleSkipClick);
+    unbindExerciseLoader();
   }
 
   async appendExercise(exercise_id, content) {
@@ -38,8 +72,9 @@ export class Controller {
     if (this.isFinalInStage) {
       if (this.stageIdx === this.lessonGenerator.stagesAmount - 1) {
         console.log("You've completed all exercises");
+        this.finishLesson();
         return;
-      };
+      }
       this.stageIdx = await this.lessonGenerator.requestNextStage();
     }
 
@@ -47,10 +82,18 @@ export class Controller {
   }
 
   async onContinueClick() {
-    this.exerciseVerifier() && await this.showNextExercise();
+    if (this.exerciseVerifier?.()) {
+      await this.showNextExercise();
+    }
   }
 
   async onSkipClick() {
     await this.showNextExercise();
+  }
+
+  finishLesson() {
+    this.elements.btnContinue.disabled = true;
+    this.elements.btnSkip.disabled = true;
+    this.elements.btnContinue.textContent = "Done";
   }
 }

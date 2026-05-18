@@ -128,12 +128,20 @@ main {
 
 .card-grid-shell::before {
   top: 0;
-  background: linear-gradient(180deg, var(--color-background) 0%, rgba(18, 19, 20, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--color-background) 0%,
+    rgba(18, 19, 20, 0) 100%
+  );
 }
 
 .card-grid-shell::after {
   bottom: 0;
-  background: linear-gradient(0deg, var(--color-background) 0%, rgba(18, 19, 20, 0) 100%);
+  background: linear-gradient(
+    0deg,
+    var(--color-background) 0%,
+    rgba(18, 19, 20, 0) 100%
+  );
 }
 
 .card-grid-scroll {

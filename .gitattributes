@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+*.ttf binary
+*.ico binary
+*.svg text eol=lf

@@ -28,7 +28,9 @@ function buildKeyboardWords(answers, distractors) {
 export function loadTask(elements, mountTask, content) {
   const promptText = String(content?.sentence || content?.paragraph || "");
   const correctAnswers = Array.isArray(content?.answers) ? content.answers : [];
-  const distractors = Array.isArray(content?.distractors) ? content.distractors : [];
+  const distractors = Array.isArray(content?.distractors)
+    ? content.distractors
+    : [];
   const keyboardWords = buildKeyboardWords(correctAnswers, distractors);
 
   let getUserAnswer = () => "";
@@ -65,9 +67,10 @@ export function loadTask(elements, mountTask, content) {
     }
 
     function updateContinueState() {
-      const filled = state.mode === TYPING_MODE
-        ? getTypingText().length > 0
-        : answerArea.querySelector(".task-key") !== null;
+      const filled =
+        state.mode === TYPING_MODE
+          ? getTypingText().length > 0
+          : answerArea.querySelector(".task-key") !== null;
       setContinueEnabled(elements, filled);
     }
 
@@ -100,37 +103,58 @@ export function loadTask(elements, mountTask, content) {
       containers,
       onMove(dragState, pointerX, pointerY) {
         const overAnswer = isPointInside(answerArea, pointerX, pointerY);
-        const overKeyboard = !overAnswer && isPointInside(keyboardArea, pointerX, pointerY);
+        const overKeyboard =
+          !overAnswer && isPointInside(keyboardArea, pointerX, pointerY);
 
         if (overAnswer) {
-          const beforeNode = findInsertBeforeNode(answerArea, pointerX, pointerY, dragState.wordElement);
-          const needsMove = dragState.placeholder.parentNode !== answerArea
-            || dragState.placeholder.nextSibling !== beforeNode;
+          const beforeNode = findInsertBeforeNode(
+            answerArea,
+            pointerX,
+            pointerY,
+            dragState.wordElement,
+          );
+          const needsMove =
+            dragState.placeholder.parentNode !== answerArea ||
+            dragState.placeholder.nextSibling !== beforeNode;
 
           if (needsMove) {
-            runFlipAnimation(containers, () => {
-              if (beforeNode) {
-                answerArea.insertBefore(dragState.placeholder, beforeNode);
-              } else {
-                answerArea.append(dragState.placeholder);
-              }
-            }, FLIP_PLACEHOLDER_MS);
+            runFlipAnimation(
+              containers,
+              () => {
+                if (beforeNode) {
+                  answerArea.insertBefore(dragState.placeholder, beforeNode);
+                } else {
+                  answerArea.append(dragState.placeholder);
+                }
+              },
+              FLIP_PLACEHOLDER_MS,
+            );
           }
 
           dragState.data.dropTarget = "answer";
         } else if (overKeyboard) {
-          const beforeNode = findInsertBeforeNode(keyboardArea, pointerX, pointerY, dragState.wordElement);
-          const needsMove = dragState.placeholder.parentNode !== keyboardArea
-            || dragState.placeholder.nextSibling !== beforeNode;
+          const beforeNode = findInsertBeforeNode(
+            keyboardArea,
+            pointerX,
+            pointerY,
+            dragState.wordElement,
+          );
+          const needsMove =
+            dragState.placeholder.parentNode !== keyboardArea ||
+            dragState.placeholder.nextSibling !== beforeNode;
 
           if (needsMove) {
-            runFlipAnimation(containers, () => {
-              if (beforeNode) {
-                keyboardArea.insertBefore(dragState.placeholder, beforeNode);
-              } else {
-                keyboardArea.append(dragState.placeholder);
-              }
-            }, FLIP_PLACEHOLDER_MS);
+            runFlipAnimation(
+              containers,
+              () => {
+                if (beforeNode) {
+                  keyboardArea.insertBefore(dragState.placeholder, beforeNode);
+                } else {
+                  keyboardArea.append(dragState.placeholder);
+                }
+              },
+              FLIP_PLACEHOLDER_MS,
+            );
           }
 
           dragState.data.dropTarget = "keyboard";
@@ -196,7 +220,8 @@ export function loadTask(elements, mountTask, content) {
     attachModeSwitch(modeSwitchRoot, switchMode, WORD_BANK_MODE);
     updateContinueState();
 
-    getUserAnswer = () => (state.mode === TYPING_MODE ? getTypingText() : getWordBankText());
+    getUserAnswer = () =>
+      state.mode === TYPING_MODE ? getTypingText() : getWordBankText();
   });
 
   return function verify() {

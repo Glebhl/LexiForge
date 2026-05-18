@@ -1,5 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
-import { STUB_FLAGS, PLAN_STUB } from "./stubs.js";
+import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class PlanGenerator {
   constructor(lessonLanguage, stageId, options = {}) {
@@ -24,15 +24,20 @@ export class PlanGenerator {
     const response = await fetch(promptPath);
 
     if (!response.ok) {
-      throw new Error(`Could not load prompt from ${promptPath}. Status: ${response.status}`);
+      throw new Error(
+        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
+      );
     }
-    console.debug("Loaded plan generator prompt");
 
+    console.debug("Loaded plan generator prompt");
     this.prompt = await response.text();
   }
 
   async *generate(lessonSettings) {
-    console.info("Generating lesson plan.", { stageId: this.stageId, lessonSettings });
+    console.info("Generating lesson plan.", {
+      stageId: this.stageId,
+      lessonSettings,
+    });
     const userPrompt = this.buildUserPrompt(lessonSettings);
     console.debug("User prompt:\n", userPrompt);
 
@@ -41,13 +46,14 @@ export class PlanGenerator {
 
   async *streamPlan({ userPrompt }) {
     if (STUB_FLAGS.plan) {
-      // Stubs
       console.debug("PlanGenerator: using stub instead of LLM call");
+
       for (const line of PLAN_STUB.split("\n")) {
         if (line.trim()) {
           yield JSON.parse(line.trim());
         }
       }
+
       return;
     }
 
@@ -78,14 +84,21 @@ export class PlanGenerator {
   }
 
   buildUserPrompt(lessonSettings) {
-    const lines = []
-    lessonSettings.lessonLanguage && lines.push(`LESSON_LANGUAGE: ${lessonSettings.lessonLanguage}`);
-    lessonSettings.learnerLanguage && lines.push(`LEARNER_LANGUAGE: ${lessonSettings.learnerLanguage}`);
-    lessonSettings.learnerLevel && lines.push(`LEARNER_LEVEL: ${lessonSettings.learnerLevel}`);
-    lessonSettings.learnerRequest && lines.push(`LEARNER_REQUEST: ${lessonSettings.learnerRequest}`);
-    lessonSettings.disabledExercises?.length && lines.push(`DISABLED_EXERCISES: ${lessonSettings.disabledExercises}`);
-    lessonSettings.cards && lines.push(`LEARNING_UNITS:\n${lessonSettings.cards}`);
-    lessonSettings.goals && lines.push(`LESSON_GOALS:\n${lessonSettings.goals}`);
+    const lines = [];
+    lessonSettings.lessonLanguage &&
+      lines.push(`LESSON_LANGUAGE: ${lessonSettings.lessonLanguage}`);
+    lessonSettings.learnerLanguage &&
+      lines.push(`LEARNER_LANGUAGE: ${lessonSettings.learnerLanguage}`);
+    lessonSettings.learnerLevel &&
+      lines.push(`LEARNER_LEVEL: ${lessonSettings.learnerLevel}`);
+    lessonSettings.learnerRequest &&
+      lines.push(`LEARNER_REQUEST: ${lessonSettings.learnerRequest}`);
+    lessonSettings.disabledExercises?.length &&
+      lines.push(`DISABLED_EXERCISES: ${lessonSettings.disabledExercises}`);
+    lessonSettings.cards &&
+      lines.push(`LEARNING_UNITS:\n${lessonSettings.cards}`);
+    lessonSettings.goals &&
+      lines.push(`LESSON_GOALS:\n${lessonSettings.goals}`);
     // lessonSettings.previousStageResults && lines.push(`PREVIOUS_STAGE_RESULTS:\n${this.formatPromptValue(lessonSettings.previousStageResults)}`);
     return lines.join("\n");
   }

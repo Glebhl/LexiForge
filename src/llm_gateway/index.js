@@ -1,4 +1,1 @@
-export {
-  OpenRouterClient,
-  OpenRouterError,
-} from "./openrouter.js";
+export { OpenRouterClient, OpenRouterError } from "./openrouter.js";

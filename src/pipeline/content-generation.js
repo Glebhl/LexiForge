@@ -43,22 +43,26 @@ export class ContentGenerator {
     const response = await fetch(promptPath);
 
     if (!response.ok) {
-      throw new Error(`Could not load prompt from ${promptPath}. Status: ${response.status}`);
+      throw new Error(
+        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
+      );
     }
-    console.debug("Loaded content generator prompt");
 
+    console.debug("Loaded content generator prompt");
     this.prompts[exercise_id] = await response.text();
   }
 
   async generate({ description, exercise_id }) {
     console.info("Generating lesson content.", { exercise_id, description });
-
     const userPrompt = this.buildUserPrompt({ description });
     console.debug(`User prompt:\n${userPrompt}`);
 
     let content;
+
     if (STUB_FLAGS.content) {
-      console.debug("ContentGenerator: using stub instead of LLM call", { exercise_id });
+      console.debug("ContentGenerator: using stub instead of LLM call", {
+        exercise_id,
+      });
       content = CONTENT_STUBS[exercise_id];
 
       if (!content) {
@@ -84,7 +88,7 @@ export class ContentGenerator {
   }
 
   buildUserPrompt({ description }) {
-    const lines = []
+    const lines = [];
     description && lines.push(`DESCRIPTION:\n${description}`);
     return lines.join("\n");
   }

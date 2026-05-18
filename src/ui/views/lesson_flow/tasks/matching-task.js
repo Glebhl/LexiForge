@@ -110,7 +110,8 @@ export function loadTask(elements, mountTask, content) {
         return;
       }
 
-      const isCorrect = leftChoice.dataset.pairId === rightChoice.dataset.pairId;
+      const isCorrect =
+        leftChoice.dataset.pairId === rightChoice.dataset.pairId;
 
       setChoiceState(leftChoice, isCorrect ? "is-correct" : "is-wrong");
       setChoiceState(rightChoice, isCorrect ? "is-correct" : "is-wrong");

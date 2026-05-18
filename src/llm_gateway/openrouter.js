@@ -1,13 +1,16 @@
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-const DEFAULT_API_KEY = getAPIKey();
+const API_KEY_STORAGE_NAME = "openrouter_api_key";
 
 function getAPIKey() {
-  const key = localStorage?.getItem("openrouter_api_key") || "";
+  const key =
+    globalThis.localStorage?.getItem(API_KEY_STORAGE_NAME)?.trim() || "";
+
   if (key) {
     console.debug("OpenRouter API key was loaded");
   } else {
     console.warn("OpenRouter API key was not loaded");
   }
+
   return key;
 }
 
@@ -22,7 +25,7 @@ export class OpenRouterError extends Error {
 
 export class OpenRouterClient {
   constructor(options = {}) {
-    this.apiKey = options.apiKey || DEFAULT_API_KEY;
+    this.apiKey = options.apiKey || getAPIKey();
     this.baseUrl = options.baseUrl || DEFAULT_BASE_URL;
     this.defaultHeaders = options.headers || {};
     this.appTitle = options.appTitle;
@@ -30,19 +33,27 @@ export class OpenRouterClient {
   }
 
   async chat(request, options = {}) {
-    const response = await this.postJson("/chat/completions", {
-      ...request,
-      stream: false,
-    }, options);
+    const response = await this.postJson(
+      "/chat/completions",
+      {
+        ...request,
+        stream: false,
+      },
+      options,
+    );
 
     return this.readJson(response);
   }
 
   async *streamChat(request, options = {}) {
-    const response = await this.postJson("/chat/completions", {
-      ...request,
-      stream: true,
-    }, options);
+    const response = await this.postJson(
+      "/chat/completions",
+      {
+        ...request,
+        stream: true,
+      },
+      options,
+    );
 
     if (!response.ok) {
       await this.throwResponseError(response);
@@ -67,9 +78,12 @@ export class OpenRouterClient {
       const chunk = JSON.parse(data);
 
       if (chunk.error) {
-        throw new OpenRouterError(chunk.error.message || "OpenRouter stream error", {
-          body: chunk,
-        });
+        throw new OpenRouterError(
+          chunk.error.message || "OpenRouter stream error",
+          {
+            body: chunk,
+          },
+        );
       }
 
       yield chunk;
@@ -111,6 +125,12 @@ export class OpenRouterClient {
   }
 
   headers(extraHeaders = {}) {
+    if (!this.apiKey) {
+      throw new OpenRouterError(
+        `OpenRouter API key is missing. Add ${API_KEY_STORAGE_NAME} in storage.html.`,
+      );
+    }
+
     const headers = {
       Authorization: `Bearer ${this.apiKey}`,
       "Content-Type": "application/json",
@@ -139,7 +159,8 @@ async function readResponseBody(response) {
 }
 
 function throwResponseBody(response, body) {
-  let message = body || `OpenRouter request failed with status ${response.status}`;
+  let message =
+    body || `OpenRouter request failed with status ${response.status}`;
   let parsedBody = body;
 
   try {

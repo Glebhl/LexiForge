@@ -4,7 +4,9 @@ const FLIP_DURATION_MS = 200;
 let nextWordId = 0;
 
 export function normalizeInlineText(value) {
-  return String(value ?? "").replace(/\s+/g, " ").trim();
+  return String(value ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function setContinueEnabled(elements, enabled) {
@@ -41,16 +43,22 @@ export function isPointInside(element, pointerX, pointerY) {
 
   const rect = element.getBoundingClientRect();
   return (
-    pointerX >= rect.left
-    && pointerX <= rect.right
-    && pointerY >= rect.top
-    && pointerY <= rect.bottom
+    pointerX >= rect.left &&
+    pointerX <= rect.right &&
+    pointerY >= rect.top &&
+    pointerY <= rect.bottom
   );
 }
 
-export function findInsertBeforeNode(container, pointerX, pointerY, ignoredNode) {
-  const wordNodes = Array.from(container.querySelectorAll(".task-key"))
-    .filter((node) => node !== ignoredNode);
+export function findInsertBeforeNode(
+  container,
+  pointerX,
+  pointerY,
+  ignoredNode,
+) {
+  const wordNodes = Array.from(container.querySelectorAll(".task-key")).filter(
+    (node) => node !== ignoredNode,
+  );
 
   for (const node of wordNodes) {
     const rect = node.getBoundingClientRect();
@@ -100,14 +108,22 @@ function animateNodesFromRects(nodes, startingRects, durationMs) {
       node.style.transform = "translate(0, 0)";
     });
 
-    node.addEventListener("transitionend", () => {
-      node.style.transition = "";
-      node.style.transform = "";
-    }, { once: true });
+    node.addEventListener(
+      "transitionend",
+      () => {
+        node.style.transition = "";
+        node.style.transform = "";
+      },
+      { once: true },
+    );
   }
 }
 
-export function runFlipAnimation(containers, mutate, durationMs = FLIP_DURATION_MS) {
+export function runFlipAnimation(
+  containers,
+  mutate,
+  durationMs = FLIP_DURATION_MS,
+) {
   const nodesBefore = collectWordNodes(containers);
   const startingRects = new Map();
 
@@ -117,19 +133,26 @@ export function runFlipAnimation(containers, mutate, durationMs = FLIP_DURATION_
 
   mutate();
 
-  animateNodesFromRects(collectWordNodes(containers), startingRects, durationMs);
+  animateNodesFromRects(
+    collectWordNodes(containers),
+    startingRects,
+    durationMs,
+  );
 }
 
 function createPlaceholder(wordElement, rect, options = {}) {
   const placeholder = document.createElement("div");
-  const placeholderText = typeof options.placeholderText === "function"
-    ? options.placeholderText(wordElement)
-    : wordElement.textContent || "";
+  const placeholderText =
+    typeof options.placeholderText === "function"
+      ? options.placeholderText(wordElement)
+      : wordElement.textContent || "";
 
   placeholder.className = [
     "task-key-placeholder",
     options.placeholderClassName || "",
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
   placeholder.textContent = placeholderText;
   placeholder.style.width = `${rect.width}px`;
   placeholder.style.height = `${rect.height}px`;
@@ -183,18 +206,32 @@ function endFloatingDrag(dragState) {
   document.body.classList.remove("is-word-dragging");
 }
 
-function settleFloatingDrag(dragState, containers, mutate, durationMs = FLIP_DURATION_MS) {
-  const otherNodes = collectWordNodes(containers).filter((node) => node !== dragState.wordElement);
+function settleFloatingDrag(
+  dragState,
+  containers,
+  mutate,
+  durationMs = FLIP_DURATION_MS,
+) {
+  const otherNodes = collectWordNodes(containers).filter(
+    (node) => node !== dragState.wordElement,
+  );
   const startingRects = new Map();
 
   for (const node of otherNodes) {
     startingRects.set(node, node.getBoundingClientRect());
   }
 
-  startingRects.set(dragState.wordElement, dragState.wordElement.getBoundingClientRect());
+  startingRects.set(
+    dragState.wordElement,
+    dragState.wordElement.getBoundingClientRect(),
+  );
   endFloatingDrag(dragState);
   mutate();
-  animateNodesFromRects(collectWordNodes(containers), startingRects, durationMs);
+  animateNodesFromRects(
+    collectWordNodes(containers),
+    startingRects,
+    durationMs,
+  );
 }
 
 export function attachWordDrag(rootElement, options) {
@@ -210,7 +247,8 @@ export function attachWordDrag(rootElement, options) {
 
   function restore(dragState) {
     settleFloatingDrag(dragState, containers, () => {
-      const { restoreParent, restoreBeforeNode, wordElement, placeholder } = dragState;
+      const { restoreParent, restoreBeforeNode, wordElement, placeholder } =
+        dragState;
 
       if (restoreBeforeNode && restoreBeforeNode.parentNode === restoreParent) {
         restoreParent.insertBefore(wordElement, restoreBeforeNode);
@@ -244,7 +282,12 @@ export function attachWordDrag(rootElement, options) {
 
     const dropped = forceRestore
       ? false
-      : onDrop(dragState, (mutate) => settleFloatingDrag(dragState, containers, mutate), pointerX, pointerY);
+      : onDrop(
+          dragState,
+          (mutate) => settleFloatingDrag(dragState, containers, mutate),
+          pointerX,
+          pointerY,
+        );
 
     if (!dropped) {
       restore(dragState);
@@ -252,7 +295,9 @@ export function attachWordDrag(rootElement, options) {
 
     activeDrag = null;
     suppressClick = true;
-    window.setTimeout(() => { suppressClick = false; }, 0);
+    window.setTimeout(() => {
+      suppressClick = false;
+    }, 0);
   }
 
   function handleMove(event) {
@@ -264,12 +309,15 @@ export function attachWordDrag(rootElement, options) {
       if (Math.hypot(deltaX, deltaY) < DRAG_START_DISTANCE) return;
 
       activeDrag.didStart = true;
-      Object.assign(activeDrag, beginFloatingDrag(
-        activeDrag.wordElement,
-        event.clientX,
-        event.clientY,
-        options,
-      ));
+      Object.assign(
+        activeDrag,
+        beginFloatingDrag(
+          activeDrag.wordElement,
+          event.clientX,
+          event.clientY,
+          options,
+        ),
+      );
     }
 
     event.preventDefault();
@@ -321,7 +369,9 @@ export function attachWordDrag(rootElement, options) {
 }
 
 export function attachModeSwitch(rootElement, onChange, initialMode) {
-  const buttons = Array.from(rootElement.querySelectorAll(".task-keyboard__mode-button[data-mode]"));
+  const buttons = Array.from(
+    rootElement.querySelectorAll(".task-keyboard__mode-button[data-mode]"),
+  );
 
   if (buttons.length === 0) return;
 
@@ -336,6 +386,7 @@ export function attachModeSwitch(rootElement, onChange, initialMode) {
     button.addEventListener("click", () => applyMode(button.dataset.mode));
   }
 
-  const startButton = buttons.find((b) => b.dataset.mode === initialMode) || buttons[0];
+  const startButton =
+    buttons.find((b) => b.dataset.mode === initialMode) || buttons[0];
   applyMode(startButton.dataset.mode);
 }

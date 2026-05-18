@@ -33,17 +33,25 @@ export class Router {
       });
     }
 
-    if (this.currentScreen && typeof this.currentScreen.unmount === "function") {
+    if (
+      this.currentScreen &&
+      typeof this.currentScreen.unmount === "function"
+    ) {
       await this.currentScreen.unmount();
     }
 
     const routeUrl = new URL(`${route}/`, import.meta.url);
     const html = await this.loadRouteHtml(path, routeUrl);
+    const routeDocument = this.parseRouteDocument(html);
 
-    this.replaceRouteStyles(html, routeUrl);
-    app.innerHTML = this.getRouteBodyHtml(html);
+    this.replaceRouteStyles(routeDocument, routeUrl);
+    app.replaceChildren(...this.getRouteBodyNodes(routeDocument));
 
-    this.currentScreen = await this.mountRouteController(path, routeUrl, options);
+    this.currentScreen = await this.mountRouteController(
+      path,
+      routeUrl,
+      options,
+    );
     this.currentPath = path;
     this.currentOptions = options;
   }
@@ -72,12 +80,20 @@ export class Router {
     return response.text();
   }
 
-  getRouteBodyHtml(html) {
-    return new DOMParser().parseFromString(html, "text/html").body.innerHTML;
+  parseRouteDocument(html) {
+    return new DOMParser().parseFromString(html, "text/html");
+  }
+
+  getRouteBodyNodes(routeDocument) {
+    return Array.from(routeDocument.body.childNodes).map((node) =>
+      document.importNode(node, true),
+    );
   }
 
   async mountRouteController(path, routeUrl, options) {
-    const module = await import(new URL("controller.js", routeUrl).href);
+    const module = await import(
+      /* @vite-ignore */ new URL("controller.js", routeUrl).href
+    );
 
     if (typeof module.Controller !== "function") {
       throw new Error(`Route "${path}" does not export Controller`);
@@ -94,12 +110,11 @@ export class Router {
     return controller;
   }
 
-  replaceRouteStyles(html, routeUrl) {
+  replaceRouteStyles(routeDocument, routeUrl) {
     for (const linkElement of this.routeStyleLinks) {
       linkElement.remove();
     }
 
-    const routeDocument = new DOMParser().parseFromString(html, "text/html");
     this.routeStyleLinks = Array.from(
       routeDocument.querySelectorAll('link[rel="stylesheet"]'),
     ).map((sourceLinkElement) => {

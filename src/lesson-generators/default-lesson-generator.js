@@ -1,10 +1,13 @@
-import { GoalsGenerator, PlanGenerator, ContentGenerator } from "../pipeline/index.js";
+import {
+  GoalsGenerator,
+  PlanGenerator,
+  ContentGenerator,
+} from "../pipeline/index.js";
 
 const DEFAULT_STAGES = ["presentation"];
 const noop = async () => {};
-const callbackOrNoop = (callback) => (
-  typeof callback === "function" ? callback : noop
-);
+const callbackOrNoop = (callback) =>
+  typeof callback === "function" ? callback : noop;
 
 export class DefaultLessonGenerator {
   constructor({ stages = DEFAULT_STAGES } = {}) {
@@ -33,7 +36,9 @@ export class DefaultLessonGenerator {
   async generateLesson(lessonSettings) {
     console.debug("Starting lesson generation with settings", lessonSettings);
     this.lessonSettings = await this.buildLessonSettings(lessonSettings);
-    this.contentGenerator = await ContentGenerator.create(this.lessonSettings.lessonLanguage);
+    this.contentGenerator = await ContentGenerator.create(
+      this.lessonSettings.lessonLanguage,
+    );
     console.debug("Generated lesson goals:\n", this.lessonSettings.goals);
     await this.requestNextStage();
   }
@@ -53,7 +58,9 @@ export class DefaultLessonGenerator {
   }
 
   async buildLessonSettings(lessonSettings) {
-    const goalsGenerator = await GoalsGenerator.create(lessonSettings.lessonLanguage);
+    const goalsGenerator = await GoalsGenerator.create(
+      lessonSettings.lessonLanguage,
+    );
     const goals = await goalsGenerator.generate(lessonSettings);
     return { ...lessonSettings, goals };
   }
@@ -71,7 +78,10 @@ export class DefaultLessonGenerator {
   }
 
   async *generateStagePlan(stageId) {
-    const planGenerator = await PlanGenerator.create(this.lessonSettings.lessonLanguage, stageId);
+    const planGenerator = await PlanGenerator.create(
+      this.lessonSettings.lessonLanguage,
+      stageId,
+    );
     yield* planGenerator.generate(this.lessonSettings);
   }
 

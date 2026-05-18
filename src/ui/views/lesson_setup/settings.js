@@ -1,7 +1,3 @@
-const elements = {
-  settingsContent: document.getElementById("settings-content"),
-};
-
 const DEFAULT_LANGUAGE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 const DEFAULT_TASKS = [
@@ -35,7 +31,6 @@ const DEFAULT_TASKS = [
 let settings = loadSettingsValues();
 let detachScrollFade = null;
 
-// Settings change handler
 export function onChange(id, value) {
   console.log(`id=${id} value=${value}`);
 }
@@ -45,20 +40,42 @@ export function loadSettings({
   languageLevels = DEFAULT_LANGUAGE_LEVELS,
   isAdditionalRequestAvailable = true,
 } = {}) {
-  elements.settingsContent.replaceChildren();
-  elements.settingsContent.appendChild(renderLessonProfileGroup(languageLevels));
+  const settingsContent = getSettingsContent();
 
-  const tuningGroup = renderLessonTuningGroup(availableTasks, isAdditionalRequestAvailable);
+  settingsContent.replaceChildren();
+  settingsContent.appendChild(renderLessonProfileGroup(languageLevels));
+
+  const tuningGroup = renderLessonTuningGroup(
+    availableTasks,
+    isAdditionalRequestAvailable,
+  );
   if (tuningGroup) {
-    elements.settingsContent.appendChild(tuningGroup);
+    settingsContent.appendChild(tuningGroup);
   }
 
-  attachScrollFade(elements.settingsContent);
-  updateScrollFade(elements.settingsContent);
+  attachScrollFade(settingsContent);
+  updateScrollFade(settingsContent);
 }
 
 export function getSettingsValue(key) {
   return settings[key];
+}
+
+export function destroySettings() {
+  if (detachScrollFade) {
+    detachScrollFade();
+    detachScrollFade = null;
+  }
+}
+
+function getSettingsContent() {
+  const settingsContent = document.getElementById("settings-content");
+
+  if (!settingsContent) {
+    throw new Error("Lesson setup settings view is not mounted");
+  }
+
+  return settingsContent;
 }
 
 function loadSettingsValues() {
@@ -104,7 +121,9 @@ function createSettingShell(title, description) {
   headElement.appendChild(createElement("p", "settings-item-title", title));
 
   if (description) {
-    headElement.appendChild(createElement("p", "settings-item-description", description));
+    headElement.appendChild(
+      createElement("p", "settings-item-description", description),
+    );
   }
 
   shellElement.appendChild(headElement);
@@ -143,7 +162,10 @@ function renderLevelPicker(languageLevels) {
   const pickerElement = createElement("div", "settings-level-picker");
   const trackElement = createElement("div", "settings-level-track");
 
-  trackElement.style.setProperty("--settings-level-count", String(languageLevels.length || 1));
+  trackElement.style.setProperty(
+    "--settings-level-count",
+    String(languageLevels.length || 1),
+  );
 
   languageLevels.forEach(function (level) {
     const levelValue = String(level);
@@ -153,7 +175,9 @@ function renderLevelPicker(languageLevels) {
     buttonElement.dataset.value = levelValue;
     buttonElement.setAttribute("aria-pressed", "false");
     buttonElement.appendChild(createElement("span", "settings-level-dot"));
-    buttonElement.appendChild(createElement("span", "settings-level-label", levelValue));
+    buttonElement.appendChild(
+      createElement("span", "settings-level-label", levelValue),
+    );
     buttonElement.addEventListener("click", function () {
       settings.languageLevel = levelValue;
       setLevelPickerValue(trackElement, levelValue);
@@ -171,12 +195,14 @@ function renderLevelPicker(languageLevels) {
 }
 
 function setLevelPickerValue(trackElement, value) {
-  Array.from(trackElement.querySelectorAll(".settings-level-step")).forEach(function (buttonElement) {
-    const isActive = buttonElement.dataset.value === value;
+  Array.from(trackElement.querySelectorAll(".settings-level-step")).forEach(
+    function (buttonElement) {
+      const isActive = buttonElement.dataset.value === value;
 
-    buttonElement.classList.toggle("is-active", isActive);
-    buttonElement.setAttribute("aria-pressed", isActive ? "true" : "false");
-  });
+      buttonElement.classList.toggle("is-active", isActive);
+      buttonElement.setAttribute("aria-pressed", isActive ? "true" : "false");
+    },
+  );
 }
 
 function renderAdditionalRequest() {
@@ -188,7 +214,8 @@ function renderAdditionalRequest() {
 
   textareaElement.value = settings.additionalRequest;
   textareaElement.rows = 4;
-  textareaElement.placeholder = 'For example: "More explanations and travel context"';
+  textareaElement.placeholder =
+    'For example: "More explanations and travel context"';
   textareaElement.addEventListener("input", function () {
     settings.additionalRequest = textareaElement.value;
     emitChange("additionalRequest", settings.additionalRequest);
@@ -209,6 +236,7 @@ function renderTaskToggles(availableTasks) {
     listElement.appendChild(createTaskToggle(task, listElement));
   });
 
+  updateTaskAvailability(listElement);
   shellElement.appendChild(listElement);
   return shellElement;
 }
@@ -227,13 +255,19 @@ function createTaskToggle(task, listElement) {
   inputElement.value = taskId;
   inputElement.checked = !settings.disabledTaskIds.includes(taskId);
 
-  bodyElement.appendChild(createElement("span", "settings-toggle__label", task.label || taskId));
-  bodyElement.appendChild(createElement("span", "settings-toggle__description", task.description || ""));
+  bodyElement.appendChild(
+    createElement("span", "settings-toggle__label", task.label || taskId),
+  );
+  bodyElement.appendChild(
+    createElement(
+      "span",
+      "settings-toggle__description",
+      task.description || "",
+    ),
+  );
   updateTaskStatus(statusElement, inputElement.checked);
 
   inputElement.addEventListener("change", function () {
-    // A generated lesson needs at least one exercise type.
-    // TODO replace with inputElement.disabled = true;
     if (!inputElement.checked && countCheckedTasks(listElement) === 0) {
       inputElement.checked = true;
       return;
@@ -241,6 +275,7 @@ function createTaskToggle(task, listElement) {
 
     updateTaskStatus(statusElement, inputElement.checked);
     settings.disabledTaskIds = getDisabledTaskIds(listElement);
+    updateTaskAvailability(listElement);
     emitChange("disabledTaskIds", settings.disabledTaskIds.slice());
   });
 
@@ -271,6 +306,17 @@ function updateTaskStatus(statusElement, isChecked) {
   statusElement.textContent = isChecked ? "On" : "Off";
 }
 
+function updateTaskAvailability(listElement) {
+  const inputs = Array.from(
+    listElement.querySelectorAll(".settings-toggle__input"),
+  );
+  const checkedCount = countCheckedTasks(listElement);
+
+  inputs.forEach(function (inputElement) {
+    inputElement.disabled = checkedCount === 1 && inputElement.checked;
+  });
+}
+
 function attachScrollFade(rootElement) {
   if (detachScrollFade) {
     detachScrollFade();
@@ -290,13 +336,23 @@ function attachScrollFade(rootElement) {
 }
 
 function updateScrollFade(rootElement) {
-  const maxScrollTop = Math.max(rootElement.scrollHeight - rootElement.clientHeight, 0);
+  const maxScrollTop = Math.max(
+    rootElement.scrollHeight - rootElement.clientHeight,
+    0,
+  );
   const fadeDistance = 80;
   const topFade = Math.min(rootElement.scrollTop / fadeDistance, 1);
-  const bottomFade = maxScrollTop === 0
-    ? 0
-    : Math.min((maxScrollTop - rootElement.scrollTop) / fadeDistance, 1);
+  const bottomFade =
+    maxScrollTop === 0
+      ? 0
+      : Math.min((maxScrollTop - rootElement.scrollTop) / fadeDistance, 1);
 
-  rootElement.style.setProperty("--settings-top-fade-start-alpha", String(1 - topFade));
-  rootElement.style.setProperty("--settings-bottom-fade-start-alpha", String(1 - bottomFade));
+  rootElement.style.setProperty(
+    "--settings-top-fade-start-alpha",
+    String(1 - topFade),
+  );
+  rootElement.style.setProperty(
+    "--settings-bottom-fade-start-alpha",
+    String(1 - bottomFade),
+  );
 }

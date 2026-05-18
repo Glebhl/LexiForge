@@ -15,17 +15,34 @@ const taskControllers = {
   matching: matchingTask,
 };
 
-const elements = {
-  container: document.getElementById("taskStage"),
-  continueBtn: document.getElementById("continue"),
-  skipBtn: document.getElementById("skip"),
-};
+let elements = {};
 
 const queue = [];
 let stagesRemaining = 0;
 let stageFinished = false;
 let pendingResolve = null;
 let transitionToken = 0;
+
+export function bindExerciseLoader(nextElements) {
+  elements = nextElements;
+  queue.length = 0;
+  stagesRemaining = 0;
+  stageFinished = false;
+  pendingResolve = null;
+  transitionToken = 0;
+}
+
+export function unbindExerciseLoader() {
+  notify();
+  elements = {};
+  queue.length = 0;
+}
+
+function ensureExerciseLoaderBound() {
+  if (!elements.container || !elements.continueBtn || !elements.skipBtn) {
+    throw new Error("Lesson flow view is not mounted");
+  }
+}
 
 function getTransitionClasses(direction = "next") {
   if (direction === "prev") {
@@ -65,7 +82,9 @@ function waitForTransition(element) {
 }
 
 function cleanupStage(visibleTask) {
-  for (const taskElement of elements.container.querySelectorAll(".lesson-task")) {
+  for (const taskElement of elements.container.querySelectorAll(
+    ".lesson-task",
+  )) {
     if (taskElement !== visibleTask) {
       taskElement.remove();
     }
@@ -91,8 +110,9 @@ function getTaskElement(templateId) {
 
 function mountTask(templateId, setupTask, direction = "next") {
   const nextTask = getTaskElement(templateId);
-  const previousTask = elements.container.querySelector(".lesson-task.is-active")
-    || elements.container.querySelector(".lesson-task");
+  const previousTask =
+    elements.container.querySelector(".lesson-task.is-active") ||
+    elements.container.querySelector(".lesson-task");
   const token = transitionToken + 1;
   const classes = getTransitionClasses(direction);
 
@@ -124,7 +144,6 @@ function mountTask(templateId, setupTask, direction = "next") {
   return nextTask;
 }
 
-
 function notify() {
   if (!pendingResolve) return;
   const resolve = pendingResolve;
@@ -137,33 +156,43 @@ function lessonComplete() {
 }
 
 export function setStagesAmount(amount) {
+  ensureExerciseLoaderBound();
   stagesRemaining = amount;
 }
 
 export function appendExercise(exercise_id, content) {
+  ensureExerciseLoaderBound();
   elements.skipBtn.disabled = false;
   queue.push({ exercise_id, content });
   notify();
 }
 
 export function finishStage() {
+  ensureExerciseLoaderBound();
   stageFinished = true;
   stagesRemaining = Math.max(0, stagesRemaining - 1);
   notify();
 }
 
 export async function showNextExercise() {
+  ensureExerciseLoaderBound();
   elements.continueBtn.disabled = true;
 
   if (queue.length === 0) {
     if (lessonComplete()) return [true, () => true];
     elements.skipBtn.disabled = true;
     showLoadingScreen(elements, mountTask);
-    await new Promise((resolve) => { pendingResolve = resolve; });
+    await new Promise((resolve) => {
+      pendingResolve = resolve;
+    });
   }
 
   const { exercise_id, content } = queue.shift();
-  const verifier = taskControllers[exercise_id].loadTask(elements, mountTask, content);
+  const verifier = taskControllers[exercise_id].loadTask(
+    elements,
+    mountTask,
+    content,
+  );
 
   const isFinalInStage = stageFinished && queue.length === 0;
   if (isFinalInStage) stageFinished = false;

@@ -5,18 +5,39 @@ let cardEntries = [];
 let nextCardNumber = 0;
 let boundCardList = null;
 
-const elements = {
-  template: document.getElementById("card-template"),
-  cardList: document.getElementById("cards"),
-  emptyText: document.getElementById("cards-empty-text"),
-  deckAmount: document.getElementById("deck-amount"),
-  btnStart: document.getElementById("btn-start"),
-};
+let elements = {};
 
-elements.cardList.addEventListener("click", handleCardActionClick);
+export function bindCards(root = document) {
+  if (boundCardList) {
+    boundCardList.removeEventListener("click", handleCardActionClick);
+  }
+
+  elements = {
+    template: root.getElementById("card-template"),
+    cardList: root.getElementById("cards"),
+    emptyText: root.getElementById("cards-empty-text"),
+    deckAmount: root.getElementById("deck-amount"),
+    btnStart: root.getElementById("btn-start"),
+  };
+
+  ensureCardsBound();
+  elements.cardList.addEventListener("click", handleCardActionClick);
+  boundCardList = elements.cardList;
+  refreshDeckState();
+}
+
+export function unbindCards() {
+  if (boundCardList) {
+    boundCardList.removeEventListener("click", handleCardActionClick);
+  }
+
+  boundCardList = null;
+  elements = {};
+}
 
 export function addCard(card) {
-  console.debug(`Added card: ${card}`);
+  ensureCardsBound();
+  console.debug("Added card:", card);
   const cardEntry = createCardEntry(card);
 
   cardEntries.push(cardEntry);
@@ -29,6 +50,7 @@ export function addCard(card) {
 }
 
 export function removeCard(cardId) {
+  ensureCardsBound();
   const id = String(cardId || "");
   const cardEntry = findCardEntry(id);
   const cardElement = findCardElement(id);
@@ -36,7 +58,7 @@ export function removeCard(cardId) {
   if (!cardElement) {
     removeCardEntry(id);
     refreshDeckState();
-    return cardEntry.card;
+    return cardEntry?.card || null;
   }
 
   const previousPositions = capturePositions(elements.cardList, CARD_SELECTOR);
@@ -44,10 +66,15 @@ export function removeCard(cardId) {
   removeCardElement(cardElement, function () {
     removeCardEntry(id);
     refreshDeckState();
-    runFlipAnimation(elements.cardList, CARD_SELECTOR, previousPositions, CARD_SHIFT_ANIMATION_MS);
+    runFlipAnimation(
+      elements.cardList,
+      CARD_SELECTOR,
+      previousPositions,
+      CARD_SHIFT_ANIMATION_MS,
+    );
   });
 
-  return cardEntry.card;
+  return cardEntry?.card || null;
 }
 
 export function getAllCards() {
@@ -59,6 +86,7 @@ export function getCardsAmount() {
 }
 
 export function clearAllCards() {
+  ensureCardsBound();
   cardEntries = [];
   nextCardNumber = 0;
 
@@ -68,6 +96,18 @@ export function clearAllCards() {
   }
 
   refreshDeckState();
+}
+
+function ensureCardsBound() {
+  if (
+    !elements.template ||
+    !elements.cardList ||
+    !elements.emptyText ||
+    !elements.deckAmount ||
+    !elements.btnStart
+  ) {
+    throw new Error("Lesson setup cards view is not mounted");
+  }
 }
 
 function handleCardActionClick(event) {
@@ -96,7 +136,9 @@ function findCardEntry(cardId) {
 }
 
 function removeCardEntry(cardId) {
-  const index = cardEntries.findIndex((entry) => entry.id === String(cardId || ""));
+  const index = cardEntries.findIndex(
+    (entry) => entry.id === String(cardId || ""),
+  );
 
   if (index !== -1) {
     cardEntries.splice(index, 1);
@@ -142,7 +184,7 @@ function playEnterAnimation(cardElement) {
   );
 }
 
-function removeCardElement(cardElement, callback) {  
+function removeCardElement(cardElement, callback) {
   const animation = cardElement.animate(
     [
       { opacity: 1, transform: "scale(1)" },
@@ -175,7 +217,10 @@ function refreshDeckState() {
   const hasCards = cardEntries.length > 0;
 
   elements.deckAmount.textContent = formatDeckAmount(cardEntries.length);
-  elements.emptyText.classList.toggle("card-grid__empty-text--hidden", hasCards);
+  elements.emptyText.classList.toggle(
+    "card-grid__empty-text--hidden",
+    hasCards,
+  );
 
   elements.btnStart.disabled = !hasCards;
 }

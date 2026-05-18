@@ -9,9 +9,9 @@ function getCorrectAnswer(options, answer) {
 
   const answerIndex = Number(answer);
   if (
-    Number.isInteger(answerIndex)
-    && answerIndex >= 0
-    && answerIndex < options.length
+    Number.isInteger(answerIndex) &&
+    answerIndex >= 0 &&
+    answerIndex < options.length
   ) {
     return getText(options[answerIndex]);
   }
@@ -53,7 +53,8 @@ export function loadTask(elements, mountTask, content) {
     const answerField = root.querySelector(".answer-field");
     const label = answerField.querySelector(".lesson-card__label");
 
-    root.querySelector(".question-content").textContent = content?.question || "";
+    root.querySelector(".question-content").textContent =
+      content?.question || "";
     root.querySelector(".question-paragraph").textContent =
       content?.paragraph || content?.passage || "";
 
@@ -66,7 +67,12 @@ export function loadTask(elements, mountTask, content) {
 
     for (const optionText of options) {
       answerField.append(
-        createOption(optionText, correctAnswer, answerField, elements.continueBtn),
+        createOption(
+          optionText,
+          correctAnswer,
+          answerField,
+          elements.continueBtn,
+        ),
       );
     }
   });

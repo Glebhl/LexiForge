@@ -1,5 +1,6 @@
 const LOADING_TITLE = "GENERATING";
-const LOADING_MESSAGE = "Please wait while the next exercises are being prepared.";
+const LOADING_MESSAGE =
+  "Please wait while the next exercises are being prepared.";
 
 function setupLoadingScreen(root) {
   root.querySelector(".loading-title").textContent = LOADING_TITLE;

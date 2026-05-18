@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.vite/
+LICENSE
+src/prompts/**/*.txt

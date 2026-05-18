@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls \"C:\\\\Users\\\\glebd\\\\Downloads\\\\Glosium-python-legacy\\\\Glosium-python-legacy\")"
-    ]
-  }
-}

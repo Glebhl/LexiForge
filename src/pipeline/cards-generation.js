@@ -22,22 +22,29 @@ export class CardsGenerator {
     const response = await fetch(promptPath);
 
     if (!response.ok) {
-      throw new Error(`Could not load prompt from ${promptPath}. Status: ${response.status}`);
+      throw new Error(
+        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
+      );
     }
-    console.debug("Loaded cards generator prompt");
 
+    console.debug("Loaded cards generator prompt");
     this.prompt = await response.text();
   }
 
   async generate({ learnerRequest, learnerLanguage, callback }) {
-    console.info(`Generating cards. learnerRequest=${learnerRequest} learnerLanguage=${learnerLanguage}`);
-    const userPrompt = this.buildUserPrompt({ learnerRequest, learnerLanguage });
+    console.info(
+      `Generating cards. learnerRequest=${learnerRequest} learnerLanguage=${learnerLanguage}`,
+    );
+    const userPrompt = this.buildUserPrompt({
+      learnerRequest,
+      learnerLanguage,
+    });
     await this.streamCards({ userPrompt, callback });
   }
-  
+
   async streamCards({ userPrompt, callback }) {
     let buffer = "";
-    
+
     for await (const chunk of this.client.streamChat({
       model: this.model,
       messages: [
@@ -49,16 +56,23 @@ export class CardsGenerator {
       buffer += token;
       const lines = buffer.split("\n");
       buffer = lines.pop();
-      lines.forEach((line) => {callback(JSON.parse(line.trim()))});
+
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+
+        if (trimmedLine) {
+          callback(JSON.parse(trimmedLine));
+        }
+      }
     }
 
-    if (buffer) {
+    if (buffer.trim()) {
       callback(JSON.parse(buffer.trim()));
     }
   }
-  
+
   buildUserPrompt({ learnerRequest, learnerLanguage }) {
-    const lines = []
+    const lines = [];
     lines.push(`LEARNER_REQUEST: ${learnerRequest}`);
     lines.push(`LEARNER_LANGUAGE: ${learnerLanguage}`);
     return lines.join("\n");

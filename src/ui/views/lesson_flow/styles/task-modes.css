@@ -199,7 +199,6 @@
   pointer-events: auto;
 }
 
-
 .lesson-task.is-translation-typing .task-keyboard-block,
 .lesson-task.is-filling-typing .task-keyboard-block {
   overflow: hidden;

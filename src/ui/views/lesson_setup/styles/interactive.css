@@ -24,7 +24,9 @@
 
 .topic-prompt:focus {
   border-color: rgba(123, 97, 255, 0.55);
-  box-shadow: 0 0 0 1px rgba(123, 97, 255, 0.25), 0 8px 28px rgba(123, 97, 255, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(123, 97, 255, 0.25),
+    0 8px 28px rgba(123, 97, 255, 0.14);
 }
 
 .mobile-view-tab:hover {
@@ -139,7 +141,11 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.95) 0 26%, rgba(123, 97, 255, 0.95) 27% 100%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.95) 0 26%,
+    rgba(123, 97, 255, 0.95) 27% 100%
+  );
   opacity: 0;
   transition: opacity var(--duration-moderate) var(--easing-standard);
 }
@@ -285,7 +291,9 @@
 
 .request-input-area:focus {
   border-color: rgba(123, 97, 255, 0.55);
-  box-shadow: 0 0 0 1px rgba(123, 97, 255, 0.25), 0 8px 28px rgba(123, 97, 255, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(123, 97, 255, 0.25),
+    0 8px 28px rgba(123, 97, 255, 0.14);
 }
 
 .request-input-area:disabled {

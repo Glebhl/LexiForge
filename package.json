@@ -1,0 +1,19 @@
+{
+  "name": "glosium",
+  "version": "0.1.0",
+  "description": "Static browser prototype for generating AI-assisted language lessons.",
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "preview": "vite preview --host 127.0.0.1",
+    "format": "prettier --write \"**/*.{js,css,html,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,css,html,json,md}\"",
+    "check:js": "node scripts/check-js-syntax.mjs",
+    "check": "npm run format:check && npm run check:js"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "vite": "^6.3.5"
+  }
+}

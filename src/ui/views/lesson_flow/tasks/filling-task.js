@@ -64,7 +64,9 @@ function buildAnswerLayout(answerArea, parts) {
 
 export function loadTask(elements, mountTask, content) {
   const { parts, answers: correctAnswers } = parseParagraph(content?.paragraph);
-  const distractors = Array.isArray(content?.distractors) ? content.distractors : [];
+  const distractors = Array.isArray(content?.distractors)
+    ? content.distractors
+    : [];
   const keyboardWords = shuffle([...correctAnswers, ...distractors]);
 
   let getUserAnswers = () => [];
@@ -98,7 +100,9 @@ export function loadTask(elements, mountTask, content) {
     }
 
     function updateContinueState() {
-      const allFilled = blanks.every((_, index) => getBlankText(index).length > 0);
+      const allFilled = blanks.every(
+        (_, index) => getBlankText(index).length > 0,
+      );
       setContinueEnabled(elements, allFilled);
     }
 
@@ -146,8 +150,13 @@ export function loadTask(elements, mountTask, content) {
         const isTarget = blank === targetBlank;
         blank.classList.toggle("is-drop-preview", isTarget);
         if (isTarget) {
-          blank.dataset.dropPreview = normalizeInlineText(wordElement.textContent);
-          blank.style.setProperty("--drop-preview-width", `${wordElement.getBoundingClientRect().width}px`);
+          blank.dataset.dropPreview = normalizeInlineText(
+            wordElement.textContent,
+          );
+          blank.style.setProperty(
+            "--drop-preview-width",
+            `${wordElement.getBoundingClientRect().width}px`,
+          );
         } else {
           delete blank.dataset.dropPreview;
           blank.style.removeProperty("--drop-preview-width");
@@ -183,7 +192,10 @@ export function loadTask(elements, mountTask, content) {
           }
         }
         dragState.data.dropBlank = hoveredBlank;
-        keyboardArea.classList.toggle("is-drop-target", isPointInside(keyboardArea, pointerX, pointerY));
+        keyboardArea.classList.toggle(
+          "is-drop-target",
+          isPointInside(keyboardArea, pointerX, pointerY),
+        );
         previewDropBlank(hoveredBlank, dragState.wordElement);
       },
       onDrop(dragState, settle, pointerX, pointerY) {
@@ -201,7 +213,11 @@ export function loadTask(elements, mountTask, content) {
           return true;
         }
 
-        if (!dropBlank && sourceBlank && isPointInside(keyboardArea, pointerX, pointerY)) {
+        if (
+          !dropBlank &&
+          sourceBlank &&
+          isPointInside(keyboardArea, pointerX, pointerY)
+        ) {
           settle(() => {
             clearDropHighlights();
             dragState.placeholder.remove();
@@ -231,7 +247,9 @@ export function loadTask(elements, mountTask, content) {
 
       runFlipAnimation(containers, () => {
         if (isInKeyboard) {
-          const emptyBlank = blanks.find((blank) => !blank.querySelector(".task-key"));
+          const emptyBlank = blanks.find(
+            (blank) => !blank.querySelector(".task-key"),
+          );
           if (!emptyBlank) return;
           emptyBlank.append(wordElement);
         } else {
@@ -246,10 +264,12 @@ export function loadTask(elements, mountTask, content) {
     answerArea.addEventListener("click", handleWordClick);
 
     for (const blank of blanks) {
-      blank.querySelector(".task-blank__input").addEventListener("input", () => {
-        clearInvalidAnswer();
-        updateContinueState();
-      });
+      blank
+        .querySelector(".task-blank__input")
+        .addEventListener("input", () => {
+          clearInvalidAnswer();
+          updateContinueState();
+        });
     }
 
     attachModeSwitch(modeSwitchRoot, switchMode, WORD_BANK_MODE);
@@ -266,7 +286,9 @@ export function loadTask(elements, mountTask, content) {
     }
 
     const isCorrect = correctAnswers.every(
-      (expected, index) => normalizeInlineText(userAnswers[index]) === normalizeInlineText(expected),
+      (expected, index) =>
+        normalizeInlineText(userAnswers[index]) ===
+        normalizeInlineText(expected),
     );
     if (!isCorrect) showInvalidAnswer();
     return isCorrect;

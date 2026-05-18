@@ -1,14 +1,22 @@
-import { addCard, getAllCards } from "./cards.js";
-import { getSettingsValue, loadSettings } from "./settings.js";
-import { showHint } from "./hint.js";
+import {
+  addCard,
+  bindCards,
+  clearAllCards,
+  getAllCards,
+  unbindCards,
+} from "./cards.js";
+import { destroySettings, getSettingsValue, loadSettings } from "./settings.js";
+import { showHint, showHintText } from "./hint.js";
 import { initLessonSetupTabs } from "./tabs.js";
 import { CardsGenerator } from "../../../pipeline/index.js";
 
-const elements = {
-  btnGenerate: document.getElementById("btn-go"),
-  btnStart: document.getElementById("btn-start"),
-  prompt: document.getElementById("prompt"),
-};
+function getElements() {
+  return {
+    btnGenerate: document.getElementById("btn-go"),
+    btnStart: document.getElementById("btn-start"),
+    prompt: document.getElementById("prompt"),
+  };
+}
 
 const testCards = [
   {
@@ -20,7 +28,8 @@ const testCards = [
     translation: "двусмысленный",
     definition: "имеющий несколько возможных значений",
     definition_english: "having several possible meanings",
-    example: 'The ending of the movie was ambiguous and left us with many questions.',
+    example:
+      "The ending of the movie was ambiguous and left us with many questions.",
   },
   {
     lexeme: "inevitable",
@@ -31,7 +40,7 @@ const testCards = [
     translation: "неизбежный",
     definition: "то, чего нельзя избежать",
     definition_english: "something that cannot be avoided",
-    example: 'It was an inevitable consequence of his actions.',
+    example: "It was an inevitable consequence of his actions.",
   },
   {
     lexeme: "subtle",
@@ -42,7 +51,7 @@ const testCards = [
     translation: "тонкий, едва заметный",
     definition: "неявный или трудноуловимый",
     definition_english: "implicit or elusive",
-    example: 'There is a subtle difference between these two shades of blue.',
+    example: "There is a subtle difference between these two shades of blue.",
   },
   {
     lexeme: "resilient",
@@ -53,7 +62,8 @@ const testCards = [
     translation: "устойчивый, жизнестойкий",
     definition: "способный быстро восстанавливаться после трудностей",
     definition_english: "able to recover quickly from difficulties",
-    example: 'The ending of the movie was ambiguous and left us with many questions.',
+    example:
+      "The ending of the movie was ambiguous and left us with many questions.",
   },
   {
     lexeme: "mitigate",
@@ -64,35 +74,49 @@ const testCards = [
     translation: "смягчать, уменьшать",
     definition: "делать что-то менее серьезным или суровым",
     definition_english: "make something less serious or severe",
-    example: 'The government is trying to mitigate the effects of the crisis.',
+    example: "The government is trying to mitigate the effects of the crisis.",
   },
-]
+];
 
 export class Controller {
   learnerLanguage = "ru";
   lessonLanguage = "en";
 
   constructor() {
-    this.router;
-    this.cardsGenerator;
+    this.router = null;
+    this.cardsGenerator = null;
+    this.elements = {};
+    this.handleGenerateClick = this.generateCards.bind(this);
+    this.handleStartClick = this.startLesson.bind(this);
   }
 
-  // Options are always empty for this page
-  async mount(router, options = {}) {
+  async mount(router) {
     this.router = router;
-    this.cardsGenerator = await CardsGenerator.create(this.lessonLanguage);
+    this.elements = getElements();
+
+    bindCards();
+    clearAllCards();
     initLessonSetupTabs();
     loadSettings();
     showHint();
+    // testCards.forEach(addCard);
 
-    testCards.forEach(addCard);
-    
-    elements.btnGenerate.addEventListener("click", this.startLesson.bind(this));
-    elements.btnStart.addEventListener("click", this.startLesson.bind(this));
+    this.cardsGenerator = await CardsGenerator.create(this.lessonLanguage);
+    this.elements.btnGenerate.addEventListener(
+      "click",
+      this.handleGenerateClick,
+    );
+    this.elements.btnStart.addEventListener("click", this.handleStartClick);
   }
 
   async unmount() {
-
+    this.elements.btnGenerate?.removeEventListener(
+      "click",
+      this.handleGenerateClick,
+    );
+    this.elements.btnStart?.removeEventListener("click", this.handleStartClick);
+    destroySettings();
+    unbindCards();
   }
 
   formatCards() {
@@ -100,7 +124,9 @@ export class Controller {
     const lines = [];
 
     cards.forEach((card) => {
-      lines.push(`lexeme=${card.lexeme}, part_of_speech=${card.part_of_speech}, definition="${card.definition_english}"`); 
+      lines.push(
+        `lexeme=${card.lexeme}, part_of_speech=${card.part_of_speech}, definition="${card.definition_english}"`,
+      );
     });
 
     return lines.join("\n");
@@ -114,16 +140,35 @@ export class Controller {
       learnerRequest: getSettingsValue("additionalRequest"),
       disabledExercises: getSettingsValue("disabledTaskIds"),
       cards: this.formatCards(),
-    }
-    this.router.navigateTo({ path: "/loading", options: lessonSettings });
+    };
+
+    await this.router.navigateTo({ path: "/loading", options: lessonSettings });
   }
 
   async generateCards() {
-    const learnerRequest = elements.prompt.value;
+    const learnerRequest = this.elements.prompt.value.trim();
+
     if (!learnerRequest) {
       console.warn("Lesson request was not provided");
+      showHintText("Add a lesson request first.");
       return;
     }
-    await this.cardsGenerator.generate({ learnerRequest, learnerLanguage: this.learnerLanguage, callback: addCard });
+
+    clearAllCards();
+    this.elements.btnGenerate.disabled = true;
+    showHintText("Generating cards...");
+
+    try {
+      await this.cardsGenerator.generate({
+        learnerRequest,
+        learnerLanguage: this.learnerLanguage,
+        callback: addCard,
+      });
+      showHintText("Cards are ready. Review them, then start the lesson.");
+    } catch (error) {
+      showHintText(error.message || "Could not generate cards.");
+    } finally {
+      this.elements.btnGenerate.disabled = false;
+    }
   }
 }

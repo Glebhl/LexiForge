@@ -1,5 +1,3 @@
-/* TODO add radial subtle gradients to all surface panels */
-
 @font-face {
   font-family: "Roboto";
   src: url("../fonts/Roboto.ttf") format("truetype");
@@ -28,8 +26,16 @@
   --color-scroll-track: rgba(255, 255, 255, 0.06);
   --color-scroll-thumb: rgba(255, 255, 255, 0.22);
   --color-slider-circle: rgba(53, 54, 55, 1);
-  --gradient-btn-go: linear-gradient(135deg, rgba(123, 97, 255, 1), rgba(123, 97, 255, 0.72)); 
-  --gradient-btn-start: linear-gradient(135deg, rgba(32, 227, 178, 1), rgba(32, 227, 178, 0.7)); 
+  --gradient-btn-go: linear-gradient(
+    135deg,
+    rgba(123, 97, 255, 1),
+    rgba(123, 97, 255, 0.72)
+  );
+  --gradient-btn-start: linear-gradient(
+    135deg,
+    rgba(32, 227, 178, 1),
+    rgba(32, 227, 178, 0.7)
+  );
   --shadow-shell: 0 6px 20px rgba(0, 0, 0, 0.15);
   --shadow-card: 0 3px 18px rgba(0, 0, 0, 0.12);
   --shadow-chip: 0 3px 10px rgba(0, 0, 0, 0.07);
