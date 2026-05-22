@@ -156,7 +156,6 @@ export class Controller {
 
     clearAllCards();
     this.elements.btnGenerate.disabled = true;
-    showHintText("Generating cards...");
 
     try {
       await this.cardsGenerator.generate({
@@ -164,7 +163,6 @@ export class Controller {
         learnerLanguage: this.learnerLanguage,
         callback: addCard,
       });
-      showHintText("Cards are ready. Review them, then start the lesson.");
     } catch (error) {
       showHintText(error.message || "Could not generate cards.");
     } finally {
