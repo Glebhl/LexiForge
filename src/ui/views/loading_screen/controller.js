@@ -40,6 +40,7 @@ export class Controller {
     console.log("Opening lesson flow page");
     await this.router.navigateTo({
       path: "/lesson",
+      addToHistory: false,
       options: { lessonGenerator: this.lessonGenerator },
     });
   }

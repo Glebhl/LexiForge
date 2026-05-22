@@ -85,7 +85,8 @@ export class Controller {
     if (this.isFinalInStage) {
       if (this.stageIdx === this.lessonGenerator.stagesAmount - 1) {
         console.log("You've completed all exercises");
-        this.finishLesson();
+        this.router.goBack();
+
         return;
       }
       this.stageIdx = await this.lessonGenerator.requestNextStage();
@@ -113,11 +114,5 @@ export class Controller {
 
   async onSkipClick() {
     await this.showNextExercise();
-  }
-
-  finishLesson() {
-    this.elements.btnContinue.disabled = true;
-    this.elements.btnSkip.disabled = true;
-    this.elements.btnContinue.textContent = "Done";
   }
 }
