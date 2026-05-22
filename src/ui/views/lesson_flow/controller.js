@@ -2,6 +2,7 @@ import {
   appendExercise,
   bindExerciseLoader,
   finishStage,
+  setProgressEnabled,
   setStagesAmount,
   showNextExercise,
   unbindExerciseLoader,
@@ -12,6 +13,9 @@ function getElements() {
     container: document.getElementById("taskStage"),
     btnContinue: document.getElementById("continue"),
     btnSkip: document.getElementById("skip"),
+    progressRoot: document.getElementById("lessonProgress"),
+    progressBars: document.getElementById("progressBars"),
+    progressText: document.getElementById("progressText"),
   };
 }
 
@@ -45,12 +49,16 @@ export class Controller {
       container: this.elements.container,
       continueBtn: this.elements.btnContinue,
       skipBtn: this.elements.btnSkip,
+      progressRoot: this.elements.progressRoot,
+      progressBars: this.elements.progressBars,
+      progressText: this.elements.progressText,
     });
     this.lessonGenerator.subscribeNewTaskAppeared(
       this.appendExercise.bind(this),
     );
     this.lessonGenerator.subscribeLastTaskAppeared(finishStage);
     this.stageIdx = this.lessonGenerator.stageIdx;
+    setProgressEnabled(this.lessonGenerator.progressEnabled !== false);
     setStagesAmount(this.lessonGenerator.stagesAmount);
     this.elements.btnContinue.addEventListener(
       "click",
@@ -69,8 +77,8 @@ export class Controller {
     unbindExerciseLoader();
   }
 
-  async appendExercise(exercise_id, content) {
-    appendExercise(exercise_id, content);
+  async appendExercise(exercise_id, content, meta) {
+    appendExercise(exercise_id, content, meta);
   }
 
   async showNextExercise() {

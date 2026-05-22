@@ -5,6 +5,17 @@
   padding: 15px;
 }
 
+.lesson-progress__bars {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lesson-progress--bars-hidden .lesson-progress__bars {
+  display: none;
+}
+
 .lesson-progress-bar {
   flex: 1;
   height: 12px;
@@ -27,10 +38,11 @@
 }
 
 .lesson-progress__text {
-  width: 55px;
+  min-width: 55px;
   color: var(--color-text-muted);
   font-size: 16px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .lesson-stage {

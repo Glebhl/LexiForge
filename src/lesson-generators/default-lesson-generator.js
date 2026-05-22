@@ -4,18 +4,19 @@ import {
   ContentGenerator,
 } from "../pipeline/index.js";
 
-const DEFAULT_STAGES = ["presentation"];
+const DEFAULT_STAGES = ["presentation", "recognition", "stronger_recall"];
 const noop = async () => {};
 const callbackOrNoop = (callback) =>
   typeof callback === "function" ? callback : noop;
 
 export class DefaultLessonGenerator {
-  constructor({ stages = DEFAULT_STAGES } = {}) {
+  constructor({ stages = DEFAULT_STAGES, progressEnabled = true } = {}) {
     this.onFirstTaskAppeared = noop;
     this.onNewTaskAppeared = noop;
     this.onLastTaskAppeared = noop;
     this.stages = [...stages];
     this.stagesAmount = this.stages.length;
+    this.progressEnabled = progressEnabled;
     this.stageIdx = -1;
     this.contentGenerator = null;
     this.lessonSettings = null;
@@ -49,11 +50,18 @@ export class DefaultLessonGenerator {
 
     let exerciseIdx = 0;
     for await (const exercise of this.generateStagePlan(stageId)) {
-      await this.generateExercise(exercise, exerciseIdx);
+      await this.generateExercise(exercise, exerciseIdx, {
+        stageId,
+        stageIdx: this.stageIdx,
+      });
       exerciseIdx++;
     }
 
-    await this.onLastTaskAppeared();
+    await this.onLastTaskAppeared({
+      stageId,
+      stageIdx: this.stageIdx,
+      exerciseCount: exerciseIdx,
+    });
     return this.stageIdx;
   }
 
@@ -85,7 +93,7 @@ export class DefaultLessonGenerator {
     yield* planGenerator.generate(this.lessonSettings);
   }
 
-  async generateExercise(exercise, exerciseIdx) {
+  async generateExercise(exercise, exerciseIdx, stageMeta) {
     const exerciseContent = await this.contentGenerator.generate(exercise);
 
     if (this.isFirstExercise(exerciseIdx)) {
@@ -94,7 +102,10 @@ export class DefaultLessonGenerator {
     }
 
     console.debug("A new exercise appeared:", exerciseContent);
-    await this.onNewTaskAppeared(exercise.exercise_id, exerciseContent);
+    await this.onNewTaskAppeared(exercise.exercise_id, exerciseContent, {
+      ...stageMeta,
+      exerciseIdx,
+    });
   }
 
   isFirstExercise(exerciseIdx) {
