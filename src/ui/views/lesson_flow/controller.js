@@ -15,6 +15,10 @@ function getElements() {
   };
 }
 
+function isVerifierPassed(result) {
+  return result === true || result === "correct" || result === "minor";
+}
+
 export class Controller {
   constructor() {
     this.router = null;
@@ -22,6 +26,7 @@ export class Controller {
     this.exerciseVerifier = null;
     this.elements = {};
     this.isFinalInStage = false;
+    this.isCheckingAnswer = false;
     this.stageIdx = -1;
     this.handleContinueClick = this.onContinueClick.bind(this);
     this.handleSkipClick = this.onSkipClick.bind(this);
@@ -82,8 +87,19 @@ export class Controller {
   }
 
   async onContinueClick() {
-    if (this.exerciseVerifier?.()) {
-      await this.showNextExercise();
+    if (this.isCheckingAnswer) {
+      return;
+    }
+
+    this.isCheckingAnswer = true;
+    try {
+      const verifier = this.exerciseVerifier;
+      const result = await verifier?.();
+      if (this.exerciseVerifier === verifier && isVerifierPassed(result)) {
+        await this.showNextExercise();
+      }
+    } finally {
+      this.isCheckingAnswer = false;
     }
   }
 

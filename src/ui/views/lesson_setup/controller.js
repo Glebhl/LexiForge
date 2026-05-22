@@ -99,7 +99,7 @@ export class Controller {
     initLessonSetupTabs();
     loadSettings();
     showHint();
-    // testCards.forEach(addCard);
+    testCards.forEach(addCard);
 
     this.cardsGenerator = await CardsGenerator.create(this.lessonLanguage);
     this.elements.btnGenerate.addEventListener(

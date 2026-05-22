@@ -9,28 +9,34 @@ import {
   setContinueEnabled,
   shuffle,
 } from "./word-bank-utils.js";
+import {
+  CORRECT,
+  MISTAKE,
+  evaluateTranslationAnswer,
+  isPassingEvaluation,
+  isTranslationAnswerCorrect,
+} from "./answer-checking.js";
 
 const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
 const FLIP_PLACEHOLDER_MS = 120;
 
-
 function getMinimumWordBank(sentences) {
   const wordRegex = /\p{L}+(?:[-'’]\p{L}+)*/gu;
   const maxWordCounts = {};
 
-  for (sentence of sentences) {
+  for (const sentence of sentences) {
     const matches = sentence.match(wordRegex);
 
-    const currentWordCounts = {}
-    for (word of matches) {
+    const currentWordCounts = {};
+    for (const word of matches) {
       currentWordCounts[word] = (currentWordCounts[word] ?? 0) + 1;
     }
 
     for (const word in currentWordCounts) {
       const currentCount = currentWordCounts[word];
       const maxCount = maxWordCounts[word] || 0;
-      
+
       if (currentCount > maxCount) {
         maxWordCounts[word] = currentCount;
       }
@@ -252,17 +258,26 @@ export function loadTask(elements, mountTask, content) {
       state.mode === TYPING_MODE ? getTypingText() : getWordBankText();
   });
 
-  return function verify() {
+  return async function verify() {
     const userAnswer = normalizeInlineText(getUserAnswer());
     if (userAnswer.length === 0) {
       showInvalidAnswer();
-      return false;
+      return MISTAKE;
     }
 
-    const isCorrect = correctAnswers.some(
-      (expected) => normalizeInlineText(expected) === userAnswer,
-    );
-    if (!isCorrect) showInvalidAnswer();
-    return isCorrect;
+    if (isTranslationAnswerCorrect(userAnswer, correctAnswers)) {
+      return CORRECT;
+    }
+
+    let evaluation = MISTAKE;
+    try {
+      evaluation = await evaluateTranslationAnswer(promptText, userAnswer);
+    } catch (error) {
+      console.error("Translation answer check failed", error);
+    }
+    console.debug(`isCorrect=${evaluation}, expected=${promptText}, answer=${userAnswer}`);
+
+    if (!isPassingEvaluation(evaluation)) showInvalidAnswer();
+    return evaluation;
   };
 }

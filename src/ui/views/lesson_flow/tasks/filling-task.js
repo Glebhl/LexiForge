@@ -8,6 +8,13 @@ import {
   setContinueEnabled,
   shuffle,
 } from "./word-bank-utils.js";
+import {
+  CORRECT,
+  MISTAKE,
+  evaluateFillingAnswer,
+  isFillingAnswerCorrect,
+  isPassingEvaluation,
+} from "./answer-checking.js";
 
 const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
@@ -278,19 +285,31 @@ export function loadTask(elements, mountTask, content) {
     getUserAnswers = () => blanks.map((_, index) => getBlankText(index));
   });
 
-  return function verify() {
+  return async function verify() {
     const userAnswers = getUserAnswers();
     if (userAnswers.length !== correctAnswers.length) {
       showInvalidAnswer();
-      return false;
+      return MISTAKE;
     }
 
-    const isCorrect = correctAnswers.every(
-      (expected, index) =>
-        normalizeInlineText(userAnswers[index]) ===
-        normalizeInlineText(expected),
-    );
-    if (!isCorrect) showInvalidAnswer();
-    return isCorrect;
+    if (isFillingAnswerCorrect(userAnswers, correctAnswers)) {
+      return CORRECT;
+    }
+
+    let evaluation = MISTAKE;
+    try {
+      evaluation = await evaluateFillingAnswer(
+        parts,
+        correctAnswers,
+        userAnswers,
+      );
+    } catch (error) {
+      console.error("Filling answer check failed", error);
+    }
+
+    console.debug(`isCorrect=${evaluation}, expected=${correctAnswers}, answer=${userAnswers}`);
+
+    if (!isPassingEvaluation(evaluation)) showInvalidAnswer();
+    return evaluation;
   };
 }
