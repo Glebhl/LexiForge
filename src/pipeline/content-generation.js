@@ -10,15 +10,15 @@ const PROMPT_FILES = {
 };
 
 export class ContentGenerator {
-  constructor(lessonLanguage, options = {}) {
-    this.lessonLanguage = lessonLanguage;
+  constructor(lessonSettings, options = {}) {
+    this.lessonSettings = lessonSettings;
     this.model = options.model || "google/gemini-3-flash-preview";
     this.client = new OpenRouterClient(options);
     this.prompts = {};
   }
 
-  static async create(lessonLanguage, options = {}) {
-    const contentGenerator = new ContentGenerator(lessonLanguage, options);
+  static async create(lessonSettings, options = {}) {
+    const contentGenerator = new ContentGenerator(lessonSettings, options);
     await contentGenerator.loadPrompts();
     return contentGenerator;
   }
@@ -37,7 +37,7 @@ export class ContentGenerator {
     }
 
     const promptPath = new URL(
-      `../prompts/${this.lessonLanguage}/task-generation/${promptFile}`,
+      `../prompts/${this.lessonSettings.lessonLanguage}/task-generation/${promptFile}`,
       import.meta.url,
     );
     const response = await fetch(promptPath);
@@ -89,7 +89,12 @@ export class ContentGenerator {
 
   buildUserPrompt({ description }) {
     const lines = [];
-    description && lines.push(`DESCRIPTION:\n${description}`);
+    description &&
+      lines.push(`DESCRIPTION:\n${description}`);
+    this.lessonSettings.learnerLanguage &&
+      lines.push(`LEARNER_LANGUAGE: ${this.lessonSettings.learnerLanguage}`);
+    this.lessonSettings.learnerLevel &&
+      lines.push(`LEARNER_LEVEL: ${this.lessonSettings.learnerLevel}`);
     return lines.join("\n");
   }
 }

@@ -58,8 +58,6 @@ export class GoalsGenerator {
 
   buildUserPrompt(lessonSettings) {
     const lines = [];
-    lessonSettings.lessonLanguage &&
-      lines.push(`LESSON_LANGUAGE: ${lessonSettings.lessonLanguage}`);
     lessonSettings.learnerLanguage &&
       lines.push(`LEARNER_LANGUAGE: ${lessonSettings.learnerLanguage}`);
     lessonSettings.learnerLevel &&
