@@ -14,14 +14,42 @@ const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
 const FLIP_PLACEHOLDER_MS = 120;
 
-function splitWords(text) {
-  return normalizeInlineText(text)
-    .split(" ")
-    .filter((word) => word.length > 0);
+
+function getMinimumWordBank(sentences) {
+  const wordRegex = /\p{L}+(?:[-'’]\p{L}+)*/gu;
+  const maxWordCounts = {};
+
+  for (sentence of sentences) {
+    const matches = sentence.match(wordRegex);
+
+    const currentWordCounts = {}
+    for (word of matches) {
+      currentWordCounts[word] = (currentWordCounts[word] ?? 0) + 1;
+    }
+
+    for (const word in currentWordCounts) {
+      const currentCount = currentWordCounts[word];
+      const maxCount = maxWordCounts[word] || 0;
+      
+      if (currentCount > maxCount) {
+        maxWordCounts[word] = currentCount;
+      }
+    }
+  }
+
+  const result = [];
+  for (const word in maxWordCounts) {
+    const count = maxWordCounts[word];
+    for (let i = 0; i < count; i++) {
+      result.push(word);
+    }
+  }
+
+  return result;
 }
 
 function buildKeyboardWords(answers, distractors) {
-  const correctWords = splitWords(answers[0] || "");
+  const correctWords = getMinimumWordBank(answers);
   return shuffle([...correctWords, ...distractors]);
 }
 
