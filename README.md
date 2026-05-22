@@ -2,6 +2,23 @@
 
 Glosium is a web page for generating AI-assisted languages lessons from your request.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/screenshot2.png" alt="Glosium lesson planning screen" />
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/screenshot1.png" alt="Glosium interactive lesson task" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Lesson planning screen.</sub></td>
+    <td align="center"><sub>Lesson task screen.</sub></td>
+  </tr>
+</table>
+
 ## Requirements
 
 - Node.js 20 or newer
