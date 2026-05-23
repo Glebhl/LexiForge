@@ -119,19 +119,6 @@ export class Controller {
     unbindCards();
   }
 
-  formatCards() {
-    const cards = getAllCards();
-    const lines = [];
-
-    cards.forEach((card) => {
-      lines.push(
-        `lexeme=${card.lexeme}, part_of_speech=${card.part_of_speech}, definition="${card.definition_english}"`,
-      );
-    });
-
-    return lines.join("\n");
-  }
-
   async startLesson() {
     const lessonSettings = {
       lessonLanguage: this.lessonLanguage,
@@ -139,7 +126,7 @@ export class Controller {
       learnerLevel: getSettingsValue("languageLevel"),
       learnerRequest: getSettingsValue("additionalRequest"),
       disabledExercises: getSettingsValue("disabledTaskIds"),
-      cards: this.formatCards(),
+      cards: formatAllCards(),
     };
 
     await this.router.navigateTo({ path: "/loading", options: lessonSettings });
@@ -169,8 +156,8 @@ export class Controller {
           continue;
         }
 
-        if (typeof item.lexeme === "string") {
-          addCard(warning);
+        if (isGeneratedCard(item)) {
+          addCard(item);
           continue;
         }
       }
@@ -180,4 +167,36 @@ export class Controller {
       this.elements.btnGenerate.disabled = false;
     }
   }
+}
+
+function isGeneratedCard(item) {
+  return (
+    (item?.type === "vocab") ||
+    (item?.type === "grammar")
+  );
+}
+
+function formatAllCards() {
+  const cards = getAllCards();
+  return cards.map(formatLearningUnit).filter(Boolean).join("\n");
+}
+
+function formatLearningUnit(card) {
+  if (card.type === "grammar") {
+    return formatGrammarUnit(card);
+  }
+
+  return formatVocabUnit(card);
+}
+
+function formatVocabUnit(card) {
+  return [
+    `vocab: lexeme="${card.lexeme || "N/A"}"`,
+    `part_of_speech="${card.part_of_speech || "N/A"}"`,
+    `definition="${card.part_of_speech || "N/A"}"`,
+  ].join(", ");
+}
+
+function formatGrammarUnit(card) {
+  return `grammar: item="${card.grammar || "N/A"}"`
 }

@@ -64,7 +64,8 @@ export class GoalsGenerator {
       lines.push(`LEARNER_LEVEL: ${lessonSettings.learnerLevel}`);
     lessonSettings.learnerRequest &&
       lines.push(`LEARNER_REQUEST: ${lessonSettings.learnerRequest}`);
-    lessonSettings.cards && lines.push(`TARGETS:\n${lessonSettings.cards}`);
+    lessonSettings.cards &&
+      lines.push(`LEARNING_UNITS:\n${lessonSettings.cards}`);
     return lines.join("\n");
   }
 }

@@ -42,7 +42,7 @@
             <input
               class="topic-prompt"
               id="prompt"
-              placeholder='What do you want to learn today? e.g. "Business meeting vocabulary for B2"'
+              placeholder='What do you want to learn today? e.g. "Second Conditional" or "Business meeting vocabulary for B2"'
             />
             <div class="hint-line">
               <div class="hint-text" id="hint"></div>
@@ -114,44 +114,47 @@
     </main>
 
     <template id="card-template">
-      <div class="lesson-card">
+      <div class="lesson-card lesson-card--vocab">
         <div class="lesson-card__header">
           <div class="lesson-card__term">
             <p class="lesson-card__word"></p>
             <p class="lesson-card__transcription"></p>
           </div>
-          <div class="lesson-card__actions">
-            <button class="action-btn" type="button" aria-label="Edit card">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M12 20h9"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                ></path>
-                <path
-                  d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5z"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>
-              </svg>
-            </button>
-            <button
-              class="action-btn action-btn--remove"
-              type="button"
-              aria-label="Remove card"
-            >
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M18 6 6 18M6 6l12 12"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                ></path>
-              </svg>
-            </button>
+          <div class="lesson-card__header-aside">
+            <div class="lesson-card__actions">
+              <button class="action-btn" type="button" aria-label="Edit card">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 20h9"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  ></path>
+                  <path
+                    d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="action-btn action-btn--remove"
+                type="button"
+                aria-label="Remove card"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M18 6 6 18M6 6l12 12"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <!-- <span class="lesson-card__type"></span> -->
           </div>
         </div>
         <div class="lesson-card__meta">
@@ -159,7 +162,7 @@
             <span class="meta-pill__value meta-pill__value--unit"></span>
             unit
           </span>
-          <span class="meta-pill">
+          <span class="meta-pill meta-pill--part">
             <span class="meta-pill__value meta-pill__value--part"></span>
             part of speech
           </span>
@@ -168,13 +171,13 @@
             level
           </span>
         </div>
-        <div class="lesson-card__section">
-          <p class="lesson-card__section-label">TRANSLATION</p>
-          <p class="lesson-card__section-value lesson-card__translation"></p>
+        <div class="lesson-card__section lesson-card__section--primary">
+          <p class="lesson-card__section-label lesson-card__primary-label"></p>
+          <p class="lesson-card__section-value lesson-card__primary"></p>
         </div>
-        <div class="lesson-card__section">
-          <p class="lesson-card__section-label">MEANING</p>
-          <p class="lesson-card__section-value lesson-card__definition"></p>
+        <div class="lesson-card__section lesson-card__section--secondary">
+          <p class="lesson-card__section-label lesson-card__secondary-label"></p>
+          <p class="lesson-card__section-value lesson-card__secondary"></p>
         </div>
         <div class="lesson-card__section lesson-card__section--example">
           <p class="lesson-card__section-label">EXAMPLE</p>

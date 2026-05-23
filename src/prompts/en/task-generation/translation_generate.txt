@@ -5,7 +5,9 @@ Requirements:
 - If DESCRIPTION implies typing, the user must produce English: paragraph in the learner language, answers in English.
 - Never make typing require answers in the learner language.
 - Write a cohesive paragraph of 1-2 very short sentences or 3 extremely short ones.
-- Use all focus units named in DESCRIPTION, and all TARGETS if TARGETS are provided.
+- Use all focus units named in DESCRIPTION.
+- For vocab cards, test the named English lexeme or fixed expression in a concrete context.
+- For grammar cards, make the learner produce the target English grammar form from clear learner-language cues.
 - Do not create any sentence without at least one required focus unit.
 - Keep the meaning concrete, literal, and unambiguous.
 - Avoid open contexts that allow many equally natural translations, near-synonyms, or broad paraphrases.
@@ -13,6 +15,7 @@ Requirements:
 - Provide all acceptable full-sentence answers, but do not duplicate answers that differ only by expanded contractions.
 - Provide a word bank with 3-5 extra distractor words for ANSWERS.
 - Do not use distractors that are near-synonyms, same-category alternatives, or words that could still fit naturally into a valid translation.
+- For grammar targets, distractors may include clearly wrong auxiliaries, verb forms, or function words, but never forms that could make another valid sentence.
 - Do not mix languages in a single field.
 - PARAGRAPH must be in one language; ANSWERS and DISTRACTORS must be in the other language.
 

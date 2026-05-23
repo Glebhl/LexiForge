@@ -16,7 +16,7 @@ export class CardsGenerator {
 
   async loadPrompt() {
     const promptPath = new URL(
-      `../prompts/${this.lessonLanguage}/cards/vocabulary_generate.txt`,
+      `../prompts/${this.lessonLanguage}/cards/cards_generate.txt`,
       import.meta.url,
     );
     const response = await fetch(promptPath);

@@ -156,18 +156,56 @@ function createCardElement(cardEntry) {
 }
 
 function fillCardElement(cardElement, card) {
+  if (card.type === "grammar") {
+    fillGrammarCardElement(cardElement, card);
+    return;
+  }
+
+  fillVocabCardElement(cardElement, card);
+}
+
+function fillVocabCardElement(cardElement, card) {
+  cardElement.classList.add("lesson-card--vocab");
+  cardElement.classList.remove("lesson-card--grammar");
   setText(cardElement, ".lesson-card__word", card.lexeme);
+  setText(cardElement, ".lesson-card__transcription", card.transcription);
+  // setText(cardElement, ".lesson-card__type", "VOCAB");
   setText(cardElement, ".meta-pill__value--unit", card.lexical_unit);
   setText(cardElement, ".meta-pill__value--part", card.part_of_speech);
   setText(cardElement, ".meta-pill__value--level", card.level);
-  setText(cardElement, ".lesson-card__transcription", card.transcription);
-  setText(cardElement, ".lesson-card__translation", card.translation);
-  setText(cardElement, ".lesson-card__definition", card.definition);
-  setText(cardElement, ".lesson-card__example", `"${card.example}"`);
+  setText(cardElement, ".lesson-card__primary-label", "TRANSLATION");
+  setText(cardElement, ".lesson-card__primary", card.translation);
+  setText(cardElement, ".lesson-card__secondary-label", "MEANING");
+  setText(cardElement, ".lesson-card__secondary", card.definition);
+  setText(cardElement, ".lesson-card__example", formatExample(card.example));
+  toggleElement(cardElement, ".meta-pill--part", true);
+}
+
+function fillGrammarCardElement(cardElement, card) {
+  cardElement.classList.add("lesson-card--grammar");
+  cardElement.classList.remove("lesson-card--vocab");
+  setText(cardElement, ".lesson-card__word", card.grammar);
+  // setText(cardElement, ".lesson-card__type", "GRAMMAR");
+  setText(cardElement, ".meta-pill__value--unit", "grammar");
+  setText(cardElement, ".meta-pill__value--level", card.level);
+  setText(cardElement, ".lesson-card__primary-label", "RULE");
+  setText(cardElement, ".lesson-card__primary", card.rule);
+  setText(cardElement, ".lesson-card__example", formatExample(card.example));
+  toggleElement(cardElement, ".lesson-card__transcription", false);
+  toggleElement(cardElement, ".meta-pill--part", false);
+  toggleElement(cardElement, ".lesson-card__section--secondary", false);
+}
+
+function formatExample(example) {
+  return example ? `"${example}"` : "";
 }
 
 function setText(root, selector, value) {
   root.querySelector(selector).textContent = value || "";
+}
+
+function toggleElement(root, selector, isVisible) {
+  root.querySelector(selector).hidden = !isVisible;
 }
 
 function playEnterAnimation(cardElement) {

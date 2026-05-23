@@ -16,7 +16,6 @@ You may receive:
 - PREVIOUS_STAGE_RESULTS
 
 LEARNING_UNITS may be vocabulary, grammar, patterns, chunks, functions, or contrasts.
-Use only units from LEARNING_UNITS. Treat their IDs, forms, meanings, translations, and POS/rules as source truth.
 
 [GOAL]
 This stage is part of one continuous lesson.
@@ -89,13 +88,10 @@ Before outputting a step, check that the exercise type makes pedagogical sense f
 
 [DESCRIPTION]
 description is the complete contract for the later generator.
-There is no separate targets field, so description must carry every selected unit.
+There is no separate targets field, so description must carry every selected lexeme or grammar description.
 
-Use this compact structure:
-Units: U1 'form' = meaning/translation/rule/use; U2 'form' = meaning/translation/rule/use. Task: what the learner does, with sentence/pair/blank/passage count, context, direction, and support level. Constraints: contrast, form focus, answer language, and any ambiguity guard.
-
-For vocabulary, include translation, part of speech if useful, and natural situation or collocation.
-For grammar/patterns, include form, use condition, meaning effect, and common confusion.
+For vocabulary, include the lexeme, part of speech if useful, hidden English definition, and natural situation or collocation.
+For grammar/patterns, include the grammar item name, standard form, use condition, meaning effect, and common confusion.
 Do not include exact exercise content, answer keys, or finished sentences.
 Do not target a unit unless it is named in description with enough context to generate it.
 

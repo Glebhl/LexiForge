@@ -2,7 +2,9 @@ Create one reading-comprehension multiple-choice exercise entirely in English.
 
 Requirements:
 - Write one short paragraph of 3-10 sentences in English.
-- Use all focus units named in DESCRIPTION, and all TARGETS if TARGETS are provided, naturally in the passage.
+- Use all focus units named in DESCRIPTION naturally in the passage.
+- For vocab cards, use the target lexeme or fixed expression in context.
+- For grammar cards, use the target grammar form naturally and make it support the passage meaning.
 - The correct answer must not be inferable from general knowledge or the target words.
 - Then write one clear question about the passage.
 - Provide 3-4 very short answer options in English.

@@ -6,15 +6,16 @@
 }
 
 .lesson-card__word {
-  font-size: 20px;
-  font-weight: 600;
   color: var(--color-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .lesson-card__transcription {
-  font-size: 14px;
   margin-top: 6px;
   color: var(--color-text-muted);
+  font-size: 14px;
 }
 
 .lesson-card__meta {
@@ -26,17 +27,32 @@
 }
 
 .lesson-card__section-value {
-  font-size: 17px;
   color: rgba(233, 233, 243, 0.8);
+  font-size: 17px;
   font-weight: 700;
+  line-height: 1.35;
 }
 
 .lesson-card__example-text {
   color: rgba(233, 233, 243, 0.78);
   font-size: 16px;
+  line-height: 1.45;
 }
 
 .lesson-card__header {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
+}
+
+.lesson-card__term {
+  min-width: 0;
+}
+
+.lesson-card__header-aside {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
 }

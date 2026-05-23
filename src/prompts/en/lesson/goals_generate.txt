@@ -20,5 +20,5 @@ Example:
 [
   "Present 'advice' as an uncountable noun and show article restrictions",
   "Contrast common preposition patterns for movement and placement verbs",
-  "Exlain when the target grammar describes sequence, contrast, or result"
+  "Explain that the Second Conditional uses past form plus would for unreal present or future situations"
 ]
