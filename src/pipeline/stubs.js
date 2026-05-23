@@ -3,10 +3,20 @@
 // the raw text below as if it were the model's response.
 
 export const STUB_FLAGS = {
+  cards: false,
   goals: false,
   plan: false,
   content: false,
 };
+
+// JSONL: one generated card per line.
+export const CARDS_STUB = `{"type":"vocab","lexeme":"ambiguous","lexical_unit":"word","part_of_speech":"adjective","level":"B2","transcription":"/æmˈbɪɡjuəs/","translation":"двусмысленный","definition":"имеющий несколько возможных значений","definition_english":"having several possible meanings","example":"The ending of the movie was ambiguous and left us with many questions."}
+{"type":"vocab","lexeme":"inevitable","lexical_unit":"word","part_of_speech":"adjective","level":"B2","transcription":"/æmˈbɪɡjuəs/","translation":"неизбежный","definition":"то, чего нельзя избежать","definition_english":"something that cannot be avoided","example":"It was an inevitable consequence of his actions."}
+{"type":"vocab","lexeme":"subtle","lexical_unit":"word","part_of_speech":"adjective","level":"B2","transcription":"/æmˈbɪɡjuəs/","translation":"тонкий, едва заметный","definition":"неявный или трудноуловимый","definition_english":"implicit or elusive","example":"There is a subtle difference between these two shades of blue."}
+{"type":"vocab","lexeme":"mitigate","lexical_unit":"word","part_of_speech":"verb","level":"B2","transcription":"/æmˈbɪɡjuəs/","translation":"смягчать, уменьшать","definition":"делать что-то менее серьезным или суровым","definition_english":"make something less serious or severe","example":"The government is trying to mitigate the effects of the crisis."}
+{"type":"grammar","grammar":"Present Perfect for life experience","level":"B1","rule":"используется, чтобы говорить об опыте без указания точного времени в прошлом","example":"I have visited London twice."}
+{"type":"grammar","grammar":"Used to for past habits","level":"B1","rule":"используется для привычек или состояний в прошлом, которые сейчас уже не актуальны","example":"She used to live near the station."}
+`;
 
 export const GOALS_STUB = `[
   "Present 'advice' as an uncountable noun and show article restrictions",

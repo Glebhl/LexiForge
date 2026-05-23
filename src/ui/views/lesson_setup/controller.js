@@ -20,66 +20,6 @@ function getElements() {
   };
 }
 
-const testCards = [
-  {
-    lexeme: "ambiguous",
-    lexical_unit: "word",
-    part_of_speech: "adjective",
-    level: "B2",
-    transcription: "/æmˈbɪɡjuəs/",
-    translation: "двусмысленный",
-    definition: "имеющий несколько возможных значений",
-    definition_english: "having several possible meanings",
-    example:
-      "The ending of the movie was ambiguous and left us with many questions.",
-  },
-  {
-    lexeme: "inevitable",
-    lexical_unit: "word",
-    part_of_speech: "adjective",
-    level: "B2",
-    transcription: "/æmˈbɪɡjuəs/",
-    translation: "неизбежный",
-    definition: "то, чего нельзя избежать",
-    definition_english: "something that cannot be avoided",
-    example: "It was an inevitable consequence of his actions.",
-  },
-  {
-    lexeme: "subtle",
-    lexical_unit: "word",
-    part_of_speech: "adjective",
-    level: "B2",
-    transcription: "/æmˈbɪɡjuəs/",
-    translation: "тонкий, едва заметный",
-    definition: "неявный или трудноуловимый",
-    definition_english: "implicit or elusive",
-    example: "There is a subtle difference between these two shades of blue.",
-  },
-  {
-    lexeme: "resilient",
-    lexical_unit: "word",
-    part_of_speech: "adjective",
-    level: "B2",
-    transcription: "/æmˈbɪɡjuəs/",
-    translation: "устойчивый, жизнестойкий",
-    definition: "способный быстро восстанавливаться после трудностей",
-    definition_english: "able to recover quickly from difficulties",
-    example:
-      "The ending of the movie was ambiguous and left us with many questions.",
-  },
-  {
-    lexeme: "mitigate",
-    lexical_unit: "word",
-    part_of_speech: "verb",
-    level: "B2",
-    transcription: "/æmˈbɪɡjuəs/",
-    translation: "смягчать, уменьшать",
-    definition: "делать что-то менее серьезным или суровым",
-    definition_english: "make something less serious or severe",
-    example: "The government is trying to mitigate the effects of the crisis.",
-  },
-];
-
 export class Controller {
   learnerLanguage = "ru";
   lessonLanguage = "en_US";
@@ -101,7 +41,6 @@ export class Controller {
     initLessonSetupTabs();
     loadSettings();
     showHint();
-    // testCards.forEach(addCard);
 
     this.cardsGenerator = await CardsGenerator.create(this.lessonLanguage);
     this.elements.btnGenerate.addEventListener(

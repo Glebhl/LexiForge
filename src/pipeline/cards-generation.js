@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class CardsGenerator {
   constructor(lessonLanguage, options = {}) {
@@ -43,6 +44,20 @@ export class CardsGenerator {
   }
 
   async *streamCards({ userPrompt }) {
+    if (STUB_FLAGS.cards) {
+      console.debug("CardsGenerator: using stub instead of LLM call");
+
+      for (const line of CARDS_STUB.split("\n")) {
+        const trimmedLine = line.trim();
+
+        if (trimmedLine) {
+          yield trimmedLine;
+        }
+      }
+
+      return;
+    }
+
     let buffer = "";
 
     for await (const chunk of this.client.streamChat({
