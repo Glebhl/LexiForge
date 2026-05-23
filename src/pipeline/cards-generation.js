@@ -31,7 +31,7 @@ export class CardsGenerator {
     this.prompt = await response.text();
   }
 
-  async generate({ learnerRequest, learnerLanguage, callback }) {
+  async *generate({ learnerRequest, learnerLanguage }) {
     console.info(
       `Generating cards. learnerRequest=${learnerRequest} learnerLanguage=${learnerLanguage}`,
     );
@@ -39,10 +39,10 @@ export class CardsGenerator {
       learnerRequest,
       learnerLanguage,
     });
-    await this.streamCards({ userPrompt, callback });
+    yield* this.streamCards({ userPrompt });
   }
 
-  async streamCards({ userPrompt, callback }) {
+  async *streamCards({ userPrompt }) {
     let buffer = "";
 
     for await (const chunk of this.client.streamChat({
@@ -61,13 +61,13 @@ export class CardsGenerator {
         const trimmedLine = line.trim();
 
         if (trimmedLine) {
-          callback(JSON.parse(trimmedLine));
+          yield trimmedLine;
         }
       }
     }
 
     if (buffer.trim()) {
-      callback(JSON.parse(buffer.trim()));
+      yield buffer.trim();
     }
   }
 

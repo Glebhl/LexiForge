@@ -158,11 +158,22 @@ export class Controller {
     this.elements.btnGenerate.disabled = true;
 
     try {
-      await this.cardsGenerator.generate({
+      for await (const line of this.cardsGenerator.generate({
         learnerRequest,
         learnerLanguage: this.learnerLanguage,
-        callback: addCard,
-      });
+      })) {
+        const item = JSON.parse(line);
+
+        if (typeof item.warning === "string") {
+          showHintText(item.warning);
+          continue;
+        }
+
+        if (typeof item.lexeme === "string") {
+          addCard(warning);
+          continue;
+        }
+      }
     } catch (error) {
       showHintText(error.message || "Could not generate cards.");
     } finally {
