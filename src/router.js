@@ -45,7 +45,7 @@ export class Router {
     const routeDocument = this.parseRouteDocument(html);
 
     this.replaceRouteStyles(routeDocument, routeUrl);
-    app.replaceChildren(...this.getRouteBodyNodes(routeDocument));
+    app.replaceChildren(...this.getRouteBodyNodes(routeDocument, routeUrl));
 
     this.currentScreen = await this.mountRouteController(
       path,
@@ -84,10 +84,22 @@ export class Router {
     return new DOMParser().parseFromString(html, "text/html");
   }
 
-  getRouteBodyNodes(routeDocument) {
+  getRouteBodyNodes(routeDocument, routeUrl) {
+    this.resolveRouteAssetUrls(routeDocument, routeUrl);
+
     return Array.from(routeDocument.body.childNodes).map((node) =>
       document.importNode(node, true),
     );
+  }
+
+  resolveRouteAssetUrls(routeDocument, routeUrl) {
+    for (const element of routeDocument.body.querySelectorAll("[src]")) {
+      const src = element.getAttribute("src");
+
+      if (src) {
+        element.setAttribute("src", new URL(src, routeUrl).href);
+      }
+    }
   }
 
   async mountRouteController(path, routeUrl, options) {

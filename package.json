@@ -6,6 +6,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "build": "vite build && node scripts/copy-runtime-assets.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "format": "prettier --write \"**/*.{js,css,html,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,css,html,json,md}\"",
