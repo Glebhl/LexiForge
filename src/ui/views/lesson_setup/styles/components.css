@@ -338,7 +338,7 @@
   color: rgba(211, 219, 255, 0.68);
 }
 
-@media (max-width: 420px) {
+@media (max-width: 500px) {
   .brand-row {
     align-items: flex-start;
     gap: 12px;
