@@ -32,14 +32,14 @@ function shuffle(items) {
   return shuffled;
 }
 
-function createChoice(text, pairId, side) {
+function createChoice(text, side) {
   const choice = document.createElement("button");
 
   choice.className = "task-choice is-idle";
   choice.type = "button";
   choice.textContent = text;
-  choice.dataset.pairId = String(pairId);
   choice.dataset.side = side;
+  choice.dataset.value = text;
 
   return choice;
 }
@@ -47,6 +47,10 @@ function createChoice(text, pairId, side) {
 function setChoiceState(choice, stateName) {
   choice.className = "task-choice";
   choice.classList.add(stateName);
+}
+
+function createPairKey(left, right) {
+  return JSON.stringify([left, right]);
 }
 
 export function loadTask(elements, mountTask, content) {
@@ -59,6 +63,9 @@ export function loadTask(elements, mountTask, content) {
       left: null,
       right: null,
     };
+    const correctPairKeys = new Set(
+      pairs.map((pair) => createPairKey(pair.left, pair.right)),
+    );
     let correctPairsCount = 0;
 
     function updateContinueState() {
@@ -70,12 +77,8 @@ export function loadTask(elements, mountTask, content) {
 
     for (const [index, pair] of pairs.entries()) {
       matchingGrid.append(
-        createChoice(pair.left, pair.id, "left"),
-        createChoice(
-          shuffledRightPairs[index].right,
-          shuffledRightPairs[index].id,
-          "right",
-        ),
+        createChoice(pair.left, "left"),
+        createChoice(shuffledRightPairs[index].right, "right"),
       );
     }
 
@@ -110,8 +113,9 @@ export function loadTask(elements, mountTask, content) {
         return;
       }
 
-      const isCorrect =
-        leftChoice.dataset.pairId === rightChoice.dataset.pairId;
+      const isCorrect = correctPairKeys.has(
+        createPairKey(leftChoice.dataset.value, rightChoice.dataset.value),
+      );
 
       setChoiceState(leftChoice, isCorrect ? "is-correct" : "is-wrong");
       setChoiceState(rightChoice, isCorrect ? "is-correct" : "is-wrong");
