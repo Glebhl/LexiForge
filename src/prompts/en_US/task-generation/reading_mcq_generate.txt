@@ -15,24 +15,26 @@ Requirements:
 - For grammar, use the target form naturally and make it support the passage meaning.
 - Write one clear English question about the passage.
 - The correct answer must depend on the passage, not on general knowledge or isolated target-word meaning.
-- Provide 3-4 short English options.
-- Exactly one option must be correct.
-- Wrong options must clearly contradict the passage or be unsupported by it.
+- Write one short correct English answer.
+- Provide 2-3 short incorrect English answers in "distractors".
+- Exactly one answer must be correct: the separate "answer" value.
+- Distractors must clearly contradict the passage or be unsupported by it.
 - Keep language appropriate for LEARNER_LEVEL.
 
 Bug prevention:
 - Do not ask "What does X mean?" if the answer can be guessed from the card alone.
-- Do not make options duplicates, near-duplicates, or all broadly true.
-- Do not reveal the answer only by copying one unique phrase into the correct option.
-- Do not mix learner-language text into the passage, question, or options.
+- Do not make answers duplicates, near-duplicates, or all broadly true.
+- Do not reveal the answer only by copying one unique phrase into the correct answer.
+- Do not include the correct answer in "distractors".
+- Do not mix learner-language text into the passage, question, or answers.
 
 Output raw valid JSON only. No markdown, code fences, comments, or extra text.
-"answer" must be the zero-based integer index of the correct option.
+"answer" must be the correct answer text. "distractors" must contain only incorrect answers.
 
 Schema:
 {
   "passage": "...",
   "question": "...",
-  "options": ["...", "...", "..."],
-  "answer": 0
+  "answer": "...",
+  "distractors": ["...", "...", "..."]
 }

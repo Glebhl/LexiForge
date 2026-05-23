@@ -19,6 +19,43 @@ function getCorrectAnswer(options, answer) {
   return getText(answer);
 }
 
+function shuffle(items) {
+  const shuffledItems = [...items];
+
+  for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledItems[index], shuffledItems[swapIndex]] = [
+      shuffledItems[swapIndex],
+      shuffledItems[index],
+    ];
+  }
+
+  return shuffledItems;
+}
+
+function getQuestionAnswers(content) {
+  const answer = getText(content?.answer);
+  const distractors = Array.isArray(content?.distractors)
+    ? content.distractors.map(getText)
+    : [];
+
+  if (answer && distractors.length > 0) {
+    return {
+      correctAnswer: answer,
+      options: shuffle([answer, ...distractors]),
+    };
+  }
+
+  const options = Array.isArray(content?.options)
+    ? content.options.map(getText)
+    : [];
+
+  return {
+    correctAnswer: getCorrectAnswer(options, content?.answer),
+    options: shuffle(options),
+  };
+}
+
 function createOption(optionText, correctAnswer, answerField, continueBtn) {
   const option = document.createElement("button");
 
@@ -46,10 +83,7 @@ function createOption(optionText, correctAnswer, answerField, continueBtn) {
 
 export function loadTask(elements, mountTask, content) {
   mountTask("tpl-question", (root) => {
-    const options = Array.isArray(content?.options)
-      ? content.options.map(getText)
-      : [];
-    const correctAnswer = getCorrectAnswer(options, content?.answer);
+    const { options, correctAnswer } = getQuestionAnswers(content);
     const answerField = root.querySelector(".answer-field");
     const label = answerField.querySelector(".lesson-card__label");
 

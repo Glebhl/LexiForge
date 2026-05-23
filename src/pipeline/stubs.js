@@ -44,8 +44,8 @@ export const CONTENT_STUBS = {
   question: `{
   "passage": "Mira wanted to improve her English before a job interview. Her teacher gave her some advice and one practical tip. The advice was to speak clearly. The tip was to write three key sentences before the interview.",
   "question": "What did Mira's teacher give her?",
-  "options": ["Some advice and one tip", "A ticket and a map", "Two interviews", "A new job"],
-  "answer": 0
+  "answer": "Some advice and one tip",
+  "distractors": ["A ticket and a map", "Two interviews", "A new job"]
 }`,
   translation: `{
   "paragraph": "I need some advice before the exam.",
