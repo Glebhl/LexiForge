@@ -12,7 +12,11 @@
   min-height: 90px;
 }
 
-.task-answer.task-answer--translation,
+.task-answer.task-answer--translation {
+  transition:
+    opacity var(--duration-normal) ease,
+    transform var(--duration-normal) ease;
+}
 .task-answer__typing-wrap {
   position: absolute;
   inset: 0;
@@ -161,7 +165,6 @@
 
 .lesson-task .task-keyboard-block {
   overflow: visible;
-  max-height: 220px;
   margin: 14px 0;
   padding: 14px;
   border-width: 1px;
@@ -230,4 +233,49 @@
   opacity: 0;
   transform: scale(0.94);
   pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .task-answer-stack {
+    min-height: 62px;
+  }
+
+  .task-answer.task-answer--translation {
+    gap: 4px;
+    font-size: 14px;
+  }
+
+  .task-answer__typing-input {
+    padding: 4px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .task-answer.task-answer--filling {
+    min-height: 68px;
+    font-size: 15px;
+    line-height: 32px;
+  }
+
+  .filling-text {
+    line-height: 32px;
+  }
+
+  .task-blank {
+    min-width: max(80px, var(--drop-preview-width, 0px));
+    min-height: 36px;
+    border-bottom-width: 1px;
+  }
+
+  .task-blank.is-drop-preview::after {
+    min-width: var(--drop-preview-width, 58px);
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 14px;
+  }
+
+  .lesson-task .task-keyboard-block {
+    margin: 8px 0;
+    padding: 10px;
+  }
 }

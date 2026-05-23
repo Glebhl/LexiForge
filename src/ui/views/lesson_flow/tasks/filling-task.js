@@ -53,8 +53,8 @@ function createBlankSlot() {
   input.className = "task-blank__input";
   input.type = "text";
   input.autocomplete = "off";
-  input.spellcheck = false;
-
+  input.autocapitalize = "none";
+  
   inputWrap.append(input);
   blank.append(inputWrap);
   return blank;

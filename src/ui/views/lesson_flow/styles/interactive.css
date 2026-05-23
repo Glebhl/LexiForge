@@ -21,21 +21,17 @@
   background: var(--color-surface);
 }
 
-.task-key,
-.task-keyboard__mode-button,
-.task-choice,
-.item {
-  -webkit-tap-highlight-color: transparent;
-}
-
 .task-key {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 9px 12px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: var(--color-surface);
   color: var(--color-text);
   font-size: 16px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
   cursor: pointer;
   box-shadow: var(--shadow-chip);
   transition:
@@ -118,15 +114,23 @@ body.is-word-dragging * {
 .matching-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
   gap: 5px 16px;
   margin-top: 14px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
 
+.matching-grid .task-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .task-choice,
 .item {
-  padding: 15px 0;
+  padding: 15px 10px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -168,9 +172,46 @@ body.is-word-dragging * {
   display: none !important;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
+  .task-keyboard {
+    gap: 4px;
+    min-height: 60px;
+  }
+
   .task-keyboard__header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .task-keyboard__mode-switch {
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .task-key,
+  .task-key-placeholder {
+    min-height: 31px;
+    padding: 6px 9px;
+    font-size: 15px;
+  }
+
+  .task-keyboard__mode-button {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .matching-grid {
+    margin-top: 8px;
+  }
+
+  .task-choice {
+    padding: 10px 10px;
+    font-size: 18px;
+  }
+
+  .item {
+    padding: 10px 10px;
+    font-size: 18px;
   }
 }

@@ -3,9 +3,9 @@
 // the raw text below as if it were the model's response.
 
 export const STUB_FLAGS = {
-  goals: false,
-  plan: false,
-  content: false,
+  goals: true,
+  plan: true,
+  content: true,
 };
 
 export const GOALS_STUB = `[

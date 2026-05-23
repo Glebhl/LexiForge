@@ -53,6 +53,7 @@
   --shell-inline-gap: 70px;
   --shell-block-gap: 40px;
   --card-padding: 14px;
+  --mobile-resize-threshold: 600px;
 }
 
 *,
@@ -121,7 +122,7 @@ code {
   font-size: 12px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   :root {
     --shell-inline-gap: 24px;
     --shell-block-gap: 24px;

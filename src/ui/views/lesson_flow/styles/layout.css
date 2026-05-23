@@ -96,13 +96,41 @@
   white-space: nowrap;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .lesson-progress {
-    gap: 10px;
-    padding: 12px;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  .lesson-progress__bars {
+    gap: 5px;
+  }
+
+  .lesson-progress-bar {
+    height: 11px;
+  }
+
+  .lesson-progress__text {
+    min-width: 42px;
+    font-size: 14px;
   }
 
   .lesson-task {
-    inset: 12px;
+    inset: 0 12px 12px 12px;
+  }
+
+  .lesson-task__title {
+    margin-left: 4px;
+    /* font-size: 18px; */
+  }
+
+  .lesson-task__description {
+    margin-top: 4px;
+    margin-left: 4px;
+    /* font-size: 13px; */
+  }
+
+  .translation-prompt {
+    font-size: 15px;
   }
 }
