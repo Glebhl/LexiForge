@@ -260,24 +260,45 @@
   height: 100%;
   min-height: 420px;
   padding: 16px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--lesson-card-border, var(--color-border));
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background:
+    linear-gradient(180deg, var(--lesson-card-tint), transparent 48%),
+    var(--color-surface);
   box-shadow: var(--shadow-card);
+  --lesson-card-tint: transparent;
+  --lesson-card-border: var(--color-border);
+  --lesson-card-border-hover: var(--color-border-hover);
+  --lesson-card-accent: rgba(233, 233, 243, 0.32);
+  --lesson-card-accent-soft: rgba(255, 255, 255, 0.045);
+  --lesson-card-accent-border: rgba(255, 255, 255, 0.09);
+  --lesson-card-label: var(--color-text-muted);
 }
 
 .lesson-card--vocab {
-  border-color: rgba(118, 148, 255, 0.2);
-  background:
-    linear-gradient(180deg, rgba(118, 148, 255, 0.04), transparent 60%),
-    var(--color-surface);
+  --lesson-card-tint: rgba(118, 148, 255, 0.018);
+  --lesson-card-border: rgba(118, 148, 255, 0.11);
+  --lesson-card-border-hover: rgba(118, 148, 255, 0.2);
+  --lesson-card-accent: rgba(118, 148, 255, 0.42);
+  --lesson-card-accent-soft: rgba(118, 148, 255, 0.07);
+  --lesson-card-accent-border: rgba(118, 148, 255, 0.16);
+  --lesson-card-label: rgba(213, 221, 255, 0.62);
+  --lesson-card-secondary-accent: rgba(153, 128, 255, 0.34);
+  --lesson-card-secondary-soft: rgba(153, 128, 255, 0.055);
+  --lesson-card-secondary-border: rgba(153, 128, 255, 0.13);
 }
 
 .lesson-card--grammar {
-  border-color: rgba(255, 122, 96, 0.2);
-  background:
-    linear-gradient(180deg, rgba(255, 122, 96, 0.02), transparent 60%),
-    var(--color-surface);
+  --lesson-card-tint: rgba(255, 122, 96, 0.016);
+  --lesson-card-border: rgba(255, 122, 96, 0.11);
+  --lesson-card-border-hover: rgba(255, 122, 96, 0.2);
+  --lesson-card-accent: rgba(255, 139, 115, 0.38);
+  --lesson-card-accent-soft: rgba(255, 122, 96, 0.065);
+  --lesson-card-accent-border: rgba(255, 122, 96, 0.15);
+  --lesson-card-label: rgba(255, 218, 209, 0.6);
+  --lesson-card-secondary-accent: rgba(255, 204, 102, 0.32);
+  --lesson-card-secondary-soft: rgba(255, 204, 102, 0.052);
+  --lesson-card-secondary-border: rgba(255, 204, 102, 0.13);
 }
 
 .lesson-card--vocab::before,
@@ -285,23 +306,8 @@
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: 3px;
-}
-
-.lesson-card--vocab::before {
-  background: linear-gradient(
-    180deg,
-    rgba(118, 148, 255, 0.7),
-    rgba(153, 128, 255, 0.52)
-  );
-}
-
-.lesson-card--grammar::before {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 122, 96, 0.76),
-    rgba(255, 204, 102, 0.6)
-  );
+  width: 2px;
+  background: var(--lesson-card-accent);
 }
 
 /* .lesson-card__type {
@@ -331,11 +337,11 @@
 }
 
 .lesson-card--grammar .lesson-card__section-label {
-  color: rgba(255, 214, 204, 0.68);
+  color: var(--lesson-card-label);
 }
 
 .lesson-card--vocab .lesson-card__section-label {
-  color: rgba(211, 219, 255, 0.68);
+  color: var(--lesson-card-label);
 }
 
 @media (max-width: 500px) {
