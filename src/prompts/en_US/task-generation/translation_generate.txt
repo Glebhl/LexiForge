@@ -1,4 +1,4 @@
-﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+﻿Glosium teaches American English (en_US), so write any English content in natural American English: spelling, vocabulary, grammar, punctuation, and usage. English output must be real English, not learner-language text transliterated into Latin letters.
 
 Create one translation task for Glosium, an English-learning app.
 
@@ -13,6 +13,7 @@ The learner must always translate into English. This is true for both word-bank 
 Requirements:
 - Write the source text entirely in LEARNER_LANGUAGE.
 - Write all acceptable answers as full English translations.
+- Do not create English answers by romanizing or transliterating LEARNER_LANGUAGE words.
 - Use every focus unit named in DESCRIPTION in the intended English answer set.
 - For vocabulary, cue the named English lexeme, phrase, collocation, or fixed expression through concrete learner-language meaning.
 - For grammar, cue the required English form through clear meaning, time, and context.
