@@ -7,6 +7,7 @@ import {
   showNextExercise,
   unbindExerciseLoader,
 } from "./exercise-load.js";
+import { notify } from "../../notifications.js";
 
 function getElements() {
   return {
@@ -85,6 +86,7 @@ export class Controller {
     if (this.isFinalInStage) {
       if (this.stageIdx === this.lessonGenerator.stagesAmount - 1) {
         console.log("You've completed all exercises");
+        notify.info("You've completed all exercises");
         this.router.goBack();
 
         return;

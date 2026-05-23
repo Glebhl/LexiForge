@@ -1,4 +1,5 @@
 import { DefaultLessonGenerator } from "../../../lesson-generators/default-lesson-generator.js";
+import { notify } from "../../notifications.js";
 
 function getElements() {
   return {
@@ -55,9 +56,11 @@ export class Controller {
   }
 
   showGenerationError(error) {
+    const message = error.message || "Check the API key and try again.";
+
     this.elements.title.textContent = "Could not generate the lesson";
-    this.elements.description.textContent =
-      error.message || "Check the API key and try again.";
+    this.elements.description.textContent = message;
     this.elements.btnStop.textContent = "Back";
+    notify.error(message, { title: "Lesson generation failed" });
   }
 }

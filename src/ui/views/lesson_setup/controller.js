@@ -9,6 +9,7 @@ import { destroySettings, getSettingsValue, loadSettings } from "./settings.js";
 import { showHint, showHintText } from "./hint.js";
 import { initLessonSetupTabs } from "./tabs.js";
 import { CardsGenerator } from "../../../pipeline/index.js";
+import { notify } from "../../notifications.js";
 
 function getElements() {
   return {
@@ -137,7 +138,7 @@ export class Controller {
 
     if (!learnerRequest) {
       console.warn("Lesson request was not provided");
-      showHintText("Add a lesson request first.");
+      notify.warning("Add a lesson request first.");
       return;
     }
 
@@ -152,7 +153,7 @@ export class Controller {
         const item = JSON.parse(line);
 
         if (typeof item.warning === "string") {
-          showHintText(item.warning);
+          notify.info(item.warning);
           continue;
         }
 
@@ -162,7 +163,8 @@ export class Controller {
         }
       }
     } catch (error) {
-      showHintText(error.message || "Could not generate cards.");
+      const message = error.message || "Could not generate cards.";
+      notify.error(message, { title: "Card generation failed" });
     } finally {
       this.elements.btnGenerate.disabled = false;
     }

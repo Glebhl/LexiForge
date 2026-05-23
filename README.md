@@ -47,6 +47,23 @@ Use the included local storage utility at `/storage.html` to create or update th
 
 Pipeline debug stubs live in `src/pipeline/stubs.js`. You can enable them, so exercise content can be tested without spending API calls.
 
+## Notification API
+
+Use `notify` from `src/ui/notifications.js`, or call the global
+`window.glosiumNotify` API from any screen:
+
+```js
+import { notify } from "./ui/notifications.js";
+
+notify.debug("Generation stream chunk received.");
+notify.info("Lesson is ready.");
+notify.warning("Add a lesson request first.");
+notify.error("Could not generate cards.");
+```
+
+The API also supports `notify.show({ level, title, message, duration })`,
+`notify.close(id)`, and `notify.clear()`.
+
 ## License
 
 GPL-3.0-only. See [LICENSE](LICENSE).
