@@ -54,9 +54,7 @@ export class Controller {
       progressBars: this.elements.progressBars,
       progressText: this.elements.progressText,
     });
-    this.lessonGenerator.subscribeNewTaskAppeared(
-      this.appendExercise.bind(this),
-    );
+    this.lessonGenerator.subscribeNewTaskAppeared(appendExercise);
     this.lessonGenerator.subscribeLastTaskAppeared(finishStage);
     this.stageIdx = this.lessonGenerator.stageIdx;
     setProgressEnabled(this.lessonGenerator.progressEnabled !== false);
@@ -77,11 +75,7 @@ export class Controller {
     this.elements.btnSkip?.removeEventListener("click", this.handleSkipClick);
     unbindExerciseLoader();
   }
-
-  async appendExercise(exercise_id, content, meta) {
-    appendExercise(exercise_id, content, meta);
-  }
-
+  
   async showNextExercise() {
     if (this.isFinalInStage) {
       if (this.stageIdx === this.lessonGenerator.stagesAmount - 1) {

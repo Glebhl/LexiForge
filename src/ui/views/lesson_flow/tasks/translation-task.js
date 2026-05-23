@@ -60,7 +60,7 @@ function buildKeyboardWords(answers, distractors) {
   return shuffle([...correctWords, ...distractors]);
 }
 
-export function loadTask(elements, mountTask, content) {
+export function loadTask(elements, mountTask, content, meta = {}) {
   const promptText = String(content?.sentence || content?.paragraph || "");
   const correctAnswers = Array.isArray(content?.answers) ? content.answers : [];
   const distractors = Array.isArray(content?.distractors)
@@ -252,7 +252,7 @@ export function loadTask(elements, mountTask, content) {
       updateContinueState();
     });
 
-    attachModeSwitch(modeSwitchRoot, switchMode, WORD_BANK_MODE);
+    attachModeSwitch(modeSwitchRoot, switchMode, meta.mode || WORD_BANK_MODE);
     updateContinueState();
 
     getUserAnswer = () =>

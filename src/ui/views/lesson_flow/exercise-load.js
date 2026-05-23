@@ -312,7 +312,11 @@ export function setStagesAmount(amount) {
 export function appendExercise(exercise_id, content, meta) {
   ensureExerciseLoaderBound();
   elements.skipBtn.disabled = false;
-  queue.push({ exercise_id, content, stageIdx: recordGeneratedExercise(meta) });
+  queue.push({
+    exercise_id,
+    content,
+    meta: { ...meta, stageIdx: recordGeneratedExercise(meta) },
+  });
   notify();
 }
 
@@ -338,12 +342,13 @@ export async function showNextExercise() {
     });
   }
 
-  const { exercise_id, content, stageIdx } = queue.shift();
-  recordShownExercise(stageIdx);
+  const { exercise_id, content, meta } = queue.shift();
+  recordShownExercise(meta.stageIdx);
   const verifier = taskControllers[exercise_id].loadTask(
     elements,
     mountTask,
     content,
+    meta,
   );
 
   const isFinalInStage = stageFinished && queue.length === 0;

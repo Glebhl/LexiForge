@@ -70,7 +70,7 @@ function buildAnswerLayout(answerArea, parts) {
   }
 }
 
-export function loadTask(elements, mountTask, content) {
+export function loadTask(elements, mountTask, content, meta = {}) {
   const { parts, answers: correctAnswers } = parseParagraph(content?.paragraph);
   const distractors = Array.isArray(content?.distractors)
     ? content.distractors
@@ -280,7 +280,7 @@ export function loadTask(elements, mountTask, content) {
         });
     }
 
-    attachModeSwitch(modeSwitchRoot, switchMode, WORD_BANK_MODE);
+    attachModeSwitch(modeSwitchRoot, switchMode, meta.mode || WORD_BANK_MODE);
     updateContinueState();
 
     getUserAnswers = () => blanks.map((_, index) => getBlankText(index));

@@ -53,13 +53,12 @@ export class ContentGenerator {
     this.prompts[exercise_id] = await response.text();
   }
 
-  async generate({ description, exercise_id, mode }) {
+  async generate({ description, exercise_id }) {
     console.info("Generating lesson content.", {
       exercise_id,
       description,
-      mode,
     });
-    const userPrompt = this.buildUserPrompt({ description, mode });
+    const userPrompt = this.buildUserPrompt(description);
     console.debug(`User prompt:\n${userPrompt}`);
 
     let content;
@@ -95,10 +94,10 @@ export class ContentGenerator {
     });
   }
 
-  buildUserPrompt({ description, mode }) {
+  buildUserPrompt(escription) {
     const lines = [];
-    description && lines.push(`DESCRIPTION:\n${description}`);
-    mode && lines.push(`MODE: ${mode}`);
+    description &&
+      lines.push(`DESCRIPTION:\n${description}`);
     this.lessonSettings.learnerLanguage &&
       lines.push(`LEARNER_LANGUAGE: ${this.lessonSettings.learnerLanguage}`);
     this.lessonSettings.learnerLevel &&

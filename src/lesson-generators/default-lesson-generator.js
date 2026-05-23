@@ -103,6 +103,7 @@ export class DefaultLessonGenerator {
     await this.onNewTaskAppeared(exercise.exercise_id, exerciseContent, {
       ...stageMeta,
       exerciseIdx,
+      mode: exercise.mode,
     });
   }
 
