@@ -1,5 +1,9 @@
+import { parseJsonSafely } from "../ui/json-parse.js";
+import { notify } from "../ui/notifications.js";
+
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 const API_KEY_STORAGE_NAME = "openrouter_api_key";
+let missingApiKeyNotified = false;
 
 function getAPIKey() {
   const key =
@@ -9,6 +13,12 @@ function getAPIKey() {
     console.debug("OpenRouter API key was loaded");
   } else {
     console.warn("OpenRouter API key was not loaded");
+    if (!missingApiKeyNotified) {
+      missingApiKeyNotified = true;
+      notify.warning("Add an OpenRouter API key before generating lessons.", {
+        title: "OpenRouter API key missing",
+      });
+    }
   }
 
   return key;
@@ -75,7 +85,10 @@ export class OpenRouterClient {
         return;
       }
 
-      const chunk = JSON.parse(data);
+      const chunk = parseJsonSafely(data, {
+        context: "OpenRouter stream event",
+        title: "Invalid OpenRouter response",
+      });
 
       if (chunk.error) {
         throw new OpenRouterError(
@@ -117,7 +130,12 @@ export class OpenRouterClient {
       throwResponseBody(response, body);
     }
 
-    return body === "" ? null : JSON.parse(body);
+    return body === ""
+      ? null
+      : parseJsonSafely(body, {
+          context: "OpenRouter response",
+          title: "Invalid OpenRouter response",
+        });
   }
 
   async throwResponseError(response) {
@@ -164,7 +182,12 @@ function throwResponseBody(response, body) {
   let parsedBody = body;
 
   try {
-    parsedBody = JSON.parse(body);
+    parsedBody = parseJsonSafely(body, {
+      context: "OpenRouter error response",
+      fallback: body,
+      notifyOnError: false,
+      throwOnError: false,
+    });
     message = parsedBody.error?.message || parsedBody.message || message;
   } catch {
     // Keep the text body as the error message.

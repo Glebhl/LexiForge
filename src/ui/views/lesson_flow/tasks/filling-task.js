@@ -15,6 +15,7 @@ import {
   isFillingAnswerCorrect,
   isPassingEvaluation,
 } from "./answer-checking.js";
+import { notify } from "../../../notifications.js";
 
 const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
@@ -54,7 +55,7 @@ function createBlankSlot() {
   input.type = "text";
   input.autocomplete = "off";
   input.autocapitalize = "none";
-  
+
   inputWrap.append(input);
   blank.append(inputWrap);
   return blank;
@@ -305,9 +306,14 @@ export function loadTask(elements, mountTask, content) {
       );
     } catch (error) {
       console.error("Filling answer check failed", error);
+      notify.warning(error.message || "Filling answer check failed.", {
+        title: "Answer check unavailable",
+      });
     }
 
-    console.debug(`isCorrect=${evaluation}, expected=${correctAnswers}, answer=${userAnswers}`);
+    console.debug(
+      `isCorrect=${evaluation}, expected=${correctAnswers}, answer=${userAnswers}`,
+    );
 
     if (!isPassingEvaluation(evaluation)) showInvalidAnswer();
     return evaluation;

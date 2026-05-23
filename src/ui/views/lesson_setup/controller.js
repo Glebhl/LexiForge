@@ -9,6 +9,7 @@ import { destroySettings, getSettingsValue, loadSettings } from "./settings.js";
 import { showHint, showHintText } from "./hint.js";
 import { initLessonSetupTabs } from "./tabs.js";
 import { CardsGenerator } from "../../../pipeline/index.js";
+import { parseJsonSafely } from "../../json-parse.js";
 import { notify } from "../../notifications.js";
 
 function getElements() {
@@ -150,10 +151,20 @@ export class Controller {
         learnerRequest,
         learnerLanguage: this.learnerLanguage,
       })) {
-        const item = JSON.parse(line);
+        const item = parseJsonSafely(line, {
+          context: "card line from the LLM",
+          fallback: null,
+          level: "warning",
+          throwOnError: false,
+          title: "Skipped invalid LLM response",
+        });
+
+        if (!item) {
+          continue;
+        }
 
         if (typeof item.warning === "string") {
-          notify.info(item.warning);
+          notify.warning(item.warning, { title: "Card generation warning" });
           continue;
         }
 
@@ -172,10 +183,7 @@ export class Controller {
 }
 
 function isGeneratedCard(item) {
-  return (
-    (item?.type === "vocab") ||
-    (item?.type === "grammar")
-  );
+  return item?.type === "vocab" || item?.type === "grammar";
 }
 
 function formatAllCards() {
@@ -200,5 +208,5 @@ function formatVocabUnit(card) {
 }
 
 function formatGrammarUnit(card) {
-  return `grammar: item="${card.grammar || "N/A"}"`
+  return `grammar: item="${card.grammar || "N/A"}"`;
 }

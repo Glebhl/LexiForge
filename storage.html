@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Glosium localStorage</title>
+    <link rel="stylesheet" href="./src/ui/assets/styles/notifications.css" />
     <style>
       :root {
         color-scheme: light;
@@ -500,7 +501,9 @@
       </article>
     </template>
 
-    <script>
+    <script type="module">
+      import { parseJsonSafely } from "./src/ui/json-parse.js";
+
       const OPENROUTER_KEY = "openrouter_api_key";
 
       const keyInput = document.getElementById("keyInput");
@@ -674,7 +677,10 @@
         if (!file) return;
 
         try {
-          const data = JSON.parse(await file.text());
+          const data = parseJsonSafely(await file.text(), {
+            context: "localStorage import file",
+            title: "Import JSON is invalid",
+          });
 
           if (!data || Array.isArray(data) || typeof data !== "object") {
             throw new Error("JSON must be an object of key-value pairs.");

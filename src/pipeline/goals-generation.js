@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { parseJsonSafely } from "../ui/json-parse.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class GoalsGenerator {
@@ -53,7 +54,10 @@ export class GoalsGenerator {
       content = response.choices?.[0]?.message?.content || "";
     }
 
-    return JSON.parse(content);
+    return parseJsonSafely(content, {
+      context: "lesson goals response from the LLM",
+      title: "Invalid LLM response",
+    });
   }
 
   buildUserPrompt(lessonSettings) {

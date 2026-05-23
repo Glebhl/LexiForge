@@ -1,5 +1,6 @@
 import { DefaultLessonGenerator } from "../../../lesson-generators/default-lesson-generator.js";
 import { notify } from "../../notifications.js";
+import { wasNotified } from "../../json-parse.js";
 
 function getElements() {
   return {
@@ -26,9 +27,9 @@ export class Controller {
     this.lessonGenerator.subscribeFirstTaskAppeared(
       this.onFirstTaskAppeared.bind(this),
     );
-    this.lessonGenerator.generateLesson(lessonSettings).catch((error) => {
+    this.lessonGenerator.generateLesson(lessonSettings).catch(async (error) => {
       if (!this.cancelled) {
-        this.showGenerationError(error);
+        await this.showGenerationError(error);
       }
     });
   }
@@ -55,12 +56,28 @@ export class Controller {
     await this.router.goBack();
   }
 
-  showGenerationError(error) {
+  async showGenerationError(error) {
     const message = error.message || "Check the API key and try again.";
+    const alreadyNotified = wasNotified(error);
+
+    if (alreadyNotified) {
+      const previousRoute = await this.router.goBack();
+      if (previousRoute !== null) {
+        return;
+      }
+    }
+
+    if (!alreadyNotified) {
+      notify.error(message, { title: "Lesson generation failed" });
+    }
+    const previousRoute = await this.router.goBack();
+
+    if (previousRoute !== null) {
+      return;
+    }
 
     this.elements.title.textContent = "Could not generate the lesson";
     this.elements.description.textContent = message;
     this.elements.btnStop.textContent = "Back";
-    notify.error(message, { title: "Lesson generation failed" });
   }
 }

@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { parseJsonSafely } from "../ui/json-parse.js";
 import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class PlanGenerator {
@@ -50,7 +51,11 @@ export class PlanGenerator {
 
       for (const line of PLAN_STUB.split("\n")) {
         if (line.trim()) {
-          yield JSON.parse(line.trim());
+          const item = parsePlanLine(line);
+
+          if (item) {
+            yield item;
+          }
         }
       }
 
@@ -73,13 +78,21 @@ export class PlanGenerator {
 
       for (const line of lines) {
         if (line.trim()) {
-          yield JSON.parse(line.trim());
+          const item = parsePlanLine(line);
+
+          if (item) {
+            yield item;
+          }
         }
       }
     }
 
     if (buffer.trim()) {
-      yield JSON.parse(buffer.trim());
+      const item = parsePlanLine(buffer);
+
+      if (item) {
+        yield item;
+      }
     }
   }
 
@@ -102,4 +115,14 @@ export class PlanGenerator {
     // lessonSettings.previousStageResults && lines.push(`PREVIOUS_STAGE_RESULTS:\n${this.formatPromptValue(lessonSettings.previousStageResults)}`);
     return lines.join("\n");
   }
+}
+
+function parsePlanLine(line) {
+  return parseJsonSafely(line.trim(), {
+    context: "lesson plan line from the LLM",
+    fallback: null,
+    level: "warning",
+    throwOnError: false,
+    title: "Skipped invalid LLM response",
+  });
 }

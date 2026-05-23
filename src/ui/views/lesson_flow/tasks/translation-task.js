@@ -16,6 +16,7 @@ import {
   isPassingEvaluation,
   isTranslationAnswerCorrect,
 } from "./answer-checking.js";
+import { notify } from "../../../notifications.js";
 
 const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
@@ -274,8 +275,13 @@ export function loadTask(elements, mountTask, content) {
       evaluation = await evaluateTranslationAnswer(promptText, userAnswer);
     } catch (error) {
       console.error("Translation answer check failed", error);
+      notify.warning(error.message || "Translation answer check failed.", {
+        title: "Answer check unavailable",
+      });
     }
-    console.debug(`isCorrect=${evaluation}, expected=${promptText}, answer=${userAnswer}`);
+    console.debug(
+      `isCorrect=${evaluation}, expected=${promptText}, answer=${userAnswer}`,
+    );
 
     if (!isPassingEvaluation(evaluation)) showInvalidAnswer();
     return evaluation;

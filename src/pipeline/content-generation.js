@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm_gateway/index.js";
+import { parseJsonSafely } from "../ui/json-parse.js";
 import { CONTENT_STUBS, STUB_FLAGS } from "./stubs.js";
 
 const PROMPT_FILES = {
@@ -84,13 +85,15 @@ export class ContentGenerator {
     }
 
     console.debug(`Task content:\n${content}`);
-    return JSON.parse(content);
+    return parseJsonSafely(content, {
+      context: `${exercise_id} task response from the LLM`,
+      title: "Invalid LLM response",
+    });
   }
 
   buildUserPrompt({ description }) {
     const lines = [];
-    description &&
-      lines.push(`DESCRIPTION:\n${description}`);
+    description && lines.push(`DESCRIPTION:\n${description}`);
     this.lessonSettings.learnerLanguage &&
       lines.push(`LEARNER_LANGUAGE: ${this.lessonSettings.learnerLanguage}`);
     this.lessonSettings.learnerLevel &&
