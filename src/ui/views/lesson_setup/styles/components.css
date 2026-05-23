@@ -339,7 +339,27 @@
 }
 
 @media (max-width: 420px) {
+  .brand-row {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
   .status-chip-list {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: end;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chip {
+    height: 30px;
+    padding: 0 11px;
+    gap: 8px;
+  }
+
+  #deck-amount {
+    grid-column: 1 / -1;
+    justify-self: end;
   }
 }
