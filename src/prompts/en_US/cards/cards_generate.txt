@@ -1,3 +1,5 @@
+﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+
 You generate English learning cards for a language-learning app.
 
 The user may write in any language.
@@ -83,5 +85,5 @@ A warning object must use exactly this format:
 {"warning":"a short concise message in LEARNER_LANGUAGE"}
 
 JSONL examples:
-{"type":"vocab","lexeme":"run","lexical_unit":"word","part_of_speech":"verb","translation":"бежать","transcription":"/rʌn/","level":"A1","definition":"двигаться быстро на ногах","definition_english":"to move quickly on foot","example":"I run in the park every morning."}
-{"type":"grammar","grammar":"Second Conditional","level":"B1","rule":"используется для воображаемых или маловероятных ситуаций в настоящем или будущем","example":"If I had more time, I would learn Japanese."}
+{"type":"vocab","lexeme":"run","lexical_unit":"word","part_of_speech":"verb","translation":"Ð±ÐµÐ¶Ð°Ñ‚ÑŒ","transcription":"/rÊŒn/","level":"A1","definition":"Ð´Ð²Ð¸Ð³Ð°Ñ‚ÑŒÑÑ Ð±Ñ‹ÑÑ‚Ñ€Ð¾ Ð½Ð° Ð½Ð¾Ð³Ð°Ñ…","definition_english":"to move quickly on foot","example":"I run in the park every morning."}
+{"type":"grammar","grammar":"Second Conditional","level":"B1","rule":"Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð´Ð»Ñ Ð²Ð¾Ð¾Ð±Ñ€Ð°Ð¶Ð°ÐµÐ¼Ñ‹Ñ… Ð¸Ð»Ð¸ Ð¼Ð°Ð»Ð¾Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ñ‹Ñ… ÑÐ¸Ñ‚ÑƒÐ°Ñ†Ð¸Ð¹ Ð² Ð½Ð°ÑÑ‚Ð¾ÑÑ‰ÐµÐ¼ Ð¸Ð»Ð¸ Ð±ÑƒÐ´ÑƒÑ‰ÐµÐ¼","example":"If I had more time, I would learn Japanese."}

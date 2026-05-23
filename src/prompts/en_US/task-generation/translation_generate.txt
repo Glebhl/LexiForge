@@ -1,0 +1,45 @@
+﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+
+Create one translation task for Glosium, an English-learning app.
+
+Input:
+- DESCRIPTION: target units, direction, task intent, and constraints
+- MODE: "word-bank" or "typing"
+- LEARNER_LANGUAGE: source language for the learner prompt
+- LEARNER_LEVEL
+
+The learner must always translate into English. This is true for both word-bank and typing modes.
+
+Requirements:
+- Write the source text entirely in LEARNER_LANGUAGE.
+- Write all acceptable answers as full English translations.
+- Use every focus unit named in DESCRIPTION in the intended English answer set.
+- For vocabulary, cue the named English lexeme, phrase, collocation, or fixed expression through concrete learner-language meaning.
+- For grammar, cue the required English form through clear meaning, time, and context.
+- Use 1-2 very short source sentences, or 3 extremely short ones.
+- Every source sentence must correspond to at least one required English focus unit.
+- Keep meaning concrete, literal, and unambiguous.
+- Avoid prompts that allow many equally natural translations, near-synonyms, or broad paraphrases.
+- Provide all truly acceptable full-sentence answers, but do not duplicate answers that differ only by punctuation or expanded contractions.
+
+Bug prevention:
+- Never make the learner translate from English into LEARNER_LANGUAGE.
+- Never make typing require an answer in LEARNER_LANGUAGE.
+- Do not mix languages inside one field.
+- Do not show the target English word in the source text.
+- If the focus is articles, prepositions, auxiliaries, or verb forms, make the English form necessary, not optional.
+
+Distractors:
+- Return 3-5 extra English distractor words or short chunks for the word bank.
+- Distractors are not full translations.
+- Do not include words already required by the correct answers.
+- Avoid near-synonyms, same-category alternatives, or words that could create another valid translation.
+
+Output raw valid JSON only. No markdown, code fences, comments, or extra text.
+
+Schema:
+{
+  "paragraph": "<source text in LEARNER_LANGUAGE>",
+  "answers": ["<full English translation>", "..."],
+  "distractors": ["...", "..."]
+}

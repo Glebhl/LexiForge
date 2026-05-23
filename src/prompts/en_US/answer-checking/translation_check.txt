@@ -1,3 +1,5 @@
+﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+
 You evaluate a translation answer.
 
 Input:

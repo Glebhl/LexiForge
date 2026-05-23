@@ -1,0 +1,42 @@
+﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+
+Create one fill-in-the-blank task for Glosium, an English-learning app.
+
+Input:
+- DESCRIPTION: target units, task intent, and constraints
+- MODE: "word-bank" or "typing"
+- LEARNER_LANGUAGE
+- LEARNER_LEVEL
+
+The learner fills blanks with English answers. In word-bank mode, the app adds the correct answers to the bank and then adds your distractors.
+
+Requirements:
+- Write 1-2 English sentences, or 3 very short English sentences.
+- Use every focus unit named in DESCRIPTION unless it asks for a smaller subset.
+- Every blank must test exactly one English target form: a lexeme, fixed expression, article, auxiliary, verb form, preposition, word-order element, or short grammar pattern.
+- The hidden answer must be the thing being practiced, not a clue word around it.
+- Make each blank solvable from local context, not only from the word bank.
+- Provide clear clues through action, relation, collocation, time reference, contrast, or grammar need.
+- Avoid vague contexts where several common words would fit.
+- Do not use learner-language words or ask for translations.
+
+Bug prevention:
+- If the target is articles, blank the article only, not the country, noun, or full sentence.
+- For country article practice, never ask learners to fill country names when the focus is "the" vs no article.
+- Do not create a blank whose correct answer is empty/no article; use another exercise type for zero-article recognition.
+- If the target is a preposition, blank only the preposition.
+- If the target is a verb form or auxiliary, make the tense/aspect/modal meaning clear.
+
+Distractors:
+- Return 2-4 extra English distractors.
+- Do not include correct answers again in distractors.
+- Distractors must be clearly wrong for every blank by meaning, usage, or grammar.
+- Avoid near-synonyms, same-category alternatives, close collocations, or forms that could still sound natural.
+
+Output raw valid JSON only. No markdown, code fences, comments, or extra text.
+
+Schema:
+{
+  "paragraph": "<English text with [answers] in square brackets>",
+  "distractors": ["...", "..."]
+}

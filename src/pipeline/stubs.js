@@ -18,7 +18,7 @@ export const GOALS_STUB = `[
 export const PLAN_STUB = `{"description":"Units: U1 'advice' = совет, uncountable noun; U2 'tip' = совет/подсказка, countable. Task: match English words to Russian translations. Constraints: distinct labels, no duplicates.","exercise_id":"matching","mode":"none"}
 {"description":"Units: U1 'advice' = uncountable noun meaning совет. Task: short explanation of why 'advice' takes no article and no plural form, with one example.","exercise_id":"explanation","mode":"none"}
 {"description":"Units: U1 'advice' = совет, uncountable. Task: 2 short English sentences with a blank for 'advice'; learner picks from a word bank. Constraints: no plural, no 'an advice'.","exercise_id":"filling","mode":"word-bank"}
-{"description":"Units: U1 'advice' = uncountable noun. Task: read a short passage and choose what the teacher gave Mira.","exercise_id":"question","mode":"single-choice"}
+{"description":"Units: U1 'advice' = uncountable noun. Task: read a short passage and choose what the teacher gave Mira.","exercise_id":"question","mode":"none"}
 {"description":"Units: U1 'advice' = uncountable noun. Task: translate one short learner-language sentence into English using 'some advice'.","exercise_id":"translation","mode":"word-bank"}
 `;
 

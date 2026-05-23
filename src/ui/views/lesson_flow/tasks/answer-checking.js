@@ -4,11 +4,11 @@ export const CORRECT = "correct";
 export const MINOR = "minor";
 export const MISTAKE = "mistake";
 
-const DEFAULT_LANGUAGE_CODE = "en";
+const DEFAULT_LANGUAGE_CODE = "en_US";
 const DEFAULT_MODEL = "google/gemini-3.1-flash-lite-preview";
 const APOSTROPHE_VARIANTS = ["'", "\u2019", "`", "\u02bc"];
 const LANGUAGE_CONTRACTION_RULES = {
-  en: {
+  en_us: {
     "n't": [" not"],
     "'re": [" are"],
     "'ve": [" have"],
@@ -25,11 +25,11 @@ const IRREGULAR_CONTRACTIONS = {
 };
 const PROMPT_URLS = {
   filling: new URL(
-    "../../../../prompts/en/answer-checking/fill_blank_check.txt",
+    "../../../../prompts/en_US/answer-checking/fill_blank_check.txt",
     import.meta.url,
   ),
   translation: new URL(
-    "../../../../prompts/en/answer-checking/translation_check.txt",
+    "../../../../prompts/en_US/answer-checking/translation_check.txt",
     import.meta.url,
   ),
 };

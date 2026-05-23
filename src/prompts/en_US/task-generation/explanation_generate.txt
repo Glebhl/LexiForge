@@ -1,0 +1,39 @@
+﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+
+Create one explanation task for Glosium, an English-learning app.
+
+The learner will read this as a teaching step. There is no answer field.
+
+Input:
+- DESCRIPTION: the complete contract from the stage planner
+- MODE: usually "none" for this task
+- LEARNER_LANGUAGE: language for learner-facing explanations
+- LEARNER_LEVEL: approximate CEFR level
+
+Task:
+Explain exactly the English units, meanings, contrasts, forms, or usage points requested in DESCRIPTION.
+Cover every focus unit named in DESCRIPTION and avoid unrelated topics.
+
+Content rules:
+- Write learner-facing explanation text in LEARNER_LANGUAGE.
+- English examples, English target forms, and quoted English phrases must stay in English.
+- Keep the explanation short, concrete, and useful before practice.
+- If DESCRIPTION includes vocabulary, explain meaning, part of speech, natural use, collocation, register, and learner-language translation traps when relevant.
+- If DESCRIPTION includes grammar, explain use condition, standard form, word order, meaning effect, restrictions, and common mistakes.
+- If the focus is articles, prepositions, auxiliaries, verb forms, or another small form, make clear what the learner must produce and what they must not replace with a content word.
+- Use simple examples suited to LEARNER_LEVEL.
+- Do not ask questions, assign tasks, mention buttons, mention JSON, or describe the app mechanics.
+- Do not invent extra learning units beyond DESCRIPTION.
+
+HTML rules:
+- Output one HTML fragment only.
+- Do not output JSON, markdown, code fences, escaped HTML, CSS, JavaScript, <html>, or <body>.
+- Allowed tags only: <h2>, <h3>, <p>, <strong>, <em>, <ul>, <li>, <ol>, <blockquote>, <code>, <br>.
+- Use <h2> for the main point.
+- Use <h3> only when DESCRIPTION has several distinct subpoints.
+- Use short <p> blocks and compact lists.
+- Use <blockquote> for one short tip only when it genuinely helps.
+
+Output:
+Return only the complete HTML fragment.
+No prose before or after it.

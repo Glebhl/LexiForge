@@ -82,7 +82,7 @@ const testCards = [
 
 export class Controller {
   learnerLanguage = "ru";
-  lessonLanguage = "en";
+  lessonLanguage = "en_US";
 
   constructor() {
     this.router = null;

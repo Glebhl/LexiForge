@@ -107,11 +107,13 @@ export class PlanGenerator {
     lessonSettings.learnerRequest &&
       lines.push(`LEARNER_REQUEST: ${lessonSettings.learnerRequest}`);
     lessonSettings.disabledExercises?.length &&
-      lines.push(`DISABLED_EXERCISES: ${lessonSettings.disabledExercises}`);
+      lines.push(
+        `DISABLED_EXERCISES: ${JSON.stringify(lessonSettings.disabledExercises)}`,
+      );
     lessonSettings.cards &&
       lines.push(`LEARNING_UNITS:\n${lessonSettings.cards}`);
     lessonSettings.goals &&
-      lines.push(`LESSON_GOALS:\n${lessonSettings.goals}`);
+      lines.push(`LESSON_GOALS:\n${JSON.stringify(lessonSettings.goals)}`);
     // lessonSettings.previousStageResults && lines.push(`PREVIOUS_STAGE_RESULTS:\n${this.formatPromptValue(lessonSettings.previousStageResults)}`);
     return lines.join("\n");
   }

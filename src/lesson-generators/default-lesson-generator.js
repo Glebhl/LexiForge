@@ -37,9 +37,7 @@ export class DefaultLessonGenerator {
   async generateLesson(lessonSettings) {
     console.debug("Starting lesson generation with settings", lessonSettings);
     this.lessonSettings = await this.buildLessonSettings(lessonSettings);
-    this.contentGenerator = await ContentGenerator.create(
-      this.lessonSettings,
-    );
+    this.contentGenerator = await ContentGenerator.create(this.lessonSettings);
     console.debug("Generated lesson goals:\n", this.lessonSettings.goals);
     await this.requestNextStage();
   }

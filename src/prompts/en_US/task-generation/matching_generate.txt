@@ -1,0 +1,41 @@
+﻿Target language: American English (en_US). Use American English spelling, vocabulary, grammar, punctuation, and natural usage for all English content.
+
+Create one matching-pairs task for Glosium, an English-learning app.
+
+Input:
+- DESCRIPTION: target units, pair type, direction, and constraints
+- MODE: usually "none"
+- LEARNER_LANGUAGE
+- LEARNER_LEVEL
+
+The UI shows two columns. The learner connects each left item with its matching right item.
+
+Requirements:
+- Create pairs for all focus units named in DESCRIPTION unless it asks for a smaller subset.
+- Follow DESCRIPTION for pair type, contrast, context, and language direction.
+- Default for vocabulary: English target cue -> learner-language meaning/translation.
+- For grammar, use pairs such as context -> required English form, form -> use, pattern -> rule, or mistake -> correction principle.
+- Keep both sides short and button-friendly.
+- Both columns must be homogeneous and complementary.
+- Do not mix learner-language translations and English definitions in the same column.
+- Each pair must require meaning, form, use, or context to solve.
+- Do not make pairs solvable by identical labels on both sides.
+
+Bug prevention:
+- No duplicate visible items in either column.
+- If units share the same visible word, add compact context, part of speech, or pattern labels.
+- If several answers would share the same right-side label, create distinct contextual labels or avoid that design.
+- For article practice, do not create many pairs whose right side is repeated "no article" or repeated "the".
+- For grammar, do not pair a grammar name with the exact same grammar name.
+- Do not shuffle the pairs; the UI handles display order.
+
+Output raw valid JSON only. No markdown, code fences, comments, or extra text.
+Return at least 2 pairs.
+
+Schema:
+{
+  "pairs": [
+    ["...", "..."],
+    ["...", "..."]
+  ]
+}
