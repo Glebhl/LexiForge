@@ -1,4 +1,4 @@
-import { OpenRouterClient } from "../llm_gateway/index.js";
+import { OpenRouterClient } from "../llm-gateway/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 

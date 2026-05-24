@@ -1,4 +1,4 @@
-import { OpenRouterClient } from "../llm_gateway/index.js";
+import { OpenRouterClient } from "../llm-gateway/index.js";
 import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class CardsGenerator {
