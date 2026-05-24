@@ -169,7 +169,6 @@ function fillVocabCardElement(cardElement, card) {
   cardElement.classList.remove("lesson-card--grammar");
   setText(cardElement, ".lesson-card__word", card.lexeme);
   setText(cardElement, ".lesson-card__transcription", card.transcription);
-  // setText(cardElement, ".lesson-card__type", "VOCAB");
   setText(cardElement, ".meta-pill__value--unit", card.lexical_unit);
   setText(cardElement, ".meta-pill__value--part", card.part_of_speech);
   setText(cardElement, ".meta-pill__value--level", card.level);
@@ -178,14 +177,13 @@ function fillVocabCardElement(cardElement, card) {
   setText(cardElement, ".lesson-card__secondary-label", "MEANING");
   setText(cardElement, ".lesson-card__secondary", card.definition);
   setText(cardElement, ".lesson-card__example", formatExample(card.example));
-  toggleElement(cardElement, ".meta-pill--part", true);
+  // toggleElement(cardElement, ".meta-pill--part", true);
 }
 
 function fillGrammarCardElement(cardElement, card) {
   cardElement.classList.add("lesson-card--grammar");
   cardElement.classList.remove("lesson-card--vocab");
   setText(cardElement, ".lesson-card__word", card.grammar);
-  // setText(cardElement, ".lesson-card__type", "GRAMMAR");
   setText(cardElement, ".meta-pill__value--unit", "grammar");
   setText(cardElement, ".meta-pill__value--level", card.level);
   setText(cardElement, ".lesson-card__primary-label", "RULE");
