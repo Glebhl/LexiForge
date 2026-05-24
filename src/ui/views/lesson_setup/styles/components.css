@@ -28,7 +28,7 @@
 
 .settings-title {
   color: var(--color-text);
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: 0.2px;
 }
@@ -107,7 +107,7 @@
 
 .settings-group-title {
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1.2px;
   text-transform: uppercase;
@@ -132,13 +132,13 @@
 
 .settings-item-title {
   color: var(--color-text);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
 .settings-item-description {
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.45;
 }
 
@@ -159,14 +159,14 @@
 
 .settings-summary-label {
   color: var(--color-text-muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .settings-summary-value {
   color: var(--color-text);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .brand-title {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -193,7 +193,7 @@
 .brand-subtitle {
   margin-top: 2px;
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .status-chip-list {
@@ -213,7 +213,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   box-shadow: var(--shadow-chip);
 }
 
@@ -248,7 +248,7 @@
   margin-top: 10px;
   width: 20px;
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   white-space: nowrap;
 }
 
@@ -318,7 +318,7 @@
   border-radius: 999px;
   background: rgba(118, 148, 255, 0.12);
   color: var(--color-text);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: 1px;
 } */
@@ -331,7 +331,7 @@
 .lesson-card__section-label {
   margin-bottom: 7px;
   color: var(--color-text-muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 1.5px;
 }

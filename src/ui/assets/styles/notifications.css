@@ -80,7 +80,7 @@
 .glosium-notification__title {
   margin: 0;
   color: var(--notification-accent);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.25;
 }
@@ -89,7 +89,7 @@
   overflow-wrap: anywhere;
   margin: 4px 0 0;
   color: var(--color-text-muted, rgba(233, 233, 243, 0.72));
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 

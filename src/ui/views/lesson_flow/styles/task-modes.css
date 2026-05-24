@@ -31,7 +31,7 @@
   align-content: start;
   gap: 6px;
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -52,7 +52,7 @@
   border: none;
   background: none;
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 26px;
   resize: none;
   outline: none;
@@ -62,7 +62,7 @@
   display: block;
   min-height: 94px;
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 42px;
   transition: transform var(--duration-fast) ease;
 }
@@ -98,7 +98,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.02);
   color: rgba(255, 255, 255, 0.28);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: normal;
   white-space: nowrap;
   pointer-events: none;
@@ -126,7 +126,7 @@
   border: none;
   background: none;
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
   text-align: center;
   outline: none;
 }
@@ -242,18 +242,18 @@
 
   .task-answer.task-answer--translation {
     gap: 4px;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .task-answer__typing-input {
     padding: 4px;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 20px;
   }
 
   .task-answer.task-answer--filling {
     min-height: 68px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 32px;
   }
 
@@ -271,7 +271,7 @@
     min-width: var(--drop-preview-width, 58px);
     min-height: 30px;
     padding: 5px 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .lesson-task .task-keyboard-block {

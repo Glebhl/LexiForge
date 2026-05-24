@@ -119,7 +119,7 @@ code {
   background: rgba(255, 255, 255, 0.06);
   color: rgba(231, 233, 238, 0.9);
   font-family: Consolas, monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 @media (max-width: 900px) {

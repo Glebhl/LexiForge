@@ -14,7 +14,7 @@
   padding: 16px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  font-size: 16px;
+  font-size: 1rem;
   background: rgba(0, 0, 0, 0.03);
   box-shadow: var(--shadow-card);
   color: rgba(233, 233, 243, 0.95);
@@ -43,7 +43,7 @@
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   text-align: center;
   transition: var(--duration-moderate) var(--easing-standard);
@@ -66,7 +66,7 @@
   cursor: pointer;
   border-radius: var(--radius-md);
   padding: 14px 18px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.2px;
   transition: 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -152,7 +152,7 @@
 
 .settings-level-label {
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.4px;
   transition: var(--duration-moderate) var(--easing-standard);
@@ -230,7 +230,7 @@
 .meta-pill {
   display: inline-flex;
   padding: 7px 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   border-radius: 999px;
   gap: 7px;
   border: 1px solid var(--color-border);
@@ -245,7 +245,7 @@
 
 .meta-pill__value {
   padding: 2px 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 800;
   border-radius: 999px;
   border: 1px solid var(--color-border);
@@ -294,7 +294,7 @@
   padding: 12px 13px;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.45;
   background: rgba(0, 0, 0, 0.2);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
@@ -391,16 +391,16 @@
     justify-content: center;
     min-width: 0;
     padding: 18px 10px;
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 
   .settings-level-label {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
 
   .meta-pill {
     padding: 6px 8px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
 
   .lesson-card {

@@ -1,6 +1,6 @@
 .md-content {
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .md-content h2,
@@ -9,11 +9,11 @@
 }
 
 .md-content h2 {
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 .md-content h3 {
-  font-size: 19px;
+  font-size: 1.1875rem;
 }
 
 .md-content p,
@@ -46,12 +46,12 @@ ul {
 
 .question-content {
   color: var(--color-text);
-  font-size: 21px;
+  font-size: 1.3125rem;
   font-weight: 600;
 }
 
 .question-paragraph {
   margin-top: 6px;
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
 }

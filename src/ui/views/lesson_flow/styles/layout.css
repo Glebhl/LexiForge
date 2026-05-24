@@ -40,7 +40,7 @@
 .lesson-progress__text {
   min-width: 55px;
   color: var(--color-text-muted);
-  font-size: 16px;
+  font-size: 1rem;
   text-align: center;
   white-space: nowrap;
 }
@@ -63,7 +63,7 @@
 .lesson-task__title {
   margin-left: 10px;
   color: var(--color-text);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 
@@ -71,12 +71,12 @@
   margin-top: 5px;
   margin-left: 10px;
   color: var(--color-text-muted);
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .translation-prompt {
   color: var(--color-text);
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 700;
 }
 
@@ -92,7 +92,7 @@
 .task-hint {
   width: 20px;
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   white-space: nowrap;
 }
 
@@ -112,7 +112,7 @@
 
   .lesson-progress__text {
     min-width: 42px;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .lesson-task {
@@ -121,16 +121,16 @@
 
   .lesson-task__title {
     margin-left: 4px;
-    /* font-size: 18px; */
+    /* font-size: 1.125rem; */
   }
 
   .lesson-task__description {
     margin-top: 4px;
     margin-left: 4px;
-    /* font-size: 13px; */
+    /* font-size: 0.8125rem; */
   }
 
   .translation-prompt {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
 }
