@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
+import { loadPrompt } from "../prompts/load-prompt.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
@@ -6,6 +7,8 @@ export class PlanGenerator {
   constructor(lessonLanguage, stageId, options = {}) {
     this.lessonLanguage = lessonLanguage;
     this.stageId = stageId;
+    this.promptDirectory =
+      options.promptDirectory || "lesson/generators/default/stages";
     this.model = options.model || "google/gemini-3-flash-preview";
     this.client = new OpenRouterClient(options);
     this.prompt = "";
@@ -18,20 +21,10 @@ export class PlanGenerator {
   }
 
   async loadPrompt() {
-    const promptPath = new URL(
-      `../prompts/${this.lessonLanguage}/lesson/stages/${this.stageId}_plan.txt`,
-      import.meta.url,
-    );
-    const response = await fetch(promptPath);
-
-    if (!response.ok) {
-      throw new Error(
-        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
-      );
-    }
-
     console.debug("Loaded plan generator prompt");
-    this.prompt = await response.text();
+    this.prompt = await loadPrompt(
+      `${this.lessonLanguage}/${this.promptDirectory}/${this.stageId}_plan.txt`,
+    );
   }
 
   async *generate(lessonSettings) {

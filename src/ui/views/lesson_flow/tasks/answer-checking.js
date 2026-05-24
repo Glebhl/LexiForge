@@ -1,4 +1,5 @@
-import { OpenRouterClient } from "../../../../llm_gateway/index.js";
+import { OpenRouterClient } from "../../../../llm-gateway/index.js";
+import { loadPrompt } from "../../../../prompts/load-prompt.js";
 
 export const CORRECT = "correct";
 export const MINOR = "minor";
@@ -23,15 +24,9 @@ const IRREGULAR_CONTRACTIONS = {
   "won't": ["will not"],
   "shan't": ["shall not"],
 };
-const PROMPT_URLS = {
-  filling: new URL(
-    "../../../../prompts/en_US/answer-checking/fill_blank_check.txt",
-    import.meta.url,
-  ),
-  translation: new URL(
-    "../../../../prompts/en_US/answer-checking/translation_check.txt",
-    import.meta.url,
-  ),
+const PROMPT_PATHS = {
+  filling: "en_US/answer-checking/fill_blank_check.txt",
+  translation: "en_US/answer-checking/translation_check.txt",
 };
 
 let checker = null;
@@ -204,16 +199,7 @@ class AnswerChecker {
       return this.prompts[kind];
     }
 
-    const promptPath = PROMPT_URLS[kind];
-    const response = await fetch(promptPath);
-
-    if (!response.ok) {
-      throw new Error(
-        `Could not load answer checking prompt from ${promptPath}. Status: ${response.status}`,
-      );
-    }
-
-    this.prompts[kind] = await response.text();
+    this.prompts[kind] = await loadPrompt(PROMPT_PATHS[kind]);
     return this.prompts[kind];
   }
 }

@@ -8,6 +8,7 @@ import {
 import { destroySettings, getSettingsValue, loadSettings } from "./settings.js";
 import { showHint, showHintText } from "./hint.js";
 import { initLessonSetupTabs } from "./tabs.js";
+import { LESSON_GENERATOR_OPTIONS } from "../../../lesson-generators/index.js";
 import { CardsGenerator } from "../../../pipeline/index.js";
 import { parseJsonSafely } from "../../json-parse.js";
 import { notify } from "../../notifications.js";
@@ -39,7 +40,7 @@ export class Controller {
     bindCards();
     clearAllCards();
     initLessonSetupTabs();
-    loadSettings();
+    loadSettings({ lessonGenerators: LESSON_GENERATOR_OPTIONS });
     showHint();
 
     this.cardsGenerator = await CardsGenerator.create(this.lessonLanguage);
@@ -67,6 +68,7 @@ export class Controller {
       learnerLevel: getSettingsValue("languageLevel"),
       learnerRequest: getSettingsValue("additionalRequest"),
       disabledExercises: getSettingsValue("disabledTaskIds"),
+      lessonGeneratorId: getSettingsValue("lessonGeneratorId"),
       cards: formatAllCards(),
     };
 
@@ -142,7 +144,7 @@ function formatVocabUnit(card) {
   return [
     `vocab: lexeme="${card.lexeme || "N/A"}"`,
     `part_of_speech="${card.part_of_speech || "N/A"}"`,
-    `definition="${card.part_of_speech || "N/A"}"`,
+    `definition="${card.defenition_english || "N/A"}"`,
   ].join(", ");
 }
 

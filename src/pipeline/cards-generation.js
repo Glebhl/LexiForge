@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
+import { loadPrompt } from "../prompts/load-prompt.js";
 import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class CardsGenerator {
@@ -16,20 +17,10 @@ export class CardsGenerator {
   }
 
   async loadPrompt() {
-    const promptPath = new URL(
-      `../prompts/${this.lessonLanguage}/cards/cards_generate.txt`,
-      import.meta.url,
-    );
-    const response = await fetch(promptPath);
-
-    if (!response.ok) {
-      throw new Error(
-        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
-      );
-    }
-
     console.debug("Loaded cards generator prompt");
-    this.prompt = await response.text();
+    this.prompt = await loadPrompt(
+      `${this.lessonLanguage}/cards/cards_generate.txt`,
+    );
   }
 
   async *generate({ learnerRequest, learnerLanguage }) {

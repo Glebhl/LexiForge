@@ -1,10 +1,13 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
+import { loadPrompt } from "../prompts/load-prompt.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 
 export class GoalsGenerator {
   constructor(lessonLanguage, options = {}) {
     this.lessonLanguage = lessonLanguage;
+    this.promptPath =
+      options.promptPath || "lesson/generators/default/goals_generate.txt";
     this.model = options.model || "google/gemini-3-flash-preview";
     this.client = new OpenRouterClient(options);
     this.prompt = "";
@@ -17,20 +20,8 @@ export class GoalsGenerator {
   }
 
   async loadPrompt() {
-    const promptPath = new URL(
-      `../prompts/${this.lessonLanguage}/lesson/goals_generate.txt`,
-      import.meta.url,
-    );
-    const response = await fetch(promptPath);
-
-    if (!response.ok) {
-      throw new Error(
-        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
-      );
-    }
-
+    this.prompt = await loadPrompt(`${this.lessonLanguage}/${this.promptPath}`);
     console.debug("Loaded goals generator prompt");
-    this.prompt = await response.text();
   }
 
   async generate(lessonSettings) {
@@ -50,6 +41,17 @@ export class GoalsGenerator {
           { role: "system", content: this.prompt },
           { role: "user", content: userPrompt },
         ],
+        // response_format: {
+        //   type: "json_schema",
+        //   json_schema: {
+        //     name: "lesson_goals",
+        //     strict: true,
+        //     schema: {
+        //       type: "array",
+        //       items: { type: "string" },
+        //     },
+        //   },
+        // },
       });
       content = response.choices?.[0]?.message?.content || "";
     }

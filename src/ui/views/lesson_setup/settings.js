@@ -38,12 +38,15 @@ export function onChange(id, value) {
 export function loadSettings({
   availableTasks = DEFAULT_TASKS,
   languageLevels = DEFAULT_LANGUAGE_LEVELS,
+  lessonGenerators = ["N/A"],
   isAdditionalRequestAvailable = true,
 } = {}) {
   const settingsContent = getSettingsContent();
 
   settingsContent.replaceChildren();
-  settingsContent.appendChild(renderLessonProfileGroup(languageLevels));
+  settingsContent.appendChild(
+    renderLessonProfileGroup(languageLevels, lessonGenerators),
+  );
 
   const tuningGroup = renderLessonTuningGroup(
     availableTasks,
@@ -81,6 +84,7 @@ function getSettingsContent() {
 function loadSettingsValues() {
   return {
     languageLevel: "A1",
+    lessonGeneratorId: "default",
     additionalRequest: "",
     disabledTaskIds: [],
   };
@@ -130,11 +134,42 @@ function createSettingShell(title, description) {
   return shellElement;
 }
 
-function renderLessonProfileGroup(languageLevels) {
+function renderLessonProfileGroup(languageLevels, lessonGenerators) {
   const groupElement = createGroup("Lesson profile");
 
   groupElement.appendChild(renderLevelPicker(languageLevels));
+
+  if (lessonGenerators.length > 0) {
+    groupElement.appendChild(renderGeneratorSelect(lessonGenerators));
+  }
+
   return groupElement;
+}
+
+function renderGeneratorSelect(lessonGenerators) {
+  const shellElement = createSettingShell(
+    "Generator",
+    "Temporary selector for choosing the lesson generation flow.",
+  );
+  const selectElement = createElement("select", "settings-select");
+
+  lessonGenerators.forEach(function (generator) {
+    const optionElement = document.createElement("option");
+    const generatorId = String(generator.id || "");
+
+    optionElement.value = generatorId;
+    optionElement.textContent = generator.label || generatorId;
+    selectElement.appendChild(optionElement);
+  });
+
+  selectElement.value = settings.lessonGeneratorId;
+  selectElement.addEventListener("change", function () {
+    settings.lessonGeneratorId = selectElement.value;
+    emitChange("lessonGeneratorId", settings.lessonGeneratorId);
+  });
+
+  shellElement.appendChild(selectElement);
+  return shellElement;
 }
 
 function renderLessonTuningGroup(availableTasks, isAdditionalRequestAvailable) {

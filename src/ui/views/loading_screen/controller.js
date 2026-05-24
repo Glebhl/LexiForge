@@ -1,4 +1,4 @@
-import { DefaultLessonGenerator } from "../../../lesson-generators/default-lesson-generator.js";
+import { createLessonGenerator } from "../../../lesson-generators/index.js";
 import { notify } from "../../notifications.js";
 import { wasNotified } from "../../json-parse.js";
 
@@ -23,7 +23,9 @@ export class Controller {
     this.router = router;
     this.elements = getElements();
     this.elements.btnStop.addEventListener("click", this.handleStopClick);
-    this.lessonGenerator = new DefaultLessonGenerator();
+    this.lessonGenerator = createLessonGenerator(
+      lessonSettings.lessonGeneratorId,
+    );
     this.lessonGenerator.subscribeFirstTaskAppeared(
       this.onFirstTaskAppeared.bind(this),
     );

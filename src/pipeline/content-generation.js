@@ -1,4 +1,5 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
+import { loadPrompt } from "../prompts/load-prompt.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { CONTENT_STUBS, STUB_FLAGS } from "./stubs.js";
 
@@ -37,20 +38,10 @@ export class ContentGenerator {
       throw new Error(`Unknown exercise_id: ${exercise_id}`);
     }
 
-    const promptPath = new URL(
-      `../prompts/${this.lessonSettings.lessonLanguage}/task-generation/${promptFile}`,
-      import.meta.url,
-    );
-    const response = await fetch(promptPath);
-
-    if (!response.ok) {
-      throw new Error(
-        `Could not load prompt from ${promptPath}. Status: ${response.status}`,
-      );
-    }
-
     console.debug("Loaded content generator prompt");
-    this.prompts[exercise_id] = await response.text();
+    this.prompts[exercise_id] = await loadPrompt(
+      `${this.lessonSettings.lessonLanguage}/task-generation/${promptFile}`,
+    );
   }
 
   async generate({ description, exercise_id }) {
@@ -94,10 +85,9 @@ export class ContentGenerator {
     });
   }
 
-  buildUserPrompt(escription) {
+  buildUserPrompt(description) {
     const lines = [];
-    description &&
-      lines.push(`DESCRIPTION:\n${description}`);
+    description && lines.push(`DESCRIPTION:\n${description}`);
     this.lessonSettings.learnerLanguage &&
       lines.push(`LEARNER_LANGUAGE: ${this.lessonSettings.learnerLanguage}`);
     this.lessonSettings.learnerLevel &&

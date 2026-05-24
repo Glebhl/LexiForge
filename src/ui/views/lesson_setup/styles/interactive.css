@@ -314,6 +314,24 @@
   cursor: not-allowed;
 }
 
+.settings-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(233, 233, 243, 0.95);
+  font-size: 0.9375rem;
+  outline: none;
+  transition: 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.settings-select option {
+  background: #1a1b1d;
+  color: rgba(233, 233, 243, 0.95);
+}
+
 .switch {
   position: relative;
   display: inline-block;
