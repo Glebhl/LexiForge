@@ -234,7 +234,7 @@
   border-radius: 999px;
   gap: 7px;
   border: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.026);
+  background: rgba(0, 0, 0, 0.16);
   color: var(--color-text-muted);
   align-items: center;
 }
@@ -258,13 +258,13 @@
 }
 
 .meta-pill__value--part {
-  border-color: var(--lesson-card-secondary-border);
-  background: var(--lesson-card-secondary-soft);
+  background: rgba(166, 145, 255, 0.13);
+  border-color: rgba(186, 169, 255, 0.28);
 }
 
 .meta-pill__value--level {
-  background: rgba(255, 204, 102, 0.075);
-  border-color: rgba(255, 204, 102, 0.16);
+  background: rgba(255, 204, 102, 0.14);
+  border-color: rgba(255, 204, 102, 0.26);
 }
 
 .lesson-card--grammar .meta-pill__value--unit {
@@ -276,7 +276,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: 11px 12px;
-  background: rgba(255, 255, 255, 0.024);
+  background: rgba(0, 0, 0, 0.12);
   margin-bottom: 10px;
 }
 

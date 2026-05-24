@@ -263,7 +263,7 @@
   border: 1px solid var(--lesson-card-border, var(--color-border));
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(180deg, var(--lesson-card-tint), transparent 48%),
+    linear-gradient(180deg, var(--lesson-card-tint), transparent 50%),
     var(--color-surface);
   box-shadow: var(--shadow-card);
   --lesson-card-tint: transparent;
@@ -276,29 +276,25 @@
 }
 
 .lesson-card--vocab {
-  --lesson-card-tint: rgba(118, 148, 255, 0.018);
-  --lesson-card-border: rgba(118, 148, 255, 0.11);
-  --lesson-card-border-hover: rgba(118, 148, 255, 0.2);
-  --lesson-card-accent: rgba(118, 148, 255, 0.42);
-  --lesson-card-accent-soft: rgba(118, 148, 255, 0.07);
-  --lesson-card-accent-border: rgba(118, 148, 255, 0.16);
-  --lesson-card-label: rgba(213, 221, 255, 0.62);
-  --lesson-card-secondary-accent: rgba(153, 128, 255, 0.34);
-  --lesson-card-secondary-soft: rgba(153, 128, 255, 0.055);
-  --lesson-card-secondary-border: rgba(153, 128, 255, 0.13);
+  --lesson-card-tint: rgba(118, 148, 255, 0.01);
+  --lesson-card-border: rgba(132, 154, 224, 0.123);
+  --lesson-card-border-hover: rgba(132, 154, 224, 0.28);
+  --lesson-card-accent: rgba(132, 154, 224, 0.56);
+  --lesson-card-accent-soft: rgba(132, 154, 224, 0.12);
+  --lesson-card-accent-border: rgba(132, 154, 224, 0.2);
+  --lesson-card-label: rgba(213, 221, 255, 0.68);
+  --lesson-card-secondary-border: rgba(158, 145, 216, 0.22);
 }
 
 .lesson-card--grammar {
-  --lesson-card-tint: rgba(255, 122, 96, 0.016);
-  --lesson-card-border: rgba(255, 122, 96, 0.11);
-  --lesson-card-border-hover: rgba(255, 122, 96, 0.2);
-  --lesson-card-accent: rgba(255, 139, 115, 0.38);
-  --lesson-card-accent-soft: rgba(255, 122, 96, 0.065);
-  --lesson-card-accent-border: rgba(255, 122, 96, 0.15);
-  --lesson-card-label: rgba(255, 218, 209, 0.6);
-  --lesson-card-secondary-accent: rgba(255, 204, 102, 0.32);
-  --lesson-card-secondary-soft: rgba(255, 204, 102, 0.052);
-  --lesson-card-secondary-border: rgba(255, 204, 102, 0.13);
+  --lesson-card-tint: rgba(255, 122, 96, 0.01);
+  --lesson-card-border: rgba(247, 176, 163, 0.123);
+  --lesson-card-border-hover: rgba(220, 134, 118, 0.28);
+  --lesson-card-accent: rgba(220, 134, 118, 0.55);
+  --lesson-card-accent-soft: rgba(220, 134, 118, 0.12);
+  --lesson-card-accent-border: rgba(220, 134, 118, 0.2);
+  --lesson-card-label: rgba(255, 214, 204, 0.68);
+  --lesson-card-secondary-border: rgba(224, 190, 116, 0.22);
 }
 
 .lesson-card--vocab::before,
@@ -309,24 +305,6 @@
   width: 2px;
   background: var(--lesson-card-accent);
 }
-
-/* .lesson-card__type {
-  align-self: start;
-  flex: 0 0 auto;
-  padding: 6px 10px;
-  border: 1px solid rgba(118, 148, 255, 0.3);
-  border-radius: 999px;
-  background: rgba(118, 148, 255, 0.12);
-  color: var(--color-text);
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-} */
-
-/* .lesson-card--grammar .lesson-card__type {
-  border-color: rgba(255, 122, 96, 0.28);
-  background: rgba(255, 122, 96, 0.1);
-} */
 
 .lesson-card__section-label {
   margin-bottom: 7px;
