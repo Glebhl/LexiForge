@@ -33,6 +33,7 @@
   line-height: 1.2;
   overflow-wrap: anywhere;
   cursor: pointer;
+  touch-action: none;
   box-shadow: var(--shadow-chip);
   transition:
     background-color var(--duration-normal) var(--easing-standard),
@@ -175,7 +176,7 @@ body.is-word-dragging * {
 @media (max-width: 600px) {
   .task-keyboard {
     gap: 4px;
-    min-height: 60px;
+    min-height: 70px;
   }
 
   .task-keyboard__header {

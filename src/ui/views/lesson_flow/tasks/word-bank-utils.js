@@ -273,7 +273,7 @@ export function attachWordDrag(rootElement, options) {
     let pointerX = dragState.startX;
     let pointerY = dragState.startY;
 
-    if (event) {
+    if (event && !forceRestore) {
       pointerX = event.clientX;
       pointerY = event.clientY;
       moveFloatingDrag(dragState, pointerX, pointerY);

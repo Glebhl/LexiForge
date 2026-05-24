@@ -3,10 +3,10 @@
 // the raw text below as if it were the model's response.
 
 export const STUB_FLAGS = {
-  cards: false,
-  goals: false,
-  plan: false,
-  content: false,
+  cards: true,
+  goals: true,
+  plan: true,
+  content: true,
 };
 
 // JSONL: one generated card per line.
