@@ -3,6 +3,23 @@
   min-width: 0;
 }
 
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+main {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .lesson-shell {
   position: absolute;
   inset: var(--shell-block-gap) var(--shell-inline-gap);
