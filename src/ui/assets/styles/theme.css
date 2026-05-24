@@ -50,8 +50,6 @@
   --duration-moderate: 200ms;
   --duration-slow: 350ms;
   --easing-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --shell-inline-gap: 70px;
-  --shell-block-gap: 40px;
   --card-padding: 14px;
   --mobile-resize-threshold: 600px;
 }
@@ -92,6 +90,7 @@ body::-webkit-scrollbar-thumb {
 
 main {
   min-height: 100vh;
+  padding: 40px 70px;
 }
 
 p {
@@ -122,9 +121,14 @@ code {
   font-size: 0.75rem;
 }
 
-@media (max-width: 900px) {
-  :root {
-    --shell-inline-gap: 24px;
-    --shell-block-gap: 24px;
+@media (max-width: 850px) {
+  main {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 750px) {
+  main {
+    padding: 10px;
   }
 }

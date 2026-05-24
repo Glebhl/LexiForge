@@ -173,7 +173,7 @@ body.is-word-dragging * {
   display: none !important;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
   .task-keyboard {
     gap: 4px;
     min-height: 70px;

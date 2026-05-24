@@ -10,8 +10,7 @@ body {
 
 main {
   position: absolute;
-  inset: var(--shell-block-gap) var(--shell-inline-gap);
-  bottom: 20px;
+  inset: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 20px;
@@ -202,14 +201,13 @@ main {
   opacity: 0;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
   main {
     position: relative;
     inset: auto;
     bottom: auto;
     height: 100dvh;
     min-height: 0;
-    padding: 14px;
     grid-template-rows: auto auto minmax(0, 1fr);
     gap: 12px;
   }

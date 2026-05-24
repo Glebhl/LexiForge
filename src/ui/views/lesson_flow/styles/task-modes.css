@@ -235,7 +235,7 @@
   pointer-events: none;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
   .task-answer-stack {
     min-height: 62px;
   }
