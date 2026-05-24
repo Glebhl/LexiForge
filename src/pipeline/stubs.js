@@ -3,7 +3,7 @@
 // the raw text below as if it were the model's response.
 
 export const STUB_FLAGS = {
-  cards: true,
+  cards: false,
   goals: false,
   plan: false,
   content: false,
