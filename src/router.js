@@ -44,8 +44,12 @@ export class Router {
     const html = await this.loadRouteHtml(path, routeUrl);
     const routeDocument = this.parseRouteDocument(html);
 
-    this.replaceRouteStyles(routeDocument, routeUrl);
+    const nextRouteStyleLinks = await this.loadRouteStyles(
+      routeDocument,
+      routeUrl,
+    );
     app.replaceChildren(...this.getRouteBodyNodes(routeDocument, routeUrl));
+    this.replaceRouteStyles(nextRouteStyleLinks);
 
     this.currentScreen = await this.mountRouteController(
       path,
@@ -122,12 +126,8 @@ export class Router {
     return controller;
   }
 
-  replaceRouteStyles(routeDocument, routeUrl) {
-    for (const linkElement of this.routeStyleLinks) {
-      linkElement.remove();
-    }
-
-    this.routeStyleLinks = Array.from(
+  async loadRouteStyles(routeDocument, routeUrl) {
+    const routeStylesheets = Array.from(
       routeDocument.querySelectorAll('link[rel="stylesheet"]'),
     ).map((sourceLinkElement) => {
       const href = sourceLinkElement.getAttribute("href");
@@ -136,9 +136,51 @@ export class Router {
       linkElement.rel = "stylesheet";
       linkElement.href = new URL(href, routeUrl).href;
       linkElement.dataset.routeStyle = "true";
+      const stylesheetReady = this.waitForStylesheet(linkElement);
+
       document.head.appendChild(linkElement);
 
-      return linkElement;
+      return { linkElement, stylesheetReady };
     });
+
+    const linkElements = routeStylesheets.map(
+      (routeStylesheet) => routeStylesheet.linkElement,
+    );
+
+    try {
+      await Promise.all(
+        routeStylesheets.map(
+          (routeStylesheet) => routeStylesheet.stylesheetReady,
+        ),
+      );
+    } catch (error) {
+      for (const linkElement of linkElements) {
+        linkElement.remove();
+      }
+
+      throw error;
+    }
+
+    return linkElements;
+  }
+
+  waitForStylesheet(linkElement) {
+    return new Promise((resolve, reject) => {
+      linkElement.addEventListener("load", resolve, { once: true });
+      linkElement.addEventListener(
+        "error",
+        () =>
+          reject(new Error(`Failed to load stylesheet "${linkElement.href}"`)),
+        { once: true },
+      );
+    });
+  }
+
+  replaceRouteStyles(nextRouteStyleLinks) {
+    for (const linkElement of this.routeStyleLinks) {
+      linkElement.remove();
+    }
+
+    this.routeStyleLinks = nextRouteStyleLinks;
   }
 }
