@@ -6,6 +6,8 @@ const routes = {
   "/lesson": "./ui/views/lesson_flow",
 };
 
+const routeControllerModules = import.meta.glob("./ui/views/**/controller.js");
+
 export class Router {
   constructor() {
     if (!app) {
@@ -107,9 +109,14 @@ export class Router {
   }
 
   async mountRouteController(path, routeUrl, options) {
-    const module = await import(
-      /* @vite-ignore */ new URL("controller.js", routeUrl).href
-    );
+    const loadControllerModule =
+      routeControllerModules[`${routes[path]}/controller.js`];
+
+    if (!loadControllerModule) {
+      throw new Error(`Route "${path}" does not have a controller module`);
+    }
+
+    const module = await loadControllerModule();
 
     if (typeof module.Controller !== "function") {
       throw new Error(`Route "${path}" does not export Controller`);
