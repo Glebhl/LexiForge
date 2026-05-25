@@ -502,8 +502,6 @@
     </template>
 
     <script type="module">
-      import { parseJsonSafely } from "./src/ui/json-parse.js";
-
       const OPENROUTER_KEY = "openrouter_api_key";
 
       const keyInput = document.getElementById("keyInput");
@@ -677,7 +675,7 @@
         if (!file) return;
 
         try {
-          const data = parseJsonSafely(await file.text(), {
+          const data = JSON.parse(await file.text(), {
             context: "localStorage import file",
             title: "Import JSON is invalid",
           });
