@@ -1,5 +1,6 @@
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { notify } from "../ui/notifications.js";
+import { appStorage } from "../storage/index.js";
 
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 const API_KEY_STORAGE_NAME = "openrouter_api_key";
@@ -7,8 +8,7 @@ const DEFAULT_MAX_TOKENS = 2048;
 let missingApiKeyNotified = false;
 
 function getAPIKey() {
-  const key =
-    globalThis.localStorage?.getItem(API_KEY_STORAGE_NAME)?.trim() || "";
+  const key = appStorage.getItem(API_KEY_STORAGE_NAME, "").trim();
 
   if (key) {
     console.debug("OpenRouter API key was loaded");
