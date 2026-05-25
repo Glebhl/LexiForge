@@ -1,3 +1,5 @@
+import { appStorage } from "../../../storage/index.js";
+
 const DEFAULT_LANGUAGE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 const DEFAULT_TASKS = [
@@ -33,6 +35,10 @@ let detachScrollFade = null;
 
 export function onChange(id, value) {
   console.log(`id=${id} value=${value}`);
+
+  if (id === "languageLevel") {
+    appStorage.setItem("languageLevel", value);
+  }
 }
 
 export function loadSettings({
@@ -83,7 +89,7 @@ function getSettingsContent() {
 
 function loadSettingsValues() {
   return {
-    languageLevel: "A1",
+    languageLevel: appStorage.getItem("languageLevel", "A1"),
     lessonGeneratorId: "default",
     additionalRequest: "",
     disabledTaskIds: [],
