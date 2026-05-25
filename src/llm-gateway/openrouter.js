@@ -3,6 +3,7 @@ import { notify } from "../ui/notifications.js";
 
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 const API_KEY_STORAGE_NAME = "openrouter_api_key";
+const DEFAULT_MAX_TOKENS = 2048;
 let missingApiKeyNotified = false;
 
 function getAPIKey() {
@@ -40,15 +41,14 @@ export class OpenRouterClient {
     this.defaultHeaders = options.headers || {};
     this.appTitle = options.appTitle;
     this.siteUrl = options.siteUrl;
+    this.defaultMaxTokens =
+      options.maxTokens ?? options.max_tokens ?? DEFAULT_MAX_TOKENS;
   }
 
   async chat(request, options = {}) {
     const response = await this.postJson(
       "/chat/completions",
-      {
-        ...request,
-        stream: false,
-      },
+      this.withRequestDefaults(request, { stream: false }),
       options,
     );
 
@@ -58,10 +58,7 @@ export class OpenRouterClient {
   async *streamChat(request, options = {}) {
     const response = await this.postJson(
       "/chat/completions",
-      {
-        ...request,
-        stream: true,
-      },
+      this.withRequestDefaults(request, { stream: true }),
       options,
     );
 
@@ -121,6 +118,23 @@ export class OpenRouterClient {
       body: JSON.stringify(body),
       signal: options.signal,
     });
+  }
+
+  withRequestDefaults(request, defaults) {
+    const body = {
+      ...request,
+      ...defaults,
+    };
+
+    if (
+      this.defaultMaxTokens != null &&
+      body.max_tokens == null &&
+      body.max_completion_tokens == null
+    ) {
+      body.max_tokens = this.defaultMaxTokens;
+    }
+
+    return body;
   }
 
   async readJson(response) {

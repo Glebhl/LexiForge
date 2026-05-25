@@ -7,6 +7,7 @@ export const MISTAKE = "mistake";
 
 const DEFAULT_LANGUAGE_CODE = "en_US";
 const DEFAULT_MODEL = "google/gemini-3.1-flash-lite-preview";
+const ANSWER_CHECK_MAX_TOKENS = 8;
 const APOSTROPHE_VARIANTS = ["'", "\u2019", "`", "\u02bc"];
 const LANGUAGE_CONTRACTION_RULES = {
   en_us: {
@@ -186,6 +187,7 @@ class AnswerChecker {
   async generateEvaluation(kind, userPrompt) {
     const response = await this.client.chat({
       model: this.model,
+      max_tokens: ANSWER_CHECK_MAX_TOKENS,
       messages: [
         { role: "system", content: await this.loadPrompt(kind) },
         { role: "user", content: userPrompt },

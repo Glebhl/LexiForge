@@ -2,6 +2,8 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
+const CARDS_MAX_TOKENS = 2048;
+
 export class CardsGenerator {
   constructor(lessonLanguage, options = {}) {
     this.lessonLanguage = lessonLanguage;
@@ -53,6 +55,7 @@ export class CardsGenerator {
 
     for await (const chunk of this.client.streamChat({
       model: this.model,
+      max_tokens: CARDS_MAX_TOKENS,
       messages: [
         { role: "system", content: this.prompt },
         { role: "user", content: userPrompt },

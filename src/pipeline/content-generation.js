@@ -10,6 +10,7 @@ const PROMPT_FILES = {
   translation: "translation_generate.txt",
   matching: "matching_generate.txt",
 };
+const CONTENT_MAX_TOKENS = 2048;
 
 export class ContentGenerator {
   constructor(lessonSettings, options = {}) {
@@ -66,6 +67,7 @@ export class ContentGenerator {
     } else {
       const response = await this.client.chat({
         model: this.model,
+        max_tokens: CONTENT_MAX_TOKENS,
         messages: [
           { role: "system", content: this.prompts[exercise_id] },
           { role: "user", content: userPrompt },

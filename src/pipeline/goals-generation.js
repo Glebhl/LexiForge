@@ -3,6 +3,8 @@ import { loadPrompt } from "../prompts/load-prompt.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 
+const GOALS_MAX_TOKENS = 1024;
+
 export class GoalsGenerator {
   constructor(lessonLanguage, options = {}) {
     this.lessonLanguage = lessonLanguage;
@@ -37,6 +39,7 @@ export class GoalsGenerator {
     } else {
       const response = await this.client.chat({
         model: this.model,
+        max_tokens: GOALS_MAX_TOKENS,
         messages: [
           { role: "system", content: this.prompt },
           { role: "user", content: userPrompt },

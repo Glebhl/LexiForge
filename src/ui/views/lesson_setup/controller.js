@@ -144,7 +144,7 @@ function formatVocabUnit(card) {
   return [
     `vocab: lexeme="${card.lexeme || "N/A"}"`,
     `part_of_speech="${card.part_of_speech || "N/A"}"`,
-    `definition="${card.defenition_english || "N/A"}"`,
+    `definition="${card.definition_english || "N/A"}"`,
   ].join(", ");
 }
 

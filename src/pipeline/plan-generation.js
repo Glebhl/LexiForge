@@ -3,6 +3,8 @@ import { loadPrompt } from "../prompts/load-prompt.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
+const PLAN_MAX_TOKENS = 2048;
+
 export class PlanGenerator {
   constructor(lessonLanguage, stageId, options = {}) {
     this.lessonLanguage = lessonLanguage;
@@ -59,6 +61,7 @@ export class PlanGenerator {
 
     for await (const chunk of this.client.streamChat({
       model: this.model,
+      max_tokens: PLAN_MAX_TOKENS,
       messages: [
         { role: "system", content: this.prompt },
         { role: "user", content: userPrompt },
