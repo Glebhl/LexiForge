@@ -255,8 +255,7 @@ function renderAdditionalRequest() {
 
   textareaElement.value = settings.additionalRequest;
   textareaElement.rows = 4;
-  textareaElement.placeholder =
-    'For example: "More explanations and travel context"';
+  textareaElement.placeholder = 'Focus, e.g. "More travel examples"';
   textareaElement.addEventListener("input", function () {
     settings.additionalRequest = textareaElement.value;
     emitChange("additionalRequest", settings.additionalRequest);

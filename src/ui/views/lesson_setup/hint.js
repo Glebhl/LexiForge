@@ -1,70 +1,66 @@
 const hints = [
   [
-    "Specify your level and goal (",
-    { code: "A2 travel" },
-    ", ",
-    { code: "B1 conversation" },
-    ").",
+    "Ask for a focused card deck: ",
+    { code: "8 B1 travel verbs" },
+    " or ",
+    { code: "6 C1 negotiation words" },
+    ".",
   ],
   [
-    "Choose a topic and format (",
-    { code: "food vocabulary" },
-    ", ",
-    { code: "short sentences" },
-    ").",
+    "Mix vocabulary and grammar when both matter: ",
+    { code: "B2 work + conditionals" },
+    " or ",
+    { code: "A2 food + articles" },
+    ".",
   ],
   [
-    "Include the situation (",
-    { code: "at the airport" },
-    ", ",
-    { code: "doctor appointment" },
-    ").",
+    "Use a real situation so examples feel usable: ",
+    { code: "airport security, A2" },
+    " or ",
+    { code: "meeting small talk, B1" },
+    ".",
   ],
   [
-    "Request difficulty and pace (",
-    { code: "simple sentences" },
-    ", ",
-    { code: "challenge me" },
-    ").",
+    "Say whether you want grammar cards or vocab cards: ",
+    { code: "Present Perfect" },
+    " or ",
+    { code: "B2 interview words" },
+    ".",
   ],
   [
-    "Focus on a grammar point (",
-    { code: "present perfect" },
-    ", ",
-    { code: "conditionals" },
-    ").",
+    "Ask for contrasts when similar items blur together: ",
+    { code: "borrow vs lend" },
+    " or ",
+    { code: "in time vs on time" },
+    ".",
   ],
   [
-    "Set the number of new words (",
-    { code: "teach 10 B2 words" },
-    ", ",
-    { code: "5 new B1 words" },
-    ").",
+    "Paste exact targets if you already know them: ",
+    { code: "depend on, deal with" },
+    " or ",
+    { code: "although, despite" },
+    ".",
   ],
   [
-    "Pick a register (",
-    { code: "formal" },
-    ", ",
-    { code: "casual" },
-    ", ",
-    { code: "business" },
-    ").",
+    "Add register or tone for better card choices: ",
+    { code: "casual disagreement, B2" },
+    " or ",
+    { code: "formal emails, B1" },
+    ".",
   ],
   [
-    "Ask for phrasal verbs by theme (",
-    { code: "phrasal verbs for work" },
-    ", ",
-    { code: "for travel" },
-    ").",
+    "Ask for one word in a specific context: ",
+    { code: "charge: phones" },
+    " or ",
+    { code: "run: business" },
+    ".",
   ],
   [
-    "Include your interests (",
-    { code: "music" },
-    ", ",
-    { code: "gaming" },
-    ", ",
-    { code: "fitness" },
-    ").",
+    "Shape the deck around something you actually care about: ",
+    { code: "B1 gaming, 7 cards" },
+    " or ",
+    { code: "C1 psychology idioms" },
+    ".",
   ],
 ];
 
@@ -90,11 +86,15 @@ function renderHint(parts) {
 
   parts.forEach((part) => {
     if (typeof part === "string") {
-      fragment.append(part);
+      const textElement = document.createElement("span");
+      textElement.className = "hint-copy";
+      textElement.textContent = part;
+      fragment.append(textElement);
       return;
     }
 
     const codeElement = document.createElement("code");
+    codeElement.className = "hint-chip";
     codeElement.textContent = part.code;
     fragment.append(codeElement);
   });

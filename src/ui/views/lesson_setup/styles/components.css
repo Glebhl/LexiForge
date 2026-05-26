@@ -246,7 +246,8 @@
 
 .hint-text {
   margin-top: 10px;
-  width: 20px;
+  width: max-content;
+  max-width: 100%;
   color: var(--color-text-muted);
   font-size: 0.8125rem;
   white-space: nowrap;
@@ -345,5 +346,52 @@
   #deck-amount {
     grid-column: 1 / -1;
     justify-self: end;
+  }
+}
+
+@media (max-width: 750px) {
+  .hint-text {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    margin-top: 9px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    color: rgba(233, 233, 243, 0.72);
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      #000 calc(100% - 28px),
+      transparent
+    );
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
+
+  .hint-text::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hint-text::before {
+    content: "Try:";
+    position: sticky;
+    left: 0;
+    flex: 0 0 auto;
+    padding-right: 2px;
+    background: var(--color-background);
+    color: rgba(233, 233, 243, 0.58);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
+  .hint-copy {
+    display: none;
+  }
+
+  .hint-chip {
+    flex: 0 0 auto;
   }
 }
