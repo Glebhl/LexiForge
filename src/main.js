@@ -1,4 +1,5 @@
 import { Router } from "./router.js";
+import { ensurePipelineModels } from "./storage/index.js";
 import { notify } from "./ui/notifications.js";
 import "./ui/assets/styles/notifications.css";
 
@@ -6,6 +7,8 @@ const router = new Router();
 
 window.glosiumRouter = router;
 window.glosiumNotify = notify;
+
+ensurePipelineModels();
 
 router.navigateTo({ path: "/setup", addToHistory: false }).catch((error) => {
   console.error(error);

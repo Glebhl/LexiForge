@@ -1,5 +1,6 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
+import { resolvePipelineModel } from "../storage/index.js";
 import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
 const CARDS_MAX_TOKENS = 2048;
@@ -7,7 +8,7 @@ const CARDS_MAX_TOKENS = 2048;
 export class CardsGenerator {
   constructor(lessonLanguage, options = {}) {
     this.lessonLanguage = lessonLanguage;
-    this.model = options.model || "google/gemini-3.1-flash-lite-preview";
+    this.model = resolvePipelineModel("cards", options.model);
     this.client = new OpenRouterClient(options);
     this.prompt = "";
   }

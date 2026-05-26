@@ -1,5 +1,6 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
+import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { CONTENT_STUBS, STUB_FLAGS } from "./stubs.js";
 
@@ -15,7 +16,7 @@ const CONTENT_MAX_TOKENS = 2048;
 export class ContentGenerator {
   constructor(lessonSettings, options = {}) {
     this.lessonSettings = lessonSettings;
-    this.model = options.model || "google/gemini-3-flash-preview";
+    this.model = resolvePipelineModel("content", options.model);
     this.client = new OpenRouterClient(options);
     this.prompts = {};
   }

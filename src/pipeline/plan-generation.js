@@ -1,5 +1,6 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
+import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
@@ -11,7 +12,7 @@ export class PlanGenerator {
     this.stageId = stageId;
     this.promptDirectory =
       options.promptDirectory || "lesson/generators/default/stages";
-    this.model = options.model || "google/gemini-3-flash-preview";
+    this.model = resolvePipelineModel("plan", options.model);
     this.client = new OpenRouterClient(options);
     this.prompt = "";
   }

@@ -1,3 +1,4 @@
+export * from "./answer-checking.js";
 export { CardsGenerator } from "./cards-generation.js";
 export { ContentGenerator } from "./content-generation.js";
 export { GoalsGenerator } from "./goals-generation.js";

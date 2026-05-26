@@ -1,12 +1,12 @@
-import { OpenRouterClient } from "../../../../llm-gateway/index.js";
-import { loadPrompt } from "../../../../prompts/load-prompt.js";
+import { OpenRouterClient } from "../llm-gateway/index.js";
+import { loadPrompt } from "../prompts/load-prompt.js";
+import { resolvePipelineModel } from "../storage/index.js";
 
 export const CORRECT = "correct";
 export const MINOR = "minor";
 export const MISTAKE = "mistake";
 
 const DEFAULT_LANGUAGE_CODE = "en_US";
-const DEFAULT_MODEL = "google/gemini-3.1-flash-lite-preview";
 const ANSWER_CHECK_MAX_TOKENS = 8;
 const APOSTROPHE_VARIANTS = ["'", "\u2019", "`", "\u02bc"];
 const LANGUAGE_CONTRACTION_RULES = {
@@ -164,9 +164,9 @@ function alphabeticSignature(text) {
 }
 
 class AnswerChecker {
-  constructor() {
-    this.client = new OpenRouterClient();
-    this.model = DEFAULT_MODEL;
+  constructor(options = {}) {
+    this.client = new OpenRouterClient(options);
+    this.model = resolvePipelineModel("answerChecking", options.model);
     this.prompts = {};
   }
 

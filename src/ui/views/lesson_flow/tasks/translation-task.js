@@ -15,7 +15,7 @@ import {
   evaluateTranslationAnswer,
   isPassingEvaluation,
   isTranslationAnswerCorrect,
-} from "./answer-checking.js";
+} from "../../../../pipeline/answer-checking.js";
 import { notify } from "../../../notifications.js";
 
 const WORD_BANK_MODE = "word-bank";

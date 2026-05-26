@@ -1,5 +1,6 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
+import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 
@@ -10,7 +11,7 @@ export class GoalsGenerator {
     this.lessonLanguage = lessonLanguage;
     this.promptPath =
       options.promptPath || "lesson/generators/default/goals_generate.txt";
-    this.model = options.model || "google/gemini-3-flash-preview";
+    this.model = resolvePipelineModel("goals", options.model);
     this.client = new OpenRouterClient(options);
     this.prompt = "";
   }
