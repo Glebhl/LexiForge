@@ -202,13 +202,24 @@ main {
 }
 
 @media (max-width: 750px) {
+  html,
+  body {
+    height: auto;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
   main {
     position: relative;
     inset: auto;
     bottom: auto;
-    height: 100dvh;
-    min-height: 0;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    min-height: 100dvh;
+    overflow: visible;
+    grid-template-rows: auto auto 1fr;
     gap: 12px;
   }
 
@@ -235,6 +246,7 @@ main {
   }
 
   .settings-panel {
+    height: auto;
     width: 100%;
     min-width: 0;
     min-height: 0;
@@ -246,15 +258,23 @@ main {
     min-width: 0;
   }
 
+  .settings-content {
+    overflow: visible;
+    padding-right: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scrollbar-gutter: auto;
+  }
+
   .card-grid-scroll {
+    overflow: visible;
     padding: 8px 2px 12px;
     scrollbar-gutter: auto;
   }
 
   .card-grid-shell::before,
   .card-grid-shell::after {
-    right: 0;
-    height: 18px;
+    content: none;
   }
 
   .card-grid {
