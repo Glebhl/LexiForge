@@ -378,8 +378,7 @@
     left: 0;
     flex: 0 0 auto;
     padding-right: 2px;
-    background: var(--color-background);
-    color: rgba(233, 233, 243, 0.58);
+    color: var(--color-text-muted);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.5px;
