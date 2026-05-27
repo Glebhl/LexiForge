@@ -21,6 +21,17 @@ const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
 const BLANK_PATTERN = /\[([^\]]+)\]/g;
 
+function showAnswerFeedback(evaluation, feedback) {
+  const message = String(feedback || "").trim();
+  if (!message || evaluation === CORRECT) return;
+
+  if (evaluation === MISTAKE) {
+    notify.warning(message, { title: "Check this answer" });
+  } else {
+    notify.info(message, { title: "Almost there" });
+  }
+}
+
 function parseParagraph(paragraph) {
   const text = String(paragraph || "");
   const parts = [];
@@ -298,12 +309,16 @@ export function loadTask(elements, mountTask, content, meta = {}) {
     }
 
     let evaluation = MISTAKE;
+    let feedback = "";
     try {
-      evaluation = await evaluateFillingAnswer(
+      const result = await evaluateFillingAnswer(
         parts,
         correctAnswers,
         userAnswers,
+        meta.learnerLanguage,
       );
+      evaluation = result?.evaluation || result || MISTAKE;
+      feedback = result?.feedback || "";
     } catch (error) {
       console.error("Filling answer check failed", error);
       notify.warning(error.message || "Filling answer check failed.", {
@@ -315,6 +330,7 @@ export function loadTask(elements, mountTask, content, meta = {}) {
       `isCorrect=${evaluation}, expected=${correctAnswers}, answer=${userAnswers}`,
     );
 
+    showAnswerFeedback(evaluation, feedback);
     if (!isPassingEvaluation(evaluation)) showInvalidAnswer();
     return evaluation;
   };

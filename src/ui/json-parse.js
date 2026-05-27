@@ -26,16 +26,6 @@ function getJsonParseLocation(text, error) {
   return { column, line, position };
 }
 
-function getJsonErrorExcerpt(text, position) {
-  const rawText = String(text);
-  const start = Math.max(0, position - 80);
-  const end = Math.min(rawText.length, position + 80);
-  const prefix = start > 0 ? "..." : "";
-  const suffix = end < rawText.length ? "..." : "";
-
-  return `${prefix}${rawText.slice(start, end)}${suffix}`;
-}
-
 export function parseJsonSafely(text, options = {}) {
   const {
     context = "JSON response",
@@ -55,7 +45,7 @@ export function parseJsonSafely(text, options = {}) {
     if (location) {
       console.error(message, {
         column: location.column,
-        excerpt: getJsonErrorExcerpt(text, location.position),
+        text: text,
         line: location.line,
         position: location.position,
       });

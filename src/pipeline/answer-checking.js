@@ -9,7 +9,7 @@ export const MINOR = "minor";
 export const MISTAKE = "mistake";
 
 const DEFAULT_LANGUAGE_CODE = "en_US";
-const ANSWER_CHECK_MAX_TOKENS = 32;
+const ANSWER_CHECK_MAX_TOKENS = 128;
 const ANSWER_CHECK_REASONIG_EFFORT = "minimal";
 const APOSTROPHE_VARIANTS = ["'", "\u2019", "`", "\u02bc"];
 const LANGUAGE_CONTRACTION_RULES = {
@@ -59,23 +59,36 @@ export function isFillingAnswerCorrect(userAnswers, expectedAnswers) {
   );
 }
 
-export async function evaluateTranslationAnswer(originalText, userAnswer) {
-  return getChecker().evaluateTranslationAnswer(originalText, userAnswer);
+export async function evaluateTranslationAnswer(
+  originalText,
+  userAnswer,
+  learnerLanguage,
+) {
+  return getChecker().evaluateTranslationAnswer(
+    originalText,
+    userAnswer,
+    learnerLanguage,
+  );
 }
 
 export async function evaluateFillingAnswer(
   sentenceParts,
   expectedAnswers,
   userAnswers,
+  learnerLanguage,
 ) {
   if (userAnswers.length !== expectedAnswers.length) {
-    return MISTAKE;
+    return {
+      evaluation: MISTAKE,
+      feedback: "Check that every blank has one answer.",
+    };
   }
 
   return getChecker().evaluateFillingAnswer(
     sentenceParts,
     expectedAnswers,
     userAnswers,
+    learnerLanguage,
   );
 }
 
@@ -173,17 +186,27 @@ class AnswerChecker {
     this.prompts = {};
   }
 
-  async evaluateTranslationAnswer(originalText, userAnswer) {
+  async evaluateTranslationAnswer(originalText, userAnswer, learnerLanguage) {
     return this.generateEvaluation(
       "translation",
-      buildTranslationUserPrompt(originalText, userAnswer),
+      buildTranslationUserPrompt(originalText, userAnswer, learnerLanguage),
     );
   }
 
-  async evaluateFillingAnswer(sentenceParts, expectedAnswers, userAnswers) {
+  async evaluateFillingAnswer(
+    sentenceParts,
+    expectedAnswers,
+    userAnswers,
+    learnerLanguage,
+  ) {
     return this.generateEvaluation(
       "filling",
-      buildFillingUserPrompt(sentenceParts, expectedAnswers, userAnswers),
+      buildFillingUserPrompt(
+        sentenceParts,
+        expectedAnswers,
+        userAnswers,
+        learnerLanguage,
+      ),
     );
   }
 
@@ -201,12 +224,9 @@ class AnswerChecker {
       },
     });
     const content = response.choices?.[0]?.message?.content || "";
-    const parsedContent = parseJsonSafely(content, {
-      context: "answer check response from the LLM",
-      title: "Invalid LLM response",
-    });
+    const parsedContent = parseAnswerCheckResponse(content);
 
-    return normalizeEvaluation(parsedContent?.evaluation);
+    return normalizeAnswerCheck(parsedContent);
   }
 
   async loadPrompt(kind) {
@@ -219,6 +239,75 @@ class AnswerChecker {
   }
 }
 
+function normalizeAnswerCheck(value) {
+  return {
+    evaluation: normalizeEvaluation(value?.evaluation),
+    feedback: normalizeFeedback(value?.feedback),
+  };
+}
+
+function parseAnswerCheckResponse(content) {
+  const rawContent = String(content || "");
+  const jsonContent = extractFirstJsonObject(rawContent);
+
+  if (jsonContent) {
+    return parseJsonSafely(jsonContent, {
+      context: "answer check response from the LLM",
+      title: "Invalid LLM response",
+    });
+  }
+
+  return parseJsonSafely(rawContent, {
+    context: "answer check response from the LLM",
+    title: "Invalid LLM response",
+  });
+}
+
+function extractFirstJsonObject(text) {
+  const startIndex = text.indexOf("{");
+  if (startIndex === -1) {
+    return "";
+  }
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let index = startIndex; index < text.length; index += 1) {
+    const character = text[index];
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (character === "\\") {
+      escaped = inString;
+      continue;
+    }
+
+    if (character === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (inString) {
+      continue;
+    }
+
+    if (character === "{") {
+      depth += 1;
+    } else if (character === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        return text.slice(startIndex, index + 1);
+      }
+    }
+  }
+
+  return "";
+}
+
 function normalizeEvaluation(value) {
   const evaluation = String(value ?? "")
     .trim()
@@ -226,19 +315,31 @@ function normalizeEvaluation(value) {
   return [CORRECT, MINOR, MISTAKE].includes(evaluation) ? evaluation : MISTAKE;
 }
 
-function buildTranslationUserPrompt(originalText, userAnswer) {
-  return [`SENTENCE: ${originalText ?? ""}`, `USER_ANSWER: ${userAnswer}`].join(
-    "\n",
-  );
+function normalizeFeedback(value) {
+  return String(value ?? "").trim();
 }
 
-function buildFillingUserPrompt(sentenceParts, expectedAnswers, userAnswers) {
+function buildTranslationUserPrompt(originalText, userAnswer, learnerLanguage) {
+  return [
+    `SENTENCE: ${originalText ?? ""}`,
+    `USER_ANSWER: ${userAnswer}`,
+    `LEARNER_LANGUAGE: ${learnerLanguage || "N/A"}`,
+  ].join("\n");
+}
+
+function buildFillingUserPrompt(
+  sentenceParts,
+  expectedAnswers,
+  userAnswers,
+  learnerLanguage,
+) {
   return [
     `SENTENCE_TEMPLATE: ${buildBlankSentenceTemplate(sentenceParts)}`,
     "EXPECTED_ANSWERS:",
     ...expectedAnswers.map((answer, index) => `${index + 1}. ${answer}`),
     "USER_ANSWERS:",
     ...userAnswers.map((answer, index) => `${index + 1}. ${answer}`),
+    `LEARNER_LANGUAGE: ${learnerLanguage || "N/A"}`,
   ].join("\n");
 }
 

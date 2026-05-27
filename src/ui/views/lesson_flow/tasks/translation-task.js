@@ -22,6 +22,17 @@ const WORD_BANK_MODE = "word-bank";
 const TYPING_MODE = "typing";
 const FLIP_PLACEHOLDER_MS = 120;
 
+function showAnswerFeedback(evaluation, feedback) {
+  const message = String(feedback || "").trim();
+  if (!message || evaluation === CORRECT) return;
+
+  if (evaluation === MISTAKE) {
+    notify.warning(message, { title: "Check this answer" });
+  } else {
+    notify.info(message, { title: "Almost there" });
+  }
+}
+
 function getMinimumWordBank(sentences) {
   const wordRegex = /\p{L}+(?:[-'’]\p{L}+)*/gu;
   const maxWordCounts = {};
@@ -271,8 +282,15 @@ export function loadTask(elements, mountTask, content, meta = {}) {
     }
 
     let evaluation = MISTAKE;
+    let feedback = "";
     try {
-      evaluation = await evaluateTranslationAnswer(promptText, userAnswer);
+      const result = await evaluateTranslationAnswer(
+        promptText,
+        userAnswer,
+        meta.learnerLanguage,
+      );
+      evaluation = result?.evaluation || result || MISTAKE;
+      feedback = result?.feedback || "";
     } catch (error) {
       console.error("Translation answer check failed", error);
       notify.warning(error.message || "Translation answer check failed.", {
@@ -283,6 +301,7 @@ export function loadTask(elements, mountTask, content, meta = {}) {
       `isCorrect=${evaluation}, expected=${correctAnswers}, answer=${userAnswer}`,
     );
 
+    showAnswerFeedback(evaluation, feedback);
     if (!isPassingEvaluation(evaluation)) showInvalidAnswer();
     return evaluation;
   };

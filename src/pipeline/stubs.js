@@ -2,18 +2,18 @@
 // Flip a flag to skip the corresponding LLM call and feed the parser
 // the raw text below as if it were the model's response.
 
-// export const STUB_FLAGS = {
-//   cards: true,
-//   goals: true,
-//   plan: true,
-//   content: true,
-// };
 export const STUB_FLAGS = {
-  cards: false,
-  goals: false,
-  plan: false,
-  content: false,
+  cards: true,
+  goals: true,
+  plan: true,
+  content: true,
 };
+// export const STUB_FLAGS = {
+//   cards: false,
+//   goals: false,
+//   plan: false,
+//   content: false,
+// };
 
 // JSONL: one generated card per line.
 export const CARDS_STUB = `{"type":"vocab","lexeme":"inevitable","lexical_unit":"word","part_of_speech":"adjective","level":"B2","transcription":"/æmˈbɪɡjuəs/","translation":"неизбежный","definition":"то, чего нельзя избежать","definition_english":"something that cannot be avoided","example":"It was an inevitable consequence of his actions."}

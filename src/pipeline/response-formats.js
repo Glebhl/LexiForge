@@ -221,8 +221,11 @@ const answerCheckSchema = {
       type: "string",
       enum: ["correct", "minor", "mistake"],
     },
+    feedback: {
+      type: "string",
+    },
   },
-  required: ["evaluation"],
+  required: ["evaluation", "feedback"],
   additionalProperties: false,
 };
 

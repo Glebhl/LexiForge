@@ -118,6 +118,7 @@ export class LessonGenerator {
     await this.onNewTaskAppeared(exercise.exercise_id, exerciseContent, {
       ...stageMeta,
       exerciseIdx,
+      learnerLanguage: this.lessonSettings.learnerLanguage,
       mode: exercise.mode,
     });
   }

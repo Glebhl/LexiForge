@@ -3,7 +3,7 @@ import { LocalStorageStore } from "./local-storage.js";
 const pipelineModelStorage = new LocalStorageStore();
 
 export const DEFAULT_PIPELINE_MODELS = Object.freeze({
-  answerChecking: "google/gemini-2.5-flash-lite",
+  answerChecking: "google/gemini-3.1-flash-lite",
   cards: "google/gemini-3.1-flash-lite",
   content: "google/gemini-3.1-flash-lite",
   goals: "google/gemini-3.5-flash",
