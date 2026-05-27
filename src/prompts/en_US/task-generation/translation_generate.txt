@@ -36,11 +36,7 @@ Distractors:
 - Do not include words already required by the correct answers.
 - Avoid near-synonyms, same-category alternatives, or words that could create another valid translation.
 
-Output raw valid JSON only. No markdown, code fences, comments, or extra text.
-
-Schema:
-{
-  "paragraph": "<source text in LEARNER_LANGUAGE>",
-  "answers": ["<full English translation>", "..."],
-  "distractors": ["...", "..."]
-}
+Response fields:
+- paragraph: source text in LEARNER_LANGUAGE
+- answers: full English translations
+- distractors: extra English distractor words or short chunks

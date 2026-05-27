@@ -28,13 +28,8 @@ Bug prevention:
 - Do not include the correct answer in "distractors".
 - Do not mix learner-language text into the passage, question, or answers.
 
-Output raw valid JSON only. No markdown, code fences, comments, or extra text.
-"answer" must be the correct answer text. "distractors" must contain only incorrect answers.
-
-Schema:
-{
-  "passage": "...",
-  "question": "...",
-  "answer": "...",
-  "distractors": ["...", "...", "..."]
-}
+Response fields:
+- passage: the English reading passage
+- question: one English comprehension question
+- answer: the correct answer text
+- distractors: only incorrect answers

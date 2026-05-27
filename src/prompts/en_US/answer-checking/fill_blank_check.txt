@@ -16,4 +16,4 @@ Decide:
 Evaluate each blank in the context of the whole sentence.
 Treat the order of blanks as important, but you can accept it if the answer fully makes sense.
 
-Output exactly one word: correct / minor / mistake
+Choose one evaluation label: correct, minor, or mistake.

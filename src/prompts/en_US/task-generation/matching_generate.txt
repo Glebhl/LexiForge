@@ -29,13 +29,5 @@ Bug prevention:
 - For grammar, do not pair a grammar name with the exact same grammar name.
 - Do not shuffle the pairs; the UI handles display order.
 
-Output raw valid JSON only. No markdown, code fences, comments, or extra text.
-Return at least 2 pairs.
-
-Schema:
-{
-  "pairs": [
-    ["...", "..."],
-    ["...", "..."]
-  ]
-}
+Response fields:
+- pairs: at least 2 left/right matching pairs

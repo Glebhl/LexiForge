@@ -33,10 +33,6 @@ Distractors:
 - Distractors must be clearly wrong for every blank by meaning, usage, or grammar.
 - Avoid near-synonyms, same-category alternatives, close collocations, or forms that could still sound natural.
 
-Output raw valid JSON only. No markdown, code fences, comments, or extra text.
-
-Schema:
-{
-  "paragraph": "<English text with [answers] in square brackets>",
-  "distractors": ["...", "..."]
-}
+Response fields:
+- paragraph: English text with answers marked in square brackets
+- distractors: extra English distractors

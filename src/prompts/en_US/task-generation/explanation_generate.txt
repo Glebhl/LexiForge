@@ -25,15 +25,11 @@ Content rules:
 - Do not ask questions, assign tasks, mention buttons, mention JSON, or describe the app mechanics.
 - Do not invent extra learning units beyond DESCRIPTION.
 
-HTML rules:
-- Output one HTML fragment only.
-- Do not output JSON, markdown, code fences, escaped HTML, CSS, JavaScript, <html>, or <body>.
+HTML content rules:
+- The html field contains one complete HTML fragment.
+- Do not include markdown, escaped HTML, CSS, JavaScript, <html>, or <body>.
 - Allowed tags only: <h2>, <h3>, <p>, <strong>, <em>, <ul>, <li>, <ol>, <blockquote>, <code>, <br>.
 - Use <h2> for the main point.
 - Use <h3> only when DESCRIPTION has several distinct subpoints.
 - Use short <p> blocks and compact lists.
 - Use <blockquote> for one short tip only when it genuinely helps.
-
-Output:
-Return only the complete HTML fragment.
-No prose before or after it.

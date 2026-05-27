@@ -1,9 +1,12 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
+import { parseJsonSafely } from "../ui/json-parse.js";
+import { CARDS_RESPONSE_FORMAT } from "./response-formats.js";
 import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
 const CARDS_MAX_TOKENS = 2048;
+const CARDS_REASONIG_EFFORT = "minimal";
 
 export class CardsGenerator {
   constructor(lessonLanguage, options = {}) {
@@ -57,27 +60,21 @@ export class CardsGenerator {
     for await (const chunk of this.client.streamChat({
       model: this.model,
       max_tokens: CARDS_MAX_TOKENS,
+      response_format: CARDS_RESPONSE_FORMAT,
       messages: [
         { role: "system", content: this.prompt },
         { role: "user", content: userPrompt },
       ],
+      reasoning: {
+        effort: CARDS_REASONIG_EFFORT,
+      },
     })) {
       const token = chunk.choices?.[0]?.delta?.content || "";
       buffer += token;
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        const trimmedLine = line.trim();
-
-        if (trimmedLine) {
-          yield trimmedLine;
-        }
-      }
     }
 
-    if (buffer.trim()) {
-      yield buffer.trim();
+    for (const item of parseCardsResponse(buffer)) {
+      yield JSON.stringify(item);
     }
   }
 
@@ -87,4 +84,17 @@ export class CardsGenerator {
     lines.push(`LEARNER_LANGUAGE: ${learnerLanguage}`);
     return lines.join("\n");
   }
+}
+
+function parseCardsResponse(content) {
+  const parsedContent = parseJsonSafely(content, {
+    context: "cards response from the LLM",
+    title: "Invalid LLM response",
+  });
+
+  if (!Array.isArray(parsedContent?.items)) {
+    throw new Error("Cards response did not contain an items array.");
+  }
+
+  return parsedContent.items;
 }

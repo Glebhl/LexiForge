@@ -280,7 +280,7 @@ export function loadTask(elements, mountTask, content, meta = {}) {
       });
     }
     console.debug(
-      `isCorrect=${evaluation}, expected=${promptText}, answer=${userAnswer}`,
+      `isCorrect=${evaluation}, expected=${correctAnswers}, answer=${userAnswer}`,
     );
 
     if (!isPassingEvaluation(evaluation)) showInvalidAnswer();

@@ -15,4 +15,4 @@ Decide:
 You may not receive all of the punctuation, do not consider this a mistake or typo
 Ignore minor spelling unless it affects meaning.
 
-Output exactly one word: correct / minor / mistake
+Choose one evaluation label: correct, minor, or mistake.

@@ -1,13 +1,16 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
+import { parseJsonSafely } from "../ui/json-parse.js";
+import { ANSWER_CHECK_RESPONSE_FORMAT } from "./response-formats.js";
 
 export const CORRECT = "correct";
 export const MINOR = "minor";
 export const MISTAKE = "mistake";
 
 const DEFAULT_LANGUAGE_CODE = "en_US";
-const ANSWER_CHECK_MAX_TOKENS = 8;
+const ANSWER_CHECK_MAX_TOKENS = 32;
+const ANSWER_CHECK_REASONIG_EFFORT = "minimal";
 const APOSTROPHE_VARIANTS = ["'", "\u2019", "`", "\u02bc"];
 const LANGUAGE_CONTRACTION_RULES = {
   en_us: {
@@ -188,12 +191,22 @@ class AnswerChecker {
     const response = await this.client.chat({
       model: this.model,
       max_tokens: ANSWER_CHECK_MAX_TOKENS,
+      response_format: ANSWER_CHECK_RESPONSE_FORMAT,
       messages: [
         { role: "system", content: await this.loadPrompt(kind) },
         { role: "user", content: userPrompt },
       ],
+      reasoning: {
+        effort: ANSWER_CHECK_REASONIG_EFFORT,
+      },
     });
-    return normalizeEvaluation(response.choices?.[0]?.message?.content);
+    const content = response.choices?.[0]?.message?.content || "";
+    const parsedContent = parseJsonSafely(content, {
+      context: "answer check response from the LLM",
+      title: "Invalid LLM response",
+    });
+
+    return normalizeEvaluation(parsedContent?.evaluation);
   }
 
   async loadPrompt(kind) {

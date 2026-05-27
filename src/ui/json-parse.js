@@ -9,6 +9,33 @@ export class JsonParseNotificationError extends Error {
   }
 }
 
+function getJsonParseLocation(text, error) {
+  const positionMatch = /position (\d+)/i.exec(error.message);
+
+  if (!positionMatch) {
+    return null;
+  }
+
+  const rawText = String(text);
+  const position = Number(positionMatch[1]);
+  const beforeError = rawText.slice(0, position);
+  const lines = beforeError.split(/\r\n|\r|\n/);
+  const line = lines.length;
+  const column = lines[lines.length - 1].length + 1;
+
+  return { column, line, position };
+}
+
+function getJsonErrorExcerpt(text, position) {
+  const rawText = String(text);
+  const start = Math.max(0, position - 80);
+  const end = Math.min(rawText.length, position + 80);
+  const prefix = start > 0 ? "..." : "";
+  const suffix = end < rawText.length ? "..." : "";
+
+  return `${prefix}${rawText.slice(start, end)}${suffix}`;
+}
+
 export function parseJsonSafely(text, options = {}) {
   const {
     context = "JSON response",
@@ -23,6 +50,18 @@ export function parseJsonSafely(text, options = {}) {
     return JSON.parse(text);
   } catch (error) {
     const message = `Could not parse ${context}: ${error.message}`;
+    const location = getJsonParseLocation(text, error);
+
+    if (location) {
+      console.error(message, {
+        column: location.column,
+        excerpt: getJsonErrorExcerpt(text, location.position),
+        line: location.line,
+        position: location.position,
+      });
+    } else {
+      console.error(message, { text });
+    }
 
     if (notifyOnError) {
       const notifier =

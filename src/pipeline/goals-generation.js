@@ -2,9 +2,11 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { GOALS_RESPONSE_FORMAT } from "./response-formats.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 
 const GOALS_MAX_TOKENS = 1024;
+const GOALS_REASONIG_EFFORT = "minimal";
 
 export class GoalsGenerator {
   constructor(lessonLanguage, options = {}) {
@@ -41,29 +43,34 @@ export class GoalsGenerator {
       const response = await this.client.chat({
         model: this.model,
         max_tokens: GOALS_MAX_TOKENS,
+        response_format: GOALS_RESPONSE_FORMAT,
         messages: [
           { role: "system", content: this.prompt },
           { role: "user", content: userPrompt },
         ],
-        // response_format: {
-        //   type: "json_schema",
-        //   json_schema: {
-        //     name: "lesson_goals",
-        //     strict: true,
-        //     schema: {
-        //       type: "array",
-        //       items: { type: "string" },
-        //     },
-        //   },
-        // },
+        reasoning: {
+          effort: GOALS_REASONIG_EFFORT,
+        },
       });
       content = response.choices?.[0]?.message?.content || "";
     }
 
-    return parseJsonSafely(content, {
+    const parsedContent = parseJsonSafely(content, {
       context: "lesson goals response from the LLM",
       title: "Invalid LLM response",
     });
+
+    console.log(parsedContent);
+
+    if (Array.isArray(parsedContent)) {
+      return parsedContent;
+    }
+
+    if (Array.isArray(parsedContent?.goals)) {
+      return parsedContent.goals;
+    }
+
+    throw new Error("Lesson goals response did not contain a goals array.");
   }
 
   buildUserPrompt(lessonSettings) {

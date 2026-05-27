@@ -12,7 +12,7 @@ Vocab cards may include lexeme, part_of_speech, translation, definition, definit
 Grammar cards may include grammar, rule, example, and level.
 
 Task:
-Return a compact JSON array of concrete English review goal strings, usually 5-25.
+Write a compact set of concrete English review goal strings, usually 5-25.
 
 Rules:
 - Derive every goal from LEARNING_UNITS and, when useful, LEARNER_REQUEST.
@@ -26,13 +26,7 @@ Rules:
 - If a unit is an article, preposition, auxiliary, or function-word point, name the exact English form to review; do not turn it into a task about unrelated nouns such as country names.
 - Do not invent unrelated topics, extra vocabulary, cultural facts, or unsupported rules.
 
-Output:
-- Return only a valid JSON array of strings.
-- Do not wrap the JSON in markdown, code fences, quotes, commentary, or JSONL.
-
-Example:
-[
-  "Recall that 'advice' is uncountable and produce 'some advice' or 'a piece of advice' instead of 'an advice'",
-  "Choose 'make a decision' in short contexts and reject word-by-word learner-language transfer",
-  "Produce the Second Conditional form 'if + past, would + base verb' for unreal present or future situations"
-]
+Example goal strings:
+- Recall that 'advice' is uncountable and produce 'some advice' or 'a piece of advice' instead of 'an advice'.
+- Choose 'make a decision' in short contexts and reject word-by-word learner-language transfer.
+- Produce the Second Conditional form 'if + past, would + base verb' for unreal present or future situations.

@@ -2,9 +2,11 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { PLAN_RESPONSE_FORMAT } from "./response-formats.js";
 import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
 const PLAN_MAX_TOKENS = 2048;
+const PLAN_REASONIG_EFFORT = "minimal";
 
 export class PlanGenerator {
   constructor(lessonLanguage, stageId, options = {}) {
@@ -63,33 +65,23 @@ export class PlanGenerator {
     for await (const chunk of this.client.streamChat({
       model: this.model,
       max_tokens: PLAN_MAX_TOKENS,
+      response_format: PLAN_RESPONSE_FORMAT,
       messages: [
         { role: "system", content: this.prompt },
         { role: "user", content: userPrompt },
       ],
+      reasoning: {
+        effort: PLAN_REASONIG_EFFORT,
+      },
     })) {
       const token = chunk.choices?.[0]?.delta?.content || "";
       buffer += token;
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        if (line.trim()) {
-          const item = parsePlanLine(line);
-
-          if (item) {
-            yield item;
-          }
-        }
-      }
     }
 
-    if (buffer.trim()) {
-      const item = parsePlanLine(buffer);
+    const steps = parsePlanResponse(buffer);
 
-      if (item) {
-        yield item;
-      }
+    for (const step of steps) {
+      yield step;
     }
   }
 
@@ -114,6 +106,19 @@ export class PlanGenerator {
     // lessonSettings.previousStageResults && lines.push(`PREVIOUS_STAGE_RESULTS:\n${this.formatPromptValue(lessonSettings.previousStageResults)}`);
     return lines.join("\n");
   }
+}
+
+function parsePlanResponse(content) {
+  const parsedContent = parseJsonSafely(content, {
+    context: "lesson plan response from the LLM",
+    title: "Invalid LLM response",
+  });
+
+  if (!Array.isArray(parsedContent?.steps)) {
+    throw new Error("Lesson plan response did not contain a steps array.");
+  }
+
+  return parsedContent.steps;
 }
 
 function parsePlanLine(line) {
