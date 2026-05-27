@@ -2,6 +2,7 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { t } from "../i18n/index.js";
 import { GOALS_RESPONSE_FORMAT } from "./response-formats.js";
 import { GOALS_STUB, STUB_FLAGS } from "./stubs.js";
 
@@ -57,7 +58,7 @@ export class GoalsGenerator {
 
     const parsedContent = parseJsonSafely(content, {
       context: "lesson goals response from the LLM",
-      title: "Invalid LLM response",
+      title: t("notifications.invalidLlmResponse"),
     });
 
     console.log(parsedContent);
@@ -70,7 +71,7 @@ export class GoalsGenerator {
       return parsedContent.goals;
     }
 
-    throw new Error("Lesson goals response did not contain a goals array.");
+    throw new Error(t("pipeline.goalsResponseMissingGoals"));
   }
 
   buildUserPrompt(lessonSettings) {

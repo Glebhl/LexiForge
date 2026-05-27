@@ -1,3 +1,5 @@
+import { t } from "../i18n/index.js";
+
 const LEVELS = new Set(["debug", "info", "warning", "error"]);
 const DEFAULT_DURATION_MS = {
   debug: 4000,
@@ -5,13 +7,6 @@ const DEFAULT_DURATION_MS = {
   warning: 7000,
   error: 9000,
 };
-const DEFAULT_TITLES = {
-  debug: "Debug",
-  info: "Info",
-  warning: "Warning",
-  error: "Error",
-};
-
 let nextNotificationId = 0;
 
 class NotificationCenter {
@@ -31,7 +26,7 @@ class NotificationCenter {
     const item = {
       id: this.createId(),
       level: options.level,
-      title: options.title || DEFAULT_TITLES[options.level],
+      title: options.title || t(`notifications.${options.level}`),
       message: options.message,
       duration: options.duration,
       timerId: null,
@@ -140,7 +135,7 @@ class NotificationCenter {
 
     this.container = document.createElement("div");
     this.container.className = "glosium-notifications";
-    this.container.setAttribute("aria-label", "Notifications");
+    this.container.setAttribute("aria-label", t("notifications.notifications"));
     document.body.append(this.container);
 
     return this.container;
@@ -197,7 +192,7 @@ class NotificationCenter {
     const button = document.createElement("button");
     button.className = "glosium-notification__close";
     button.type = "button";
-    button.setAttribute("aria-label", "Close notification");
+    button.setAttribute("aria-label", t("notifications.close"));
 
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");

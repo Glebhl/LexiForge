@@ -10,6 +10,7 @@ import { showHint, showHintText } from "./hint.js";
 import { initLessonSetupTabs } from "./tabs.js";
 import { LESSON_GENERATOR_OPTIONS } from "../../../lesson-generators/index.js";
 import { CardsGenerator } from "../../../pipeline/index.js";
+import { t } from "../../../i18n/index.js";
 import { parseJsonSafely } from "../../json-parse.js";
 import { notify } from "../../notifications.js";
 
@@ -79,8 +80,8 @@ export class Controller {
     const learnerRequest = this.elements.prompt.value.trim();
 
     if (!learnerRequest) {
-      console.warn("Lesson request was not provided");
-      notify.warning("Add a lesson request first.");
+      console.warn(t("setup.requestMissingLog"));
+      notify.warning(t("setup.addLessonRequest"));
       return;
     }
 
@@ -97,7 +98,7 @@ export class Controller {
           fallback: null,
           level: "warning",
           throwOnError: false,
-          title: "Skipped invalid LLM response",
+          title: t("notifications.skippedInvalidLlmResponse"),
         });
 
         if (!item) {
@@ -105,7 +106,9 @@ export class Controller {
         }
 
         if (typeof item.warning === "string") {
-          notify.warning(item.warning, { title: "Card generation warning" });
+          notify.warning(item.warning, {
+            title: t("notifications.cardGenerationWarning"),
+          });
           continue;
         }
 
@@ -115,8 +118,8 @@ export class Controller {
         }
       }
     } catch (error) {
-      const message = error.message || "Could not generate cards.";
-      notify.error(message, { title: "Card generation failed" });
+      const message = error.message || t("setup.couldNotGenerateCards");
+      notify.error(message, { title: t("notifications.cardGenerationFailed") });
     } finally {
       this.elements.btnGenerate.disabled = false;
     }

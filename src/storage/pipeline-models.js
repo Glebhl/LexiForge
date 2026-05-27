@@ -23,13 +23,15 @@ export function ensurePipelineModels() {
     PIPELINE_MODEL_STORAGE_KEYS,
   )) {
     const value = pipelineModelStorage.getItem(storageKey, "").trim();
-    console.debug(`$Loaded model ${value} for key ${storageKey}`);
-    if (isMissingPipelineModel(value)) {
+    if (!value) {
       pipelineModelStorage.setItem(
         storageKey,
         DEFAULT_PIPELINE_MODELS[pipelineKey],
       );
+      console.debug(`Saved model ${DEFAULT_PIPELINE_MODELS[pipelineKey]} for key ${storageKey}`);
+      return;
     }
+    console.debug(`Loaded model ${value} for key ${storageKey}`);
   }
 }
 
@@ -46,15 +48,11 @@ export function resolvePipelineModel(pipelineKey, explicitModel) {
 
   const storedModel = pipelineModelStorage.getItem(storageKey, "").trim();
 
-  if (!isMissingPipelineModel(storedModel)) {
+  if (storedModel) {
     return storedModel;
   }
 
   throw new Error(
     `Pipeline model is missing. Add ${storageKey} in storage.html.`,
   );
-}
-
-function isMissingPipelineModel(value) {
-  return !value || value === "undefined";
 }

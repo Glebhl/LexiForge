@@ -10,13 +10,13 @@ const DEFAULT_LESSON_GENERATOR_ID = "default";
 export const LESSON_GENERATOR_OPTIONS = [
   {
     id: "default",
-    label: "Default",
-    description: "Teach new vocabulary and grammar from the current deck.",
+    labelKey: "lessonGenerators.default.label",
+    descriptionKey: "lessonGenerators.default.description",
   },
   {
     id: "review",
-    label: "Review",
-    description: "Review previously studied vocabulary and grammar.",
+    labelKey: "lessonGenerators.review.label",
+    descriptionKey: "lessonGenerators.review.description",
   },
 ];
 
@@ -25,9 +25,7 @@ const LESSON_GENERATOR_FACTORIES = {
   review: () => new ReviewLessonGenerator({ generatorId: "review" }),
 };
 
-export function createLessonGenerator(
-  generatorId,
-) {
+export function createLessonGenerator(generatorId) {
   const factory = LESSON_GENERATOR_FACTORIES[generatorId];
   if (!factory) {
     throw new Error(`Couldn't load lesson generator ${generatorId}`);

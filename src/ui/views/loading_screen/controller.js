@@ -1,4 +1,5 @@
 import { createLessonGenerator } from "../../../lesson-generators/index.js";
+import { t } from "../../../i18n/index.js";
 import { notify } from "../../notifications.js";
 import { wasNotified } from "../../json-parse.js";
 
@@ -41,7 +42,7 @@ export class Controller {
       return;
     }
 
-    console.log("Opening lesson flow page");
+    console.log(t("loadingScreen.openingLesson"));
     await this.router.navigateTo({
       path: "/lesson",
       addToHistory: false,
@@ -59,7 +60,7 @@ export class Controller {
   }
 
   async showGenerationError(error) {
-    const message = error.message || "Check the API key and try again.";
+    const message = error.message || t("loadingScreen.errorDescription");
     const alreadyNotified = wasNotified(error);
 
     if (alreadyNotified) {
@@ -70,7 +71,7 @@ export class Controller {
     }
 
     if (!alreadyNotified) {
-      notify.error(message, { title: "Lesson generation failed" });
+      notify.error(message, { title: t("loadingScreen.failedTitle") });
     }
     const previousRoute = await this.router.goBack();
 
@@ -78,8 +79,8 @@ export class Controller {
       return;
     }
 
-    this.elements.title.textContent = "Could not generate the lesson";
+    this.elements.title.textContent = t("loadingScreen.errorTitle");
     this.elements.description.textContent = message;
-    this.elements.btnStop.textContent = "Back";
+    this.elements.btnStop.textContent = t("common.back");
   }
 }

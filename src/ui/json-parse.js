@@ -1,4 +1,5 @@
 import { notify } from "./notifications.js";
+import { t } from "../i18n/index.js";
 
 export class JsonParseNotificationError extends Error {
   constructor(message, cause) {
@@ -33,13 +34,16 @@ export function parseJsonSafely(text, options = {}) {
     level = "error",
     notifyOnError = true,
     throwOnError = true,
-    title = "Invalid JSON",
+    title = t("notifications.invalidJson"),
   } = options;
 
   try {
     return JSON.parse(text);
   } catch (error) {
-    const message = `Could not parse ${context}: ${error.message}`;
+    const message = t("jsonParse.couldNotParse", {
+      context,
+      message: error.message,
+    });
     const location = getJsonParseLocation(text, error);
 
     if (location) {

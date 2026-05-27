@@ -2,6 +2,7 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { t } from "../i18n/index.js";
 import { CARDS_RESPONSE_FORMAT } from "./response-formats.js";
 import { CARDS_STUB, STUB_FLAGS } from "./stubs.js";
 
@@ -89,11 +90,11 @@ export class CardsGenerator {
 function parseCardsResponse(content) {
   const parsedContent = parseJsonSafely(content, {
     context: "cards response from the LLM",
-    title: "Invalid LLM response",
+    title: t("notifications.invalidLlmResponse"),
   });
 
   if (!Array.isArray(parsedContent?.items)) {
-    throw new Error("Cards response did not contain an items array.");
+    throw new Error(t("pipeline.cardsResponseMissingItems"));
   }
 
   return parsedContent.items;

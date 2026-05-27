@@ -15,7 +15,9 @@
             <img class="logo" src="../../assets/icons/logo.ico" alt="" />
             <div>
               <p class="brand-title">Glosium</p>
-              <p class="brand-subtitle">Lesson planning</p>
+              <p class="brand-subtitle" data-i18n="setup.subtitle">
+                Lesson planning
+              </p>
             </div>
           </div>
           <div class="status-chip-list">
@@ -24,6 +26,7 @@
               href="./storage.html"
               target="_blank"
               rel="noopener"
+              data-i18n="common.apiKey"
               >API key</a
             >
             <div class="chip">
@@ -42,6 +45,7 @@
             <textarea
               class="topic-prompt"
               id="prompt"
+              data-i18n-placeholder="setup.promptPlaceholder"
               placeholder='Topic or goal, e.g. "Second Conditional" or "Business meeting vocabulary for B2"'
             ></textarea>
             <div class="hint-line">
@@ -64,13 +68,13 @@
                 stroke-linejoin="round"
               ></path>
             </svg>
-            Generate
+            <span data-i18n="common.generate">Generate</span>
           </button>
           <button class="btn btn--start" id="btn-start" type="button" disabled>
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M8 5v14l12-7-12-7z" fill="currentColor"></path>
             </svg>
-            Start lesson
+            <span data-i18n="common.startLesson">Start lesson</span>
           </button>
         </div>
       </div>
@@ -82,7 +86,7 @@
           aria-selected="false"
           data-setup-tab="cards"
         >
-          Cards
+          <span data-i18n="common.cards">Cards</span>
         </button>
         <button
           class="mobile-view-tab"
@@ -91,13 +95,13 @@
           aria-selected="true"
           data-setup-tab="settings"
         >
-          Settings
+          <span data-i18n="common.settings">Settings</span>
         </button>
       </div>
       <div class="bottom-shell">
         <div class="settings-shell is-active" data-setup-panel="settings">
           <div class="settings-panel">
-            <p class="settings-title">Settings</p>
+            <p class="settings-title" data-i18n="common.settings">Settings</p>
             <div class="settings-content" id="settings-content"></div>
           </div>
         </div>
@@ -105,7 +109,9 @@
           <div class="card-grid-scroll">
             <div class="card-grid" id="cards">
               <p class="card-grid__empty-text" id="cards-empty-text">
-                I'm Mr. Placeholder. Look at me!
+                <span data-i18n="setup.emptyCards">
+                  I'm Mr. Placeholder. Look at me!
+                </span>
               </p>
             </div>
           </div>
@@ -122,7 +128,12 @@
           </div>
           <div class="lesson-card__header-aside">
             <div class="lesson-card__actions">
-              <button class="action-btn" type="button" aria-label="Edit card">
+              <button
+                class="action-btn"
+                type="button"
+                aria-label="Edit card"
+                data-i18n-aria-label="setup.card.edit"
+              >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M12 20h9"
@@ -143,6 +154,7 @@
                 class="action-btn action-btn--remove"
                 type="button"
                 aria-label="Remove card"
+                data-i18n-aria-label="setup.card.remove"
               >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
@@ -159,15 +171,15 @@
         <div class="lesson-card__meta meta-pill--unit">
           <span class="meta-pill">
             <span class="meta-pill__value meta-pill__value--unit"></span>
-            unit
+            <span data-i18n="setup.card.unit">unit</span>
           </span>
           <span class="meta-pill meta-pill--part">
             <span class="meta-pill__value meta-pill__value--part"></span>
-            part of speech
+            <span data-i18n="setup.card.partOfSpeech">part of speech</span>
           </span>
           <span class="meta-pill meta-pill--level">
             <span class="meta-pill__value meta-pill__value--level"></span>
-            level
+            <span data-i18n="setup.card.level">level</span>
           </span>
         </div>
         <div class="lesson-card__section lesson-card__section--primary">
@@ -181,7 +193,9 @@
           <p class="lesson-card__section-value lesson-card__secondary"></p>
         </div>
         <div class="lesson-card__section lesson-card__section--example">
-          <p class="lesson-card__section-label">EXAMPLE</p>
+          <p class="lesson-card__section-label" data-i18n="setup.card.example">
+            EXAMPLE
+          </p>
           <p class="lesson-card__example-text lesson-card__example"></p>
         </div>
       </div>

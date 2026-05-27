@@ -1,3 +1,5 @@
+import { t, tPlural } from "../../../i18n/index.js";
+
 const CARD_SELECTOR = ".lesson-card";
 const CARD_SHIFT_ANIMATION_MS = 220;
 
@@ -172,9 +174,17 @@ function fillVocabCardElement(cardElement, card) {
   setText(cardElement, ".meta-pill__value--unit", card.lexical_unit);
   setText(cardElement, ".meta-pill__value--part", card.part_of_speech);
   setText(cardElement, ".meta-pill__value--level", card.level);
-  setText(cardElement, ".lesson-card__primary-label", "TRANSLATION");
+  setText(
+    cardElement,
+    ".lesson-card__primary-label",
+    t("setup.card.translation"),
+  );
   setText(cardElement, ".lesson-card__primary", card.translation);
-  setText(cardElement, ".lesson-card__secondary-label", "MEANING");
+  setText(
+    cardElement,
+    ".lesson-card__secondary-label",
+    t("setup.card.meaning"),
+  );
   setText(cardElement, ".lesson-card__secondary", card.definition);
   setText(cardElement, ".lesson-card__example", formatExample(card.example));
   // toggleElement(cardElement, ".meta-pill--part", true);
@@ -184,9 +194,9 @@ function fillGrammarCardElement(cardElement, card) {
   cardElement.classList.add("lesson-card--grammar");
   cardElement.classList.remove("lesson-card--vocab");
   setText(cardElement, ".lesson-card__word", card.grammar);
-  setText(cardElement, ".meta-pill__value--unit", "grammar");
+  setText(cardElement, ".meta-pill__value--unit", t("setup.card.grammar"));
   setText(cardElement, ".meta-pill__value--level", card.level);
-  setText(cardElement, ".lesson-card__primary-label", "RULE");
+  setText(cardElement, ".lesson-card__primary-label", t("setup.card.rule"));
   setText(cardElement, ".lesson-card__primary", card.rule);
   setText(cardElement, ".lesson-card__example", formatExample(card.example));
   toggleElement(cardElement, ".lesson-card__transcription", false);
@@ -262,7 +272,7 @@ function refreshDeckState() {
 }
 
 function formatDeckAmount(amount) {
-  return "Deck: " + amount + " card" + (amount === 1 ? "" : "s");
+  return tPlural("setup.deck", amount);
 }
 
 function capturePositions(container, selector) {

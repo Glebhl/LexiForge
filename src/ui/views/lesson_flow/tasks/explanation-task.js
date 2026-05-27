@@ -1,3 +1,5 @@
+import { t } from "../../../../i18n/index.js";
+
 const ALLOWED_EXPLANATION_TAGS = new Set([
   "blockquote",
   "br",
@@ -43,7 +45,7 @@ function sanitizeExplanationNode(node) {
 
 function renderExplanation(container, content) {
   const sourceDocument = new DOMParser().parseFromString(
-    content || "Empty",
+    content || t("lesson.emptyExplanation"),
     "text/html",
   );
   const fragment = document.createDocumentFragment();

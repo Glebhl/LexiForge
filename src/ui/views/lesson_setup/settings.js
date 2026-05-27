@@ -1,32 +1,33 @@
 import { appStorage } from "../../../storage/index.js";
+import { t } from "../../../i18n/index.js";
 
 const DEFAULT_LANGUAGE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 const DEFAULT_TASKS = [
   {
     id: "explanation",
-    label: "Explanation",
-    description: "Short teaching step without an answer field.",
+    labelKey: "settings.tasks.explanation.label",
+    descriptionKey: "settings.tasks.explanation.description",
   },
   {
     id: "matching",
-    label: "Matching",
-    description: "Connect words, meanings, or pairs inside one task.",
+    labelKey: "settings.tasks.matching.label",
+    descriptionKey: "settings.tasks.matching.description",
   },
   {
     id: "filling",
-    label: "Fill in the blank",
-    description: "Complete short sentences with guided recall.",
+    labelKey: "settings.tasks.filling.label",
+    descriptionKey: "settings.tasks.filling.description",
   },
   {
     id: "translation",
-    label: "Translation",
-    description: "Translate short phrases or sentences into English.",
+    labelKey: "settings.tasks.translation.label",
+    descriptionKey: "settings.tasks.translation.description",
   },
   {
     id: "question",
-    label: "Question",
-    description: "Read a short passage and answer a comprehension question.",
+    labelKey: "settings.tasks.question.label",
+    descriptionKey: "settings.tasks.question.description",
   },
 ];
 
@@ -141,7 +142,7 @@ function createSettingShell(title, description) {
 }
 
 function renderLessonProfileGroup(languageLevels, lessonGenerators) {
-  const groupElement = createGroup("Lesson profile");
+  const groupElement = createGroup(t("settings.groups.profile"));
 
   groupElement.appendChild(renderLevelPicker(languageLevels));
 
@@ -154,8 +155,8 @@ function renderLessonProfileGroup(languageLevels, lessonGenerators) {
 
 function renderGeneratorSelect(lessonGenerators) {
   const shellElement = createSettingShell(
-    "Generator",
-    "Temporary selector for choosing the lesson generation flow.",
+    t("settings.generator.title"),
+    t("settings.generator.description"),
   );
   const selectElement = createElement("select", "settings-select");
 
@@ -164,7 +165,9 @@ function renderGeneratorSelect(lessonGenerators) {
     const generatorId = String(generator.id || "");
 
     optionElement.value = generatorId;
-    optionElement.textContent = generator.label || generatorId;
+    optionElement.textContent = generator.labelKey
+      ? t(generator.labelKey)
+      : generator.label || generatorId;
     selectElement.appendChild(optionElement);
   });
 
@@ -179,7 +182,7 @@ function renderGeneratorSelect(lessonGenerators) {
 }
 
 function renderLessonTuningGroup(availableTasks, isAdditionalRequestAvailable) {
-  const groupElement = createGroup("Lesson tuning");
+  const groupElement = createGroup(t("settings.groups.tuning"));
   let hasItems = false;
 
   if (isAdditionalRequestAvailable) {
@@ -197,8 +200,8 @@ function renderLessonTuningGroup(availableTasks, isAdditionalRequestAvailable) {
 
 function renderLevelPicker(languageLevels) {
   const shellElement = createSettingShell(
-    "Learner level",
-    "Used for lesson pacing, explanations, and task difficulty.",
+    t("settings.learnerLevel.title"),
+    t("settings.learnerLevel.description"),
   );
   const pickerElement = createElement("div", "settings-level-picker");
   const trackElement = createElement("div", "settings-level-track");
@@ -248,14 +251,14 @@ function setLevelPickerValue(trackElement, value) {
 
 function renderAdditionalRequest() {
   const shellElement = createSettingShell(
-    "Lesson request",
-    "Optional note for tone, context, grammar focus, or extra guidance.",
+    t("settings.additionalRequest.title"),
+    t("settings.additionalRequest.description"),
   );
   const textareaElement = createElement("textarea", "request-input-area");
 
   textareaElement.value = settings.additionalRequest;
   textareaElement.rows = 4;
-  textareaElement.placeholder = 'Focus, e.g. "More travel examples"';
+  textareaElement.placeholder = t("settings.additionalRequest.placeholder");
   textareaElement.addEventListener("input", function () {
     settings.additionalRequest = textareaElement.value;
     emitChange("additionalRequest", settings.additionalRequest);
@@ -267,8 +270,8 @@ function renderAdditionalRequest() {
 
 function renderTaskToggles(availableTasks) {
   const shellElement = createSettingShell(
-    "Exercise types",
-    "Turn off formats you do not want in this lesson.",
+    t("settings.exerciseTypes.title"),
+    t("settings.exerciseTypes.description"),
   );
   const listElement = createElement("div", "settings-toggle-list");
 
@@ -296,13 +299,17 @@ function createTaskToggle(task, listElement) {
   inputElement.checked = !settings.disabledTaskIds.includes(taskId);
 
   bodyElement.appendChild(
-    createElement("span", "settings-toggle__label", task.label || taskId),
+    createElement(
+      "span",
+      "settings-toggle__label",
+      task.labelKey ? t(task.labelKey) : task.label || taskId,
+    ),
   );
   bodyElement.appendChild(
     createElement(
       "span",
       "settings-toggle__description",
-      task.description || "",
+      task.descriptionKey ? t(task.descriptionKey) : task.description || "",
     ),
   );
   updateTaskStatus(statusElement, inputElement.checked);
@@ -343,7 +350,7 @@ function getDisabledTaskIds(listElement) {
 }
 
 function updateTaskStatus(statusElement, isChecked) {
-  statusElement.textContent = isChecked ? "On" : "Off";
+  statusElement.textContent = isChecked ? t("common.on") : t("common.off");
 }
 
 function updateTaskAvailability(listElement) {

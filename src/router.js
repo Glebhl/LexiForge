@@ -1,3 +1,5 @@
+import { translateTree } from "./i18n/index.js";
+
 const app = document.getElementById("app");
 
 const routes = {
@@ -51,6 +53,7 @@ export class Router {
       routeUrl,
     );
     app.replaceChildren(...this.getRouteBodyNodes(routeDocument, routeUrl));
+    translateTree(app);
     this.replaceRouteStyles(nextRouteStyleLinks);
 
     this.currentScreen = await this.mountRouteController(

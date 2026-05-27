@@ -1,10 +1,10 @@
-const LOADING_TITLE = "GENERATING";
-const LOADING_MESSAGE =
-  "Please wait while the next exercises are being prepared.";
+import { t } from "../../../i18n/index.js";
 
 function setupLoadingScreen(root) {
-  root.querySelector(".loading-title").textContent = LOADING_TITLE;
-  root.querySelector(".loading-message").textContent = LOADING_MESSAGE;
+  root.querySelector(".loading-title").textContent = t("lesson.loading.title");
+  root.querySelector(".loading-message").textContent = t(
+    "lesson.loading.message",
+  );
 }
 
 export function showLoadingScreen(elements, mountTask) {

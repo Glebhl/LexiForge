@@ -7,6 +7,7 @@ import {
   showNextExercise,
   unbindExerciseLoader,
 } from "./exercise-load.js";
+import { t } from "../../../i18n/index.js";
 import { notify } from "../../notifications.js";
 
 function getElements() {
@@ -75,12 +76,12 @@ export class Controller {
     this.elements.btnSkip?.removeEventListener("click", this.handleSkipClick);
     unbindExerciseLoader();
   }
-  
+
   async showNextExercise() {
     if (this.isFinalInStage) {
       if (this.stageIdx === this.lessonGenerator.stagesAmount - 1) {
-        console.log("You've completed all exercises");
-        notify.info("You've completed all exercises");
+        console.log(t("lesson.complete"));
+        notify.info(t("lesson.complete"));
         this.router.goBack();
 
         return;

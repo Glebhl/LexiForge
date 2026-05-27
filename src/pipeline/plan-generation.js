@@ -2,6 +2,7 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { t } from "../i18n/index.js";
 import { PLAN_RESPONSE_FORMAT } from "./response-formats.js";
 import { PLAN_STUB, STUB_FLAGS } from "./stubs.js";
 
@@ -111,11 +112,11 @@ export class PlanGenerator {
 function parsePlanResponse(content) {
   const parsedContent = parseJsonSafely(content, {
     context: "lesson plan response from the LLM",
-    title: "Invalid LLM response",
+    title: t("notifications.invalidLlmResponse"),
   });
 
   if (!Array.isArray(parsedContent?.steps)) {
-    throw new Error("Lesson plan response did not contain a steps array.");
+    throw new Error(t("pipeline.planResponseMissingSteps"));
   }
 
   return parsedContent.steps;
@@ -127,6 +128,6 @@ function parsePlanLine(line) {
     fallback: null,
     level: "warning",
     throwOnError: false,
-    title: "Skipped invalid LLM response",
+    title: t("notifications.skippedInvalidLlmResponse"),
   });
 }

@@ -1,6 +1,7 @@
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { notify } from "../ui/notifications.js";
 import { appStorage } from "../storage/index.js";
+import { t } from "../i18n/index.js";
 
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 const API_KEY_STORAGE_NAME = "openrouter_api_key";
@@ -16,8 +17,8 @@ function getAPIKey() {
     console.warn("OpenRouter API key was not loaded");
     if (!missingApiKeyNotified) {
       missingApiKeyNotified = true;
-      notify.warning("Add an OpenRouter API key before generating lessons.", {
-        title: "OpenRouter API key missing",
+      notify.warning(t("openrouter.addApiKey"), {
+        title: t("openrouter.apiKeyMissing"),
       });
     }
   }
@@ -84,12 +85,12 @@ export class OpenRouterClient {
 
       const chunk = parseJsonSafely(data, {
         context: "OpenRouter stream event",
-        title: "Invalid OpenRouter response",
+        title: t("notifications.invalidLlmResponse"),
       });
 
       if (chunk.error) {
         throw new OpenRouterError(
-          chunk.error.message || "OpenRouter stream error",
+          chunk.error.message || t("openrouter.streamError"),
           {
             body: chunk,
           },
@@ -148,7 +149,7 @@ export class OpenRouterClient {
       ? null
       : parseJsonSafely(body, {
           context: "OpenRouter response",
-          title: "Invalid OpenRouter response",
+          title: t("notifications.invalidLlmResponse"),
         });
   }
 
@@ -159,7 +160,7 @@ export class OpenRouterClient {
   headers(extraHeaders = {}) {
     if (!this.apiKey) {
       throw new OpenRouterError(
-        `OpenRouter API key is missing. Add ${API_KEY_STORAGE_NAME} in storage.html.`,
+        t("openrouter.missingApiKeyError", { key: API_KEY_STORAGE_NAME }),
       );
     }
 
@@ -192,7 +193,7 @@ async function readResponseBody(response) {
 
 function throwResponseBody(response, body) {
   let message =
-    body || `OpenRouter request failed with status ${response.status}`;
+    body || t("openrouter.requestFailed", { status: response.status });
   let parsedBody = body;
 
   try {

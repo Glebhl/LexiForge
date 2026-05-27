@@ -1,66 +1,68 @@
+import { t } from "../../../i18n/index.js";
+
 const hints = [
   [
-    "Ask for a focused card deck: ",
+    { key: "setup.hints.focused.start" },
     { code: "8 B1 travel verbs" },
-    " or ",
+    { key: "setup.hints.focused.middle" },
     { code: "6 C1 negotiation words" },
-    ".",
+    { key: "setup.hints.focused.end" },
   ],
   [
-    "Mix vocabulary and grammar when both matter: ",
+    { key: "setup.hints.mixed.start" },
     { code: "B2 work + conditionals" },
-    " or ",
+    { key: "setup.hints.mixed.middle" },
     { code: "A2 food + articles" },
-    ".",
+    { key: "setup.hints.mixed.end" },
   ],
   [
-    "Use a real situation so examples feel usable: ",
+    { key: "setup.hints.situation.start" },
     { code: "airport security, A2" },
-    " or ",
+    { key: "setup.hints.situation.middle" },
     { code: "meeting small talk, B1" },
-    ".",
+    { key: "setup.hints.situation.end" },
   ],
   [
-    "Say whether you want grammar cards or vocab cards: ",
+    { key: "setup.hints.cardType.start" },
     { code: "Present Perfect" },
-    " or ",
+    { key: "setup.hints.cardType.middle" },
     { code: "B2 interview words" },
-    ".",
+    { key: "setup.hints.cardType.end" },
   ],
   [
-    "Ask for contrasts when similar items blur together: ",
+    { key: "setup.hints.contrasts.start" },
     { code: "borrow vs lend" },
-    " or ",
+    { key: "setup.hints.contrasts.middle" },
     { code: "in time vs on time" },
-    ".",
+    { key: "setup.hints.contrasts.end" },
   ],
   [
-    "Paste exact targets if you already know them: ",
+    { key: "setup.hints.exactTargets.start" },
     { code: "depend on, deal with" },
-    " or ",
+    { key: "setup.hints.exactTargets.middle" },
     { code: "although, despite" },
-    ".",
+    { key: "setup.hints.exactTargets.end" },
   ],
   [
-    "Add register or tone for better card choices: ",
+    { key: "setup.hints.tone.start" },
     { code: "casual disagreement, B2" },
-    " or ",
+    { key: "setup.hints.tone.middle" },
     { code: "formal emails, B1" },
-    ".",
+    { key: "setup.hints.tone.end" },
   ],
   [
-    "Ask for one word in a specific context: ",
+    { key: "setup.hints.context.start" },
     { code: "charge: phones" },
-    " or ",
+    { key: "setup.hints.context.middle" },
     { code: "run: business" },
-    ".",
+    { key: "setup.hints.context.end" },
   ],
   [
-    "Shape the deck around something you actually care about: ",
+    { key: "setup.hints.interest.start" },
     { code: "B1 gaming, 7 cards" },
-    " or ",
+    { key: "setup.hints.interest.middle" },
     { code: "C1 psychology idioms" },
-    ".",
+    { key: "setup.hints.interest.end" },
   ],
 ];
 
@@ -85,10 +87,10 @@ function renderHint(parts) {
   const fragment = document.createDocumentFragment();
 
   parts.forEach((part) => {
-    if (typeof part === "string") {
+    if (typeof part === "string" || part.key) {
       const textElement = document.createElement("span");
       textElement.className = "hint-copy";
-      textElement.textContent = part;
+      textElement.textContent = part.key ? t(part.key) : part;
       fragment.append(textElement);
       return;
     }

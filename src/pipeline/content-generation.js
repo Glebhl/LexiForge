@@ -2,6 +2,7 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { t } from "../i18n/index.js";
 import { CONTENT_RESPONSE_FORMATS } from "./response-formats.js";
 import { CONTENT_STUBS, STUB_FLAGS } from "./stubs.js";
 
@@ -92,7 +93,7 @@ export class ContentGenerator {
     console.debug(`Task content:\n${content}`);
     const parsedContent = parseJsonSafely(content, {
       context: `${exercise_id} task response from the LLM`,
-      title: "Invalid LLM response",
+      title: t("notifications.invalidLlmResponse"),
     });
 
     if (exercise_id === "explanation") {

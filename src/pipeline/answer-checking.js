@@ -2,6 +2,7 @@ import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
 import { resolvePipelineModel } from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
+import { t } from "../i18n/index.js";
 import { ANSWER_CHECK_RESPONSE_FORMAT } from "./response-formats.js";
 
 export const CORRECT = "correct";
@@ -80,7 +81,7 @@ export async function evaluateFillingAnswer(
   if (userAnswers.length !== expectedAnswers.length) {
     return {
       evaluation: MISTAKE,
-      feedback: "Check that every blank has one answer.",
+      feedback: t("lesson.filling.answerCountMismatch"),
     };
   }
 
@@ -253,13 +254,13 @@ function parseAnswerCheckResponse(content) {
   if (jsonContent) {
     return parseJsonSafely(jsonContent, {
       context: "answer check response from the LLM",
-      title: "Invalid LLM response",
+      title: t("notifications.invalidLlmResponse"),
     });
   }
 
   return parseJsonSafely(rawContent, {
     context: "answer check response from the LLM",
-    title: "Invalid LLM response",
+    title: t("notifications.invalidLlmResponse"),
   });
 }
 

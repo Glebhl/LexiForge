@@ -21,7 +21,9 @@
             />
             <div>
               <p class="lesson-shell__name">Glosium</p>
-              <p class="lesson-shell__subtitle">Lesson - Tasks</p>
+              <p class="lesson-shell__subtitle" data-i18n="lesson.subtitle">
+                Lesson - Tasks
+              </p>
             </div>
           </div>
           <div class="lesson-progress" id="lessonProgress">
@@ -36,7 +38,7 @@
             id="skip"
             type="button"
           >
-            Skip
+            <span data-i18n="common.skip">Skip</span>
           </button>
           <button
             class="lesson-button lesson-button--continue"
@@ -44,7 +46,7 @@
             type="button"
             disabled
           >
-            Continue
+            <span data-i18n="common.continue">Continue</span>
           </button>
         </div>
       </div>
@@ -53,20 +55,29 @@
     <template id="tpl-question">
       <div class="lesson-task">
         <div>
-          <p class="lesson-task__title">Answer the question</p>
-          <p class="lesson-task__description">
+          <p class="lesson-task__title" data-i18n="lesson.question.title">
+            Answer the question
+          </p>
+          <p
+            class="lesson-task__description"
+            data-i18n="lesson.question.description"
+          >
             Choose an answer for the question below.
           </p>
         </div>
         <div class="lesson-card">
-          <p class="lesson-card__label">QUESTION</p>
+          <p class="lesson-card__label" data-i18n="lesson.question.label">
+            QUESTION
+          </p>
           <div>
             <p class="question-content"></p>
             <p class="question-paragraph"></p>
           </div>
         </div>
         <div class="lesson-card answer-field">
-          <p class="lesson-card__label">YOUR ANSWER</p>
+          <p class="lesson-card__label" data-i18n="lesson.answer">
+            YOUR ANSWER
+          </p>
         </div>
       </div>
     </template>
@@ -74,7 +85,9 @@
     <template id="tpl-explanation">
       <div class="lesson-task">
         <article class="lesson-card">
-          <p class="lesson-card__label">EXPLANATION</p>
+          <p class="lesson-card__label" data-i18n="lesson.explanation.label">
+            EXPLANATION
+          </p>
           <div class="md-content explanation-content"></div>
         </article>
       </div>
@@ -92,44 +105,57 @@
     <template id="tpl-filling">
       <div class="lesson-task">
         <div>
-          <p class="lesson-task__title">Fill in the gaps</p>
-          <p class="lesson-task__description">
+          <p class="lesson-task__title" data-i18n="lesson.filling.title">
+            Fill in the gaps
+          </p>
+          <p
+            class="lesson-task__description"
+            data-i18n="lesson.filling.description"
+          >
             Build the answer using the word bank, or switch to typing if you
             prefer.
           </p>
         </div>
         <div class="lesson-card">
           <div class="task-keyboard__header">
-            <span class="lesson-card__label">YOUR ANSWER</span>
+            <span class="lesson-card__label" data-i18n="lesson.answer">
+              YOUR ANSWER
+            </span>
             <div class="task-keyboard__mode-switch">
               <button
                 class="task-keyboard__mode-button is-active"
                 data-mode="word-bank"
                 type="button"
               >
-                Word Bank
+                <span data-i18n="lesson.mode.wordBank">Word Bank</span>
               </button>
               <button
                 class="task-keyboard__mode-button"
                 data-mode="typing"
                 type="button"
               >
-                Typing
+                <span data-i18n="lesson.mode.typing">Typing</span>
               </button>
             </div>
           </div>
           <div class="lesson-card task-answer-shell task-answer-shell--filling">
-            <p class="lesson-card__label">SENTENCE</p>
+            <p class="lesson-card__label" data-i18n="lesson.sentence">
+              SENTENCE
+            </p>
             <div class="task-answer task-answer--filling"></div>
           </div>
           <div class="lesson-card task-keyboard-block">
-            <p class="lesson-card__label">KEYBOARD</p>
+            <p class="lesson-card__label" data-i18n="lesson.keyboard">
+              KEYBOARD
+            </p>
             <div class="task-keyboard"></div>
           </div>
           <div class="task-hint-wrap">
             <div class="task-hint">
-              Tip: click a word to place it into the next slot, or hold and drag
-              it into any blank. Click a placed word to remove it.
+              <span data-i18n="lesson.filling.tip">
+                Tip: click a word to place it into the next slot, or hold and
+                drag it into any blank. Click a placed word to remove it.
+              </span>
             </div>
           </div>
         </div>
@@ -139,40 +165,49 @@
     <template id="tpl-translation">
       <div class="lesson-task">
         <div>
-          <p class="lesson-task__title">Translate the sentence</p>
-          <p class="lesson-task__description">
+          <p class="lesson-task__title" data-i18n="lesson.translation.title">
+            Translate the sentence
+          </p>
+          <p
+            class="lesson-task__description"
+            data-i18n="lesson.translation.description"
+          >
             Build the answer using the word bank, or switch to typing if you
             prefer.
           </p>
         </div>
         <div class="lesson-card">
-          <p class="lesson-card__label">SENTENCE</p>
+          <p class="lesson-card__label" data-i18n="lesson.sentence">SENTENCE</p>
           <p class="translation-prompt"></p>
         </div>
         <div class="lesson-card">
           <div class="task-keyboard__header">
-            <p class="lesson-card__label">YOUR ANSWER</p>
+            <p class="lesson-card__label" data-i18n="lesson.answer">
+              YOUR ANSWER
+            </p>
             <div class="task-keyboard__mode-switch">
               <button
                 class="task-keyboard__mode-button is-active"
                 data-mode="word-bank"
                 type="button"
               >
-                Word Bank
+                <span data-i18n="lesson.mode.wordBank">Word Bank</span>
               </button>
               <button
                 class="task-keyboard__mode-button"
                 data-mode="typing"
                 type="button"
               >
-                Typing
+                <span data-i18n="lesson.mode.typing">Typing</span>
               </button>
             </div>
           </div>
           <div
             class="lesson-card task-answer-shell task-answer-shell--translation"
           >
-            <p class="lesson-card__label">SENTENCE</p>
+            <p class="lesson-card__label" data-i18n="lesson.sentence">
+              SENTENCE
+            </p>
             <div class="task-answer-stack">
               <div class="task-answer task-answer--translation"></div>
               <div class="task-answer__typing-wrap">
@@ -180,19 +215,24 @@
                   class="task-answer__typing-input"
                   autocomplete="off"
                   spellcheck="false"
+                  data-i18n-placeholder="lesson.translation.placeholder"
                   placeholder="Type your translation here..."
                 ></textarea>
               </div>
             </div>
           </div>
           <div class="lesson-card task-keyboard-block">
-            <p class="lesson-card__label">KEYBOARD</p>
+            <p class="lesson-card__label" data-i18n="lesson.keyboard">
+              KEYBOARD
+            </p>
             <div class="task-keyboard"></div>
           </div>
           <div class="task-hint-wrap">
             <div class="task-hint">
-              Tip: click to append a word, or hold and drag it into the exact
-              position you want. Click a placed word to remove it.
+              <span data-i18n="lesson.translation.tip">
+                Tip: click to append a word, or hold and drag it into the exact
+                position you want. Click a placed word to remove it.
+              </span>
             </div>
           </div>
         </div>
@@ -202,13 +242,20 @@
     <template id="tpl-matching">
       <div class="lesson-task">
         <div>
-          <p class="lesson-task__title">Match the words</p>
-          <p class="lesson-task__description">
+          <p class="lesson-task__title" data-i18n="lesson.matching.title">
+            Match the words
+          </p>
+          <p
+            class="lesson-task__description"
+            data-i18n="lesson.matching.description"
+          >
             Click on the elements on the left and right to make pairs.
           </p>
         </div>
         <div class="lesson-card">
-          <span class="lesson-card__label">YOUR ANSWER</span>
+          <span class="lesson-card__label" data-i18n="lesson.answer">
+            YOUR ANSWER
+          </span>
           <div class="matching-grid"></div>
         </div>
       </div>

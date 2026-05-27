@@ -1,4 +1,5 @@
 import { showLoadingScreen } from "./loading-screen.js";
+import { t } from "../../../i18n/index.js";
 import * as questionTask from "./tasks/question-task.js";
 import * as explanationTask from "./tasks/explanation-task.js";
 import * as fillingTask from "./tasks/filling-task.js";
@@ -129,7 +130,9 @@ function updateProgressView() {
     } else if (progress.enabled) {
       elements.progressText.textContent = `${progress.shownTotal} / ${progress.generatedTotal}`;
     } else {
-      elements.progressText.textContent = `Task ${progress.shownTotal}`;
+      elements.progressText.textContent = t("lesson.progress.task", {
+        count: progress.shownTotal,
+      });
     }
   }
 
