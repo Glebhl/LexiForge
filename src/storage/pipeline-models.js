@@ -5,7 +5,7 @@ const pipelineModelStorage = new LocalStorageStore();
 export const DEFAULT_PIPELINE_MODELS = Object.freeze({
   answerChecking: "google/gemini-3.1-flash-lite",
   cards: "google/gemini-3.1-flash-lite",
-  content: "google/gemini-3.1-flash-lite",
+  content: "google/gemini-3-flash-preview",
   goals: "google/gemini-3.5-flash",
   plan: "google/gemini-3.5-flash",
 });
