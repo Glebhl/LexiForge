@@ -1,7 +1,7 @@
 import { appStorage } from "../../../storage/index.js";
 import { t } from "../../../i18n/index.js";
 
-const DEFAULT_LANGUAGE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+const DEFAULT_LANGUAGE_LEVELS = ["A0", "A1", "A2", "B1", "B2", "C1", "C2"];
 
 const DEFAULT_TASKS = [
   {

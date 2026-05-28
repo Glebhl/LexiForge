@@ -134,10 +134,25 @@
   transition: var(--duration-moderate) var(--easing-standard);
 }
 
+.settings-level-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc(var(--settings-level-dot-size) / 2 - 1px);
+  left: calc(50% + var(--settings-level-dot-size) / 2);
+  width: calc(
+    100% + var(--settings-level-gap) - var(--settings-level-dot-size)
+  );
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .settings-level-dot {
   position: relative;
-  width: 22px;
-  height: 22px;
+  z-index: 1;
+  width: var(--settings-level-dot-size);
+  height: var(--settings-level-dot-size);
   border-radius: 999px;
   border: 2px solid rgba(255, 255, 255, 0.12);
   background: rgba(18, 19, 20, 0.95);
@@ -160,6 +175,8 @@
 }
 
 .settings-level-label {
+  position: relative;
+  z-index: 1;
   color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 700;
