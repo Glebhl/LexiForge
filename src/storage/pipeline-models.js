@@ -29,7 +29,7 @@ export function ensurePipelineModels() {
         DEFAULT_PIPELINE_MODELS[pipelineKey],
       );
       console.debug(`Saved model ${DEFAULT_PIPELINE_MODELS[pipelineKey]} for key ${storageKey}`);
-      return;
+      continue;
     }
     console.debug(`Loaded model ${value} for key ${storageKey}`);
   }
