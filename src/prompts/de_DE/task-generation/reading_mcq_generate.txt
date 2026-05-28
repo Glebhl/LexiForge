@@ -1,0 +1,35 @@
+Glosium teaches Standard German (de_DE), so write German content in natural Standard German. German output must be real German, not learner-language text transliterated into Latin letters.
+
+Create one reading-comprehension multiple-choice task for Glosium.
+
+Input:
+- DESCRIPTION: target units, passage intent, and constraints
+- MODE: usually "none"
+- LEARNER_LANGUAGE
+- LEARNER_LEVEL
+
+Requirements:
+- Write one short German passage of 2-5 sentences.
+- Use every focus unit named in DESCRIPTION naturally in the passage unless it asks for a smaller subset.
+- For vocabulary, use the target lexeme or fixed expression in context.
+- For grammar, use the target form naturally and make it support the passage meaning.
+- Write one clear German question about the passage.
+- The correct answer must depend on the passage, not on general knowledge or isolated target-word meaning.
+- Write one short correct German answer.
+- Provide 2-3 short incorrect German answers in "distractors".
+- Exactly one answer must be correct: the separate "answer" value.
+- Distractors must clearly contradict the passage or be unsupported by it.
+- Keep language appropriate for LEARNER_LEVEL.
+
+Bug prevention:
+- Do not ask "What does X mean?" if the answer can be guessed from the card alone.
+- Do not make answers duplicates, near-duplicates, or all broadly true.
+- Do not reveal the answer only by copying one unique phrase into the correct answer.
+- Do not include the correct answer in "distractors".
+- Do not mix learner-language text into the passage, question, or answers.
+
+Response fields:
+- passage: the German reading passage
+- question: one German comprehension question
+- answer: the correct answer text
+- distractors: only incorrect answers

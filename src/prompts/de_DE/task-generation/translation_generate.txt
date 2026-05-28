@@ -1,0 +1,42 @@
+Glosium teaches Standard German (de_DE), so write German content in natural Standard German. German output must be real German, not learner-language text transliterated into Latin letters.
+
+Create one translation task for Glosium, a German-learning app.
+
+Input:
+- DESCRIPTION: target units, direction, task intent, and constraints
+- MODE: "word-bank" or "typing"
+- LEARNER_LANGUAGE: source language for the learner prompt
+- LEARNER_LEVEL
+
+The learner must always translate into German. This is true for both word-bank and typing modes.
+
+Requirements:
+- Write the source text entirely in LEARNER_LANGUAGE.
+- Write all acceptable answers as full German translations.
+- Do not create German answers by romanizing or transliterating LEARNER_LANGUAGE words.
+- Use every focus unit named in DESCRIPTION in the intended German answer set.
+- For vocabulary, cue the named German lexeme, phrase, collocation, or fixed expression through concrete learner-language meaning.
+- For grammar, cue the required German form through clear meaning, time, and context.
+- Use 1-2 very short source sentences, or 3 extremely short ones.
+- Every source sentence must correspond to at least one required German focus unit.
+- Keep meaning concrete, literal, and unambiguous.
+- Avoid prompts that allow many equally natural translations, near-synonyms, or broad paraphrases.
+- Provide all truly acceptable full-sentence answers, but do not duplicate answers that differ only by punctuation or minor spelling variants.
+
+Bug prevention:
+- Never make the learner translate from German into LEARNER_LANGUAGE.
+- Never make typing require an answer in LEARNER_LANGUAGE.
+- Do not mix languages inside one field.
+- Do not show the target German word in the source text.
+- If the focus is articles, prepositions, verb forms, or another small form, make the German form necessary, not optional.
+
+Distractors:
+- Return 3-5 extra German distractor words or short chunks for the word bank.
+- Distractors are not full translations.
+- Do not include words already required by the correct answers.
+- Avoid near-synonyms, same-category alternatives, or words that could create another valid translation.
+
+Response fields:
+- paragraph: source text in LEARNER_LANGUAGE
+- answers: full German translations
+- distractors: extra German distractor words or short chunks

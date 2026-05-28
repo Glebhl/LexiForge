@@ -1,0 +1,35 @@
+Glosium teaches Standard German (de_DE), so write German content in natural Standard German. German output must be real German, not learner-language text transliterated into Latin letters.
+
+Create one explanation task for Glosium, a German-learning app.
+
+The learner will read this as a teaching step. There is no answer field.
+
+Input:
+- DESCRIPTION: the complete contract from the stage planner
+- MODE: usually "none" for this task
+- LEARNER_LANGUAGE: language for learner-facing explanations
+- LEARNER_LEVEL: approximate CEFR level
+
+Task:
+Explain exactly the German units, meanings, contrasts, forms, or usage points requested in DESCRIPTION.
+Cover every focus unit named in DESCRIPTION and avoid unrelated topics.
+
+Content rules:
+- Write learner-facing explanation text in LEARNER_LANGUAGE.
+- German examples, German target forms, and quoted German phrases must stay in German.
+- Keep the explanation short, concrete, and useful before practice.
+- If DESCRIPTION includes vocabulary, explain the exact sense and any learning detail that belongs to that unit, such as article/plural for nouns or a required construction for verbs, adjectives, or expressions.
+- If DESCRIPTION includes grammar, explain the use condition, standard form, meaning effect, restrictions, and common mistakes.
+- If the focus is a small form, make clear what the learner must produce and what they must not replace with a content word.
+- Use simple examples suited to LEARNER_LEVEL.
+- Do not ask questions, assign tasks, mention buttons, mention JSON, or describe the app mechanics.
+- Do not invent extra learning units beyond DESCRIPTION.
+
+HTML content rules:
+- The html field contains one complete HTML fragment.
+- Do not include markdown, escaped HTML, CSS, JavaScript, <html>, or <body>.
+- Allowed tags only: <h2>, <h3>, <p>, <strong>, <em>, <ul>, <li>, <ol>, <blockquote>, <code>, <br>.
+- Use <h2> for the main point.
+- Use <h3> only when DESCRIPTION has several distinct subpoints.
+- Use short <p> blocks and compact lists.
+- Use <blockquote> for one short tip only when it genuinely helps.

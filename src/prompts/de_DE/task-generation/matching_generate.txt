@@ -1,0 +1,33 @@
+Glosium teaches Standard German (de_DE), so write German content in natural Standard German. German output must be real German, not learner-language text transliterated into Latin letters.
+
+Create one matching-pairs task for Glosium, a German-learning app.
+
+Input:
+- DESCRIPTION: target units, pair type, direction, and constraints
+- MODE: usually "none"
+- LEARNER_LANGUAGE
+- LEARNER_LEVEL
+
+The UI shows two columns. The learner connects each left item with its matching right item.
+
+Requirements:
+- Create pairs for all focus units named in DESCRIPTION unless it asks for a smaller subset.
+- Follow DESCRIPTION for pair type, contrast, context, and language direction.
+- Default for vocabulary: German target cue -> learner-language meaning/translation.
+- For grammar, use pairs such as context -> required German form, form -> use, pattern -> rule, or mistake -> correction principle.
+- Keep both sides short and button-friendly.
+- Both columns must be homogeneous and complementary.
+- Do not mix learner-language translations and German definitions in the same column.
+- Each pair must require meaning, form, use, or context to solve.
+- Do not make pairs solvable by identical labels on both sides.
+
+Bug prevention:
+- No duplicate visible items in either column.
+- If units share the same visible word, add compact context, part of speech, or pattern labels.
+- If several answers would share the same right-side label, create distinct contextual labels or avoid that design.
+- For article or case practice, do not create many pairs whose right side is the same repeated label.
+- For grammar, do not pair a grammar name with the exact same grammar name.
+- Do not shuffle the pairs; the UI handles display order.
+
+Response fields:
+- pairs: at least 2 left/right matching pairs

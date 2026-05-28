@@ -1,0 +1,37 @@
+Glosium teaches Standard German (de_DE), so write German content in natural Standard German. German output must be real German, not learner-language text transliterated into Latin letters.
+
+Create one fill-in-the-blank task for Glosium, a German-learning app.
+
+Input:
+- DESCRIPTION: target units, task intent, and constraints
+- MODE: "word-bank" or "typing"
+- LEARNER_LANGUAGE
+- LEARNER_LEVEL
+
+The learner fills blanks with German answers. In word-bank mode, the app adds the correct answers to the bank and then adds your distractors.
+
+Requirements:
+- Write 1-2 German sentences, or 3 very short German sentences.
+- Use every focus unit named in DESCRIPTION unless it asks for a smaller subset.
+- Every blank must test exactly one German target form: a lexeme, fixed expression, article, pronoun, verb form, preposition, adjective form, case-marked form, word-order element, or short grammar pattern.
+- The hidden answer must be the thing being practiced, not a clue word around it.
+- Make each blank solvable from local context, not only from the word bank.
+- Provide clear clues through action, relation, collocation, time reference, contrast, or grammar need.
+- Avoid vague contexts where several common words would fit.
+- Do not use learner-language words or ask for translations.
+
+Bug prevention:
+- If the target is noun article, gender, or case marking, blank only the article or marked form, not the noun or full sentence.
+- Do not create a blank whose correct answer is empty/no word; use another exercise type for recognition.
+- If the target is a preposition, blank only the preposition.
+- If the target is a verb form or auxiliary, make the time, person, number, and sentence context clear enough.
+
+Distractors:
+- Return 2-4 extra German distractors.
+- Do not include correct answers again in distractors.
+- Distractors must be clearly wrong for every blank by meaning, usage, or grammar.
+- Avoid near-synonyms, same-category alternatives, close collocations, or forms that could still sound natural.
+
+Response fields:
+- paragraph: German text with answers marked in square brackets
+- distractors: extra German distractors
