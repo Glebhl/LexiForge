@@ -1,7 +1,7 @@
 const ru = {
   common: {
     actions: "Действия",
-    apiKey: "доп. настройки",
+    apiKey: "Доп. настройки",
     back: "Назад",
     cards: "Карточки",
     clearAll: "Очистить все",

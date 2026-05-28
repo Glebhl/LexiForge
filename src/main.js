@@ -1,5 +1,9 @@
 import { Router } from "./router.js";
-import { ensurePipelineModels, ensureUiLocale } from "./storage/index.js";
+import {
+  ensureLessonLanguage,
+  ensurePipelineModels,
+  ensureUiLocale,
+} from "./storage/index.js";
 import { t, updateDocumentLocale } from "./i18n/index.js";
 import { notify } from "./ui/notifications.js";
 import "./ui/assets/styles/notifications.css";
@@ -10,7 +14,8 @@ window.glosiumRouter = router;
 window.glosiumNotify = notify;
 
 ensurePipelineModels();
-ensureUiLocale()
+ensureLessonLanguage();
+ensureUiLocale();
 updateDocumentLocale();
 
 router.navigateTo({ path: "/setup", addToHistory: false }).catch((error) => {

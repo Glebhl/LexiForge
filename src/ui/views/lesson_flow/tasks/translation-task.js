@@ -289,6 +289,7 @@ export function loadTask(elements, mountTask, content, meta = {}) {
         promptText,
         userAnswer,
         meta.learnerLanguage,
+        meta.lessonLanguage,
       );
       evaluation = result?.evaluation || result || MISTAKE;
       feedback = result?.feedback || "";

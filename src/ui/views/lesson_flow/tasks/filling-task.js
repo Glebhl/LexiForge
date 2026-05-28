@@ -317,6 +317,7 @@ export function loadTask(elements, mountTask, content, meta = {}) {
         correctAnswers,
         userAnswers,
         meta.learnerLanguage,
+        meta.lessonLanguage,
       );
       evaluation = result?.evaluation || result || MISTAKE;
       feedback = result?.feedback || "";

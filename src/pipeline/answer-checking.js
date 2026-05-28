@@ -1,6 +1,10 @@
 import { OpenRouterClient } from "../llm-gateway/index.js";
 import { loadPrompt } from "../prompts/load-prompt.js";
-import { resolvePipelineModel } from "../storage/index.js";
+import {
+  DEFAULT_LESSON_LANGUAGE,
+  normalizeLessonLanguage,
+  resolvePipelineModel,
+} from "../storage/index.js";
 import { parseJsonSafely } from "../ui/json-parse.js";
 import { t } from "../i18n/index.js";
 import { ANSWER_CHECK_RESPONSE_FORMAT } from "./response-formats.js";
@@ -9,7 +13,7 @@ export const CORRECT = "correct";
 export const MINOR = "minor";
 export const MISTAKE = "mistake";
 
-const DEFAULT_LANGUAGE_CODE = "en_US";
+const DEFAULT_LANGUAGE_CODE = DEFAULT_LESSON_LANGUAGE;
 const ANSWER_CHECK_MAX_TOKENS = 128;
 const ANSWER_CHECK_REASONIG_EFFORT = "minimal";
 const APOSTROPHE_VARIANTS = ["'", "\u2019", "`", "\u02bc"];
@@ -29,12 +33,12 @@ const IRREGULAR_CONTRACTIONS = {
   "won't": ["will not"],
   "shan't": ["shall not"],
 };
-const PROMPT_PATHS = {
-  filling: "en_US/answer-checking/fill_blank_check.txt",
-  translation: "en_US/answer-checking/translation_check.txt",
+const PROMPT_FILES = {
+  filling: "answer-checking/fill_blank_check.txt",
+  translation: "answer-checking/translation_check.txt",
 };
 
-let checker = null;
+const checkers = new Map();
 
 export function isPassingEvaluation(evaluation) {
   return evaluation === CORRECT || evaluation === MINOR;
@@ -64,8 +68,9 @@ export async function evaluateTranslationAnswer(
   originalText,
   userAnswer,
   learnerLanguage,
+  lessonLanguage = DEFAULT_LANGUAGE_CODE,
 ) {
-  return getChecker().evaluateTranslationAnswer(
+  return getChecker(lessonLanguage).evaluateTranslationAnswer(
     originalText,
     userAnswer,
     learnerLanguage,
@@ -77,6 +82,7 @@ export async function evaluateFillingAnswer(
   expectedAnswers,
   userAnswers,
   learnerLanguage,
+  lessonLanguage = DEFAULT_LANGUAGE_CODE,
 ) {
   if (userAnswers.length !== expectedAnswers.length) {
     return {
@@ -85,7 +91,7 @@ export async function evaluateFillingAnswer(
     };
   }
 
-  return getChecker().evaluateFillingAnswer(
+  return getChecker(lessonLanguage).evaluateFillingAnswer(
     sentenceParts,
     expectedAnswers,
     userAnswers,
@@ -93,9 +99,17 @@ export async function evaluateFillingAnswer(
   );
 }
 
-function getChecker() {
-  checker ??= new AnswerChecker();
-  return checker;
+function getChecker(lessonLanguage) {
+  const normalizedLessonLanguage = normalizeLessonLanguage(lessonLanguage);
+
+  if (!checkers.has(normalizedLessonLanguage)) {
+    checkers.set(
+      normalizedLessonLanguage,
+      new AnswerChecker(normalizedLessonLanguage),
+    );
+  }
+
+  return checkers.get(normalizedLessonLanguage);
 }
 
 function hasIntersection(left, right) {
@@ -181,7 +195,8 @@ function alphabeticSignature(text) {
 }
 
 class AnswerChecker {
-  constructor(options = {}) {
+  constructor(lessonLanguage = DEFAULT_LANGUAGE_CODE, options = {}) {
+    this.lessonLanguage = lessonLanguage;
     this.client = new OpenRouterClient(options);
     this.model = resolvePipelineModel("answerChecking", options.model);
     this.prompts = {};
@@ -235,7 +250,9 @@ class AnswerChecker {
       return this.prompts[kind];
     }
 
-    this.prompts[kind] = await loadPrompt(PROMPT_PATHS[kind]);
+    this.prompts[kind] = await loadPrompt(
+      `${this.lessonLanguage}/${PROMPT_FILES[kind]}`,
+    );
     return this.prompts[kind];
   }
 }

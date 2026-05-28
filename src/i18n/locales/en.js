@@ -1,7 +1,7 @@
 const en = {
   common: {
     actions: "Actions",
-    apiKey: "extra settings",
+    apiKey: "Extra settings",
     back: "Back",
     cards: "Cards",
     clearAll: "Clear all",

@@ -119,6 +119,7 @@ export class LessonGenerator {
       ...stageMeta,
       exerciseIdx,
       learnerLanguage: this.lessonSettings.learnerLanguage,
+      lessonLanguage: this.lessonSettings.lessonLanguage,
       mode: exercise.mode,
     });
   }
