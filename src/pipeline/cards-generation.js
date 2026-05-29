@@ -56,7 +56,7 @@ export class CardsGenerator {
       return;
     }
 
-    let buffer = "";
+    const parser = createCardsStreamParser();
 
     for await (const chunk of this.client.streamChat({
       model: this.model,
@@ -71,11 +71,14 @@ export class CardsGenerator {
       },
     })) {
       const token = chunk.choices?.[0]?.delta?.content || "";
-      buffer += token;
+
+      for (const item of parser.push(token)) {
+        yield item;
+      }
     }
 
-    for (const item of parseCardsResponse(buffer)) {
-      yield JSON.stringify(item);
+    for (const item of parser.flush()) {
+      yield item;
     }
   }
 
@@ -87,15 +90,73 @@ export class CardsGenerator {
   }
 }
 
-function parseCardsResponse(content) {
-  const parsedContent = parseJsonSafely(content, {
-    context: "cards response from the LLM",
-    title: t("notifications.invalidLlmResponse"),
-  });
+function createCardsStreamParser() {
+  let objectBuffer = "";
+  let objectDepth = 0;
+  let isInsideString = false;
+  let isEscaped = false;
 
-  if (!Array.isArray(parsedContent?.items)) {
-    throw new Error(t("pipeline.cardsResponseMissingItems"));
+  function push(text) {
+    const items = [];
+
+    for (const char of text) {
+      if (objectDepth === 0) {
+        if (char === "{") {
+          objectBuffer = char;
+          objectDepth = 1;
+        }
+
+        continue;
+      }
+
+      objectBuffer += char;
+
+      if (isEscaped) {
+        isEscaped = false;
+        continue;
+      }
+
+      if (char === "\\") {
+        isEscaped = isInsideString;
+        continue;
+      }
+
+      if (char === '"') {
+        isInsideString = !isInsideString;
+        continue;
+      }
+
+      if (isInsideString) {
+        continue;
+      }
+
+      if (char === "{") {
+        objectDepth += 1;
+        continue;
+      }
+
+      if (char === "}") {
+        objectDepth -= 1;
+
+        if (objectDepth === 0) {
+          const item = parseJsonSafely(objectBuffer, {
+            context: "card object from the LLM stream",
+            title: t("notifications.skippedInvalidLlmResponse"),
+          });
+          items.push(JSON.stringify(item));
+          objectBuffer = "";
+          isInsideString = false;
+          isEscaped = false;
+        }
+      }
+    }
+
+    return items;
   }
 
-  return parsedContent.items;
+  function flush() {
+    return [];
+  }
+
+  return { flush, push };
 }

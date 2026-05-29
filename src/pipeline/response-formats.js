@@ -125,24 +125,18 @@ const grammarCardSchema = {
 const warningSchema = {
   type: "object",
   properties: {
+    type: { type: "string", enum: ["warning"] },
     warning: { type: "string" },
   },
-  required: ["warning"],
+  required: ["type", "warning"],
   additionalProperties: false,
 };
 
 const cardsSchema = {
-  type: "object",
-  properties: {
-    items: {
-      type: "array",
-      items: {
-        anyOf: [vocabCardSchema, grammarCardSchema, warningSchema],
-      },
-    },
+  type: "array",
+  items: {
+    anyOf: [vocabCardSchema, grammarCardSchema, warningSchema],
   },
-  required: ["items"],
-  additionalProperties: false,
 };
 
 const translationTaskSchema = {

@@ -123,7 +123,7 @@ export class Controller {
           continue;
         }
 
-        if (typeof item.warning === "string") {
+        if (item.type === "warning") {
           notify.warning(item.warning, {
             title: t("notifications.cardGenerationWarning"),
           });
